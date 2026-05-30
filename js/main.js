@@ -13,15 +13,15 @@ const ROLE_COLOR_CLASS = {
   verb: "role-verb",
   object: "role-object",
   complement: "role-complement",
-  adjective: "role-minor",
-  adverb: "role-minor"
+  adjective: "role-adjective",
+  adverb: "role-adverb"
 };
 const COMPONENT_PALETTE = {
   subject: "#00B8A9",
   verb: "#F6416C",
   object: "#FFDE7D",
   complement: "#9BB8FF",
-  adjective: "#F8F3D4",
+  adjective: "#008000",
   adverb: "#F8F3D4"
 };
 const MAJOR_ROLES = new Set(["subject", "verb", "complement", "object"]);
@@ -42,8 +42,7 @@ const PREPOSITIONS = new Set([
 ]);
 const APOSTROPHE_LIKE_PATTERN = /[\u0060\u00b4\u2018\u2019\u201b\u2032\u02bb\u02bc\uff07]/g;
 const CONTRACTION_SUFFIXES = new Set(["s", "t", "re", "ve", "ll", "d", "m"]);
-const MINOR_ANCHOR_GROUP_THRESHOLD = 7;
-const MINOR_ANCHOR_SPREAD = 6.8;
+const MINOR_ANCHOR_SPREAD = 11.0;
 const SAMPLE_TEXT = "The young students read the story carefully. Their teacher explained the difficult words on the board. They were extremely excited about the new lesson yesterday.";
 const EXPORT_MARKER = "WHITEBOARD_PPT_ANALYSIS_TXT_V1";
 const EXPORT_JSON_START = "-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----";
@@ -82,18 +81,21 @@ const elements = {
   themeSelect: document.getElementById("themeSelect"),
   editProgress: document.getElementById("editProgress"),
   presentProgress: document.getElementById("presentProgress"),
-  sourceSentence: document.getElementById("sourceSentence"),
+  sentenceTextEditor: document.getElementById("sentenceTextEditor"),
+  applySentenceTextButton: document.getElementById("applySentenceTextButton"),
+  addSentenceButton: document.getElementById("addSentenceButton"),
+  deleteSentenceButton: document.getElementById("deleteSentenceButton"),
   majorEditLane: document.getElementById("majorEditLane"),
   minorEditLane: document.getElementById("minorEditLane"),
   majorPresentLane: document.getElementById("majorPresentLane"),
   minorAnchorLane: document.getElementById("minorAnchorLane"),
   minorPresentLane: document.getElementById("minorPresentLane"),
   emptyMinorNote: document.getElementById("emptyMinorNote"),
+  presentFitButton: document.getElementById("presentFitButton"),
   backToInputButton: document.getElementById("backToInputButton"),
   startPresentButton: document.getElementById("startPresentButton"),
   returnEditButton: document.getElementById("returnEditButton"),
   returnInputButton: document.getElementById("returnInputButton"),
-  presentSaveTxtButton: document.getElementById("presentSaveTxtButton"),
   presentFirstSentenceButton: document.getElementById("presentFirstSentenceButton"),
   presentLastSentenceButton: document.getElementById("presentLastSentenceButton"),
   screenOffOverlay: document.getElementById("screenOffOverlay"),
@@ -117,50 +119,6 @@ function splitSentences(text) {
 }
 
 function analyzeSentence(sentenceText, sentenceIndex) {
-  return analyzeSentenceWithDisplayWords(sentenceText, sentenceIndex);
-  const cleanText = sentenceText.replace(/[“”]/g, "\"").replace(/[‘’]/g, "'");
-  const words = cleanText.match(/[A-Za-z]+(?:'[A-Za-z]+)?|[.,!?;:]/g) || [];
-  const plainWords = words.filter((word) => /[A-Za-z]/.test(word));
-
-  if (plainWords.length === 0) {
-    return [];
-  }
-
-  const verbIndex = findVerbIndex(plainWords);
-  const subjectStart = 0;
-  const subjectEnd = Math.max(verbIndex, 1);
-  const verbStart = verbIndex;
-  const verbEnd = Math.min(verbIndex + getVerbSpan(plainWords, verbIndex), plainWords.length);
-  const subjectWords = plainWords.slice(subjectStart, subjectEnd);
-  const verbWords = plainWords.slice(verbStart, verbEnd);
-  const afterVerbStart = verbEnd;
-  const afterVerb = plainWords.slice(afterVerbStart);
-  const splitAfterVerb = splitMinorPhrase(afterVerb);
-  const components = [];
-
-  addComponent(components, sentenceIndex, "subject", subjectWords, subjectStart, subjectEnd);
-  addComponent(components, sentenceIndex, "verb", verbWords, verbStart, verbEnd);
-
-  if (splitAfterVerb.core.length > 0) {
-    const role = BE_VERBS.has(verbWords[verbWords.length - 1]?.toLowerCase()) ? "complement" : "object";
-    const coreStart = afterVerbStart + splitAfterVerb.coreStartOffset;
-    addComponent(components, sentenceIndex, role, splitAfterVerb.core, coreStart, coreStart + splitAfterVerb.core.length);
-  }
-
-  splitAfterVerb.minors.forEach((minor, index) => {
-    const role = minor.words.some((word) => word.toLowerCase().endsWith("ly")) ? "adverb" : "adverb";
-    const minorStart = afterVerbStart + minor.startOffset;
-    addComponent(components, sentenceIndex, role, minor.words, minorStart, minorStart + minor.words.length, index);
-  });
-
-  if (components.length === 0) {
-    addComponent(components, sentenceIndex, "subject", plainWords, 0, plainWords.length);
-  }
-
-  return components.map((component, order) => ({ ...component, order: order + 1 }));
-}
-
-function analyzeSentenceWithDisplayWords(sentenceText, sentenceIndex) {
   const displayWords = getDisplayWords(sentenceText);
   const plainWords = displayWords.map(getWordCore).filter(Boolean);
 
@@ -356,7 +314,7 @@ function renderEditView() {
   }
 
   elements.editProgress.textContent = getProgressText();
-  elements.sourceSentence.textContent = sentence.text;
+  elements.sentenceTextEditor.value = sentence.text;
   renderEditLane(elements.majorEditLane, getComponentsByLane(sentence, "major"));
   renderEditLane(elements.minorEditLane, getComponentsByLane(sentence, "minor"));
   updateNavButtons();
@@ -528,13 +486,12 @@ function renderMajorPresentLane(container, components, visibleMinorComponents = 
 
 function renderMinorPresentRows(container, components) {
   container.innerHTML = "";
-  const anchorGroups = getMinorAnchorGroups(components);
   components.forEach((component, index) => {
     const row = document.createElement("div");
     row.className = "minor-row";
     placeMinorRow(row, index);
     const chip = createPresentChip(component);
-    placeMinorComponentOnGrid(chip, component, index, getShiftedAnchorPercent(component, anchorGroups));
+    placeMinorComponentOnGrid(chip, component, index, getMinorAnchorPercent(component));
     chip.draggable = true;
     chip.dataset.componentId = component.id;
     chip.addEventListener("dragstart", handlePresentMinorDragStart);
@@ -552,41 +509,50 @@ function placeMinorRow(row, rowIndex) {
   row.style.zIndex = String(100 - rowIndex);
 }
 
-function getMinorAnchorGroups(components) {
-  const groups = [];
-  const anchors = components
-    .map((component) => ({
-      id: component.id,
-      percent: getMinorAnchorPercent(component)
-    }))
-    .sort((a, b) => a.percent - b.percent);
-
-  anchors.forEach((anchor) => {
-    const group = groups[groups.length - 1];
-    const previous = group?.anchors[group.anchors.length - 1];
-    if (!group || Math.abs(anchor.percent - previous.percent) > MINOR_ANCHOR_GROUP_THRESHOLD) {
-      groups.push({ anchors: [anchor] });
-      return;
-    }
-    group.anchors.push(anchor);
-  });
-
-  return groups;
+function getMinorLaneMetrics() {
+  const rect = elements.minorPresentLane.getBoundingClientRect();
+  const style = getComputedStyle(elements.minorPresentLane);
+  const padLeft = Number.parseFloat(style.paddingLeft) || 0;
+  const padRight = Number.parseFloat(style.paddingRight) || 0;
+  const left = rect.left + padLeft;
+  const width = Math.max(1, rect.width - padLeft - padRight);
+  return { left, width, right: left + width };
 }
 
-function getShiftedAnchorPercent(component, anchorGroups) {
-  const percent = getMinorAnchorPercent(component);
-  const group = anchorGroups.find((item) => item.anchors.some((anchor) => anchor.id === component.id));
-  if (!group || group.anchors.length <= 1) {
-    return clamp(5.5, percent, 94.5);
+// 같은 슬롯(동일 위치)에 모인 부사어 점만 그 슬롯을 중심으로 좌우 대칭 분산한다.
+// 서로 다른 슬롯(예: 문장 맨앞 vs 맨뒤)에 있는 종요소는 절대 서로 영향받지 않는다(독립 이동).
+function spreadAnchors(list, metrics, edgePercent) {
+  const result = new Map();
+  if (list.length === 0) {
+    return result;
   }
 
-  const groupIndex = group.anchors.findIndex((anchor) => anchor.id === component.id);
-  const groupCenter = group.anchors.reduce((sum, anchor) => sum + anchor.percent, 0) / group.anchors.length;
-  const halfSpread = ((group.anchors.length - 1) * MINOR_ANCHOR_SPREAD) / 2;
-  const center = clamp(5.5 + halfSpread, groupCenter, 94.5 - halfSpread);
-  const offset = (groupIndex - (group.anchors.length - 1) / 2) * MINOR_ANCHOR_SPREAD;
-  return Math.round((center + offset) * 10) / 10;
+  const minSep = metrics.width
+    ? clamp(MINOR_ANCHOR_SPREAD, (26 / metrics.width) * 100, 24)
+    : MINOR_ANCHOR_SPREAD;
+  const minP = edgePercent;
+  const maxP = 100 - edgePercent;
+
+  const groups = new Map();
+  list.forEach((item) => {
+    const key = Math.round(item.percent * 10) / 10;
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key).push(item);
+  });
+
+  groups.forEach((items, slotPercent) => {
+    const ordered = items.slice().sort((a, b) => a.order - b.order);
+    const count = ordered.length;
+    ordered.forEach((item, index) => {
+      const offset = (index - (count - 1) / 2) * minSep;
+      const percent = clamp(minP, slotPercent + offset, maxP);
+      result.set(item.component.id, Math.round(percent * 10) / 10);
+    });
+  });
+
+  return result;
 }
 
 function createPresentChip(component, modifierTargetIndexes = new Set()) {
@@ -635,7 +601,8 @@ function placeMinorComponentOnGrid(element, component, rowIndex, anchorPercent =
 }
 
 function getMinorBoxTop(rowIndex) {
-  return 44 + rowIndex * 44;
+  // 종요소 행 사이 세로 간격(rowIndex 증가분)을 기존 44px의 2/3로 줄인다.
+  return 44 + rowIndex * 29;
 }
 
 function getMinorAnchorPercent(component) {
@@ -668,6 +635,20 @@ function getModifierTargetCenterPercent(component) {
     return getClosestSlot(Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1).percent;
   }
 
+  const metrics = getMinorLaneMetrics();
+  const targetWords = getVisibleWordElementsByIndexes(indexes);
+
+  if (metrics.width && targetWords.length > 0) {
+    const left = Math.min(...targetWords.map((word) => word.getBoundingClientRect().left));
+    const right = Math.max(...targetWords.map((word) => word.getBoundingClientRect().right));
+    const center = (left + right) / 2;
+    // 화살표는 수식 대상(주요소 포함)의 밑줄 정가운데를 정확히 가리켜야 한다.
+    // 가장자리 보정(edge clamp)은 화살표를 안쪽으로 당겨 밑줄 중앙을 벗어나게 하므로 적용하지 않는다.
+    // 박스가 화면 밖으로 나가는 문제는 clampMinorBoxes와 연결선 확장으로 따로 처리된다.
+    const percent = ((center - metrics.left) / metrics.width) * 100;
+    return Math.round(clamp(0, percent, 100) * 10) / 10;
+  }
+
   const percents = indexes.map((index) => {
     const startSlot = getClosestSlot(index);
     const endSlot = getClosestSlot(index + 1);
@@ -686,13 +667,13 @@ function getComponentWords(component) {
 
 function getDisplayWords(text) {
   const normalizedText = normalizeApostrophes(text);
-  const words = normalizedText.match(/["'“‘(\[]*[A-Za-z]+(?:'[A-Za-z]+)?["'”’)\].,!?;:]*/g) || [];
+  const words = normalizedText.match(/["'“‘(\[]*[A-Za-z0-9\-\u2013\u2014]+(?:'[A-Za-z0-9\-\u2013\u2014]+)?["'”’)\].,!?;:]*/g) || [];
   const mergedWords = mergeContractionFragments(words);
   return mergedWords.length > 0 ? mergedWords : [normalizedText].filter(Boolean);
 }
 
 function getWordCore(word) {
-  return normalizeApostrophes(word).match(/[A-Za-z]+(?:'[A-Za-z]+)?/)?.[0] || "";
+  return normalizeApostrophes(word).match(/[A-Za-z0-9\-\u2013\u2014]+(?:'[A-Za-z0-9\-\u2013\u2014]+)?/)?.[0] || "";
 }
 
 function normalizeApostrophes(text) {
@@ -736,7 +717,7 @@ function getClosestSlot(index) {
 }
 
 function rebuildMinorSlotsFromWords() {
-  const slotRect = elements.minorPresentLane.getBoundingClientRect();
+  const slotRect = getMinorLaneMetrics();
   const wordElements = [...elements.majorPresentLane.querySelectorAll(".present-word")];
   const sentence = getCurrentSentence();
   if (!slotRect.width || wordElements.length === 0 || !sentence) {
@@ -745,31 +726,56 @@ function rebuildMinorSlotsFromWords() {
   }
 
   const wordRects = wordElements.map((element) => element.getBoundingClientRect());
+  // 슬롯 인덱스는 원문 전체 단어 인덱스(data-word-index) 기준이어야 종요소의 startIndex와 맞아떨어진다.
+  const wordIndexes = wordElements.map((element, index) => {
+    const value = Number(element.dataset.wordIndex);
+    return Number.isFinite(value) ? value : index;
+  });
+  const firstIndex = wordIndexes[0];
+  const lastIndex = wordIndexes[wordIndexes.length - 1];
   const slots = [];
   const first = wordRects[0];
   const last = wordRects[wordRects.length - 1];
   const edgeGap = getMajorEdgeGap();
   const leftEdge = slotRect.left + getStageEdgeGuard(slotRect);
   const rightEdge = slotRect.right - getStageEdgeGuard(slotRect);
+
+  // 문장 맨 앞/맨 뒤 슬롯에 몰리는 종요소 개수만큼 가장자리 점을 더 벌려 둔다.
+  const visibleMinorComponents = getComponentsByLane(sentence, "minor").slice(0, state.minorRevealCount);
+  const startAnchorCount = visibleMinorComponents.filter((component) => {
+    const start = Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1;
+    return start <= firstIndex;
+  }).length;
+  const endAnchorCount = visibleMinorComponents.filter((component) => {
+    const start = Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1;
+    return start > lastIndex;
+  }).length;
+
+  const startShiftPx = startAnchorCount > 1 ? ((startAnchorCount - 1) * MINOR_ANCHOR_SPREAD / 2 / 100) * slotRect.width : 0;
+  const endShiftPx = endAnchorCount > 1 ? ((endAnchorCount - 1) * MINOR_ANCHOR_SPREAD / 2 / 100) * slotRect.width : 0;
+
+  // 문장 맨 앞 슬롯 (첫 단어 앞)
   slots.push({
-    index: 0,
-    percent: rectXToPercent(Math.max(leftEdge, first.left - edgeGap), slotRect)
+    index: firstIndex - 0.5,
+    percent: rectXToPercent(Math.max(leftEdge, first.left - edgeGap - startShiftPx), slotRect)
   });
 
+  // 단어와 단어 사이 슬롯: 양쪽 주요소 단어의 원문 인덱스 중간값으로 표시
   wordRects.forEach((rect, index) => {
     const nextRect = wordRects[index + 1];
     if (!nextRect) {
       return;
     }
     slots.push({
-      index: index + 1,
+      index: (wordIndexes[index] + wordIndexes[index + 1]) / 2,
       percent: rectXToPercent((rect.right + nextRect.left) / 2, slotRect)
     });
   });
 
+  // 문장 맨 뒤 슬롯 (마지막 단어 뒤)
   slots.push({
-    index: wordRects.length,
-    percent: rectXToPercent(Math.min(rightEdge, last.right + edgeGap), slotRect)
+    index: lastIndex + 0.5,
+    percent: rectXToPercent(Math.min(rightEdge, last.right + edgeGap + endShiftPx), slotRect)
   });
 
   state.minorSlots = slots;
@@ -782,11 +788,11 @@ function rectXToPercent(x, rect) {
 
 function getMajorEdgeGap() {
   const currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current"));
-  return clamp(38, currentSize * 0.48, 76);
+  return clamp(80, currentSize * 1.0, 180);
 }
 
 function getStageEdgeGuard(rect) {
-  return clamp(24, rect.width * 0.035, 54);
+  return clamp(80, rect.width * 0.08, 180);
 }
 
 function getCurrentSentence() {
@@ -813,6 +819,83 @@ function goToSentence(index, revealCount = 0) {
   state.currentSentenceIndex = Math.max(0, Math.min(index, state.sentences.length - 1));
   state.minorRevealCount = clamp(0, revealCount, getCurrentMinorCount());
   render();
+}
+
+function updateSentenceText() {
+  const sentence = getCurrentSentence();
+  if (!sentence) {
+    return;
+  }
+  const newText = elements.sentenceTextEditor.value.trim();
+  if (!newText) {
+    alert("문장 텍스트를 입력해 주세요.");
+    return;
+  }
+  sentence.text = newText;
+  sentence.wordCount = getPlainWords(newText).length;
+  sentence.components = analyzeSentence(newText, state.currentSentenceIndex);
+  
+  state.passageText = state.sentences.map((s) => s.text).join(" ");
+  elements.passageInput.value = state.passageText;
+  
+  render();
+}
+
+function insertNewSentence() {
+  if (state.sentences.length === 0) {
+    return;
+  }
+  const insertIndex = state.currentSentenceIndex + 1;
+  const defaultText = "Insert new English sentence here.";
+  const newSentence = {
+    id: `sentence-inserted-${Date.now()}`,
+    text: defaultText,
+    wordCount: getPlainWords(defaultText).length,
+    components: analyzeSentence(defaultText, insertIndex)
+  };
+  
+  state.sentences.splice(insertIndex, 0, newSentence);
+  
+  reindexSentences();
+  
+  state.currentSentenceIndex = insertIndex;
+  state.minorRevealCount = 0;
+  
+  render();
+}
+
+function deleteCurrentSentence() {
+  if (state.sentences.length === 0) {
+    return;
+  }
+  if (state.sentences.length <= 1) {
+    alert("더 이상 문장을 삭제할 수 없습니다. 최소 하나의 문장이 필요합니다.");
+    return;
+  }
+  
+  if (!confirm("현재 문장을 정말 삭제하시겠습니까?")) {
+    return;
+  }
+  
+  state.sentences.splice(state.currentSentenceIndex, 1);
+  reindexSentences();
+  
+  state.currentSentenceIndex = Math.max(0, Math.min(state.currentSentenceIndex, state.sentences.length - 1));
+  state.minorRevealCount = 0;
+  
+  render();
+}
+
+function reindexSentences() {
+  state.sentences.forEach((sentence, index) => {
+    sentence.id = `sentence-${index + 1}`;
+    // 성분마다 고유한 id를 부여한다. (배열 순서 기반이라 중복이 생기지 않는다)
+    sentence.components.forEach((component, componentIndex) => {
+      component.id = `s${index + 1}-c${componentIndex + 1}`;
+    });
+  });
+  state.passageText = state.sentences.map((s) => s.text).join(" ");
+  elements.passageInput.value = state.passageText;
 }
 
 function getCurrentMinorCount() {
@@ -925,15 +1008,23 @@ function findDefaultModifierTarget(component) {
 }
 
 function getModifierTargetIndexes(component) {
+  // 형용사어는 자기 자신의 단어를 수식 대상으로 삼을 수 없다. 과거 경계가 다를 때 저장된
+  // 자기 단어 인덱스가 남아 있으면 화살표/밑줄이 자기 박스 쪽으로 끌려가므로 항상 제외한다.
+  const isOwnWord = (index) =>
+    Number.isFinite(component.startIndex) &&
+    Number.isFinite(component.endIndex) &&
+    index >= component.startIndex &&
+    index < component.endIndex;
+
   if (Array.isArray(component.modifierTargetIndexes)) {
     return component.modifierTargetIndexes
       .map((index) => Number(index))
-      .filter((index) => Number.isInteger(index) && index >= 0)
+      .filter((index) => Number.isInteger(index) && index >= 0 && !isOwnWord(index))
       .sort((a, b) => a - b);
   }
 
   if (Number.isFinite(component.modifierTargetStart) && Number.isFinite(component.modifierTargetEnd)) {
-    return getIndexRange(component.modifierTargetStart, component.modifierTargetEnd);
+    return getIndexRange(component.modifierTargetStart, component.modifierTargetEnd).filter((index) => !isOwnWord(index));
   }
 
   return [];
@@ -1100,7 +1191,8 @@ function goToPresentationFirstSentence() {
 function handlePresentationLastButton() {
   const lastIndex = state.sentences.length - 1;
   if (state.currentSentenceIndex >= lastIndex) {
-    goToPresentationPrev();
+    // 마지막 문장에서는 "이전 단계" 버튼으로 발표를 끝내고 2단계(수정) 화면으로 돌아간다.
+    setMode("edit");
     return;
   }
   goToSentence(lastIndex, 0);
@@ -1127,6 +1219,7 @@ function moveComponent(componentId, targetLane, targetIndex = null) {
   }
 
   component.lane = targetLane;
+  clearManualMinorPosition(component);
   if (targetLane === "major" && !MAJOR_ROLES.has(component.role)) {
     component.role = "subject";
   }
@@ -1195,13 +1288,21 @@ function splitSelectedWords(componentId, selectedIndexes) {
 }
 
 function createDerivedComponent(baseComponent, words, startIndex, endIndex) {
-  return {
+  const derived = {
     ...baseComponent,
     id: getNextComponentId(baseComponent.id),
     text: words.join(" "),
     startIndex,
     endIndex
   };
+  clearManualMinorPosition(derived);
+  return derived;
+}
+
+// 발표 화면에서 드래그로 정해진 수동 위치(점 고정/박스)를 초기화한다.
+function clearManualMinorPosition(component) {
+  delete component.pinnedAnchor;
+  delete component.boxPercent;
 }
 
 function getNextComponentId(baseId) {
@@ -1218,6 +1319,7 @@ function updateComponentRole(componentId, role) {
 
   component.role = role;
   component.lane = ROLE_BY_VALUE[role].lane;
+  clearManualMinorPosition(component);
   if (role === "adjective") {
     ensureModifierTarget(component);
   } else {
@@ -1270,6 +1372,9 @@ function handleLaneDrop(event) {
   }
 
   const targetLane = lane.dataset.lane;
+  // 다른 성분 위에 직접 겹쳐 놓으면 병합한다(README: "겹치게 드래그한 성분 병합").
+  // 병합 결과 텍스트는 mergeComponents에서 startIndex 순(문장 순서)으로 합쳐진다.
+  // 성분 사이 빈 공간에 놓으면 위치만 이동한다.
   const mergeTargetId = getMergeTargetId(lane, componentId, event.clientX, event.clientY);
   if (mergeTargetId) {
     mergeComponents(componentId, mergeTargetId, targetLane);
@@ -1325,6 +1430,7 @@ function mergeComponents(sourceId, targetId, targetLane) {
     delete merged.modifierTargetEnd;
     delete merged.modifierTargetIndexes;
   }
+  clearManualMinorPosition(merged);
 
   const insertIndex = sentence.components.findIndex((item) => item.id === target.id);
   sentence.components = sentence.components.filter((item) => item.id !== source.id && item.id !== target.id);
@@ -1371,21 +1477,35 @@ function moveMinorAnchor(componentId, clientX) {
     return;
   }
 
-  const rect = elements.minorPresentLane.getBoundingClientRect();
-  const ratio = clamp(0, (clientX - rect.left) / rect.width, 1);
+  const metrics = getMinorLaneMetrics();
+  if (!metrics.width) {
+    return;
+  }
+  const targetPercent = clamp(0, ((clientX - metrics.left) / metrics.width) * 100, 100);
+  const edgePercent = (getStageEdgeGuard(metrics) / metrics.width) * 100;
+
+  if (component.role === "adjective") {
+    // 형용사어: 화살표는 수식 대상 가운데에 고정하고 박스 위치만 옮긴다.
+    component.boxPercent = Math.round(clamp(edgePercent, targetPercent, 100 - edgePercent) * 10) / 10;
+    renderPresentView();
+    return;
+  }
+
+  // 부사어: 동그라미 점을 문장 맨앞/단어 사이/맨뒤 슬롯으로 스냅한다.
   const slots = getMinorSlots();
   if (slots.length === 0) {
     return;
   }
-  const span = Math.max(1, (component.endIndex || 0) - (component.startIndex || 0));
-  const targetPercent = ratio * 100;
   const nearestSlot = slots.reduce((closest, slot) => {
     return Math.abs(slot.percent - targetPercent) < Math.abs(closest.percent - targetPercent) ? slot : closest;
   }, slots[0]);
-  const startIndex = nearestSlot.index;
+  const span = Math.max(1, (component.endIndex || 0) - (component.startIndex || 0));
   const wordCount = Math.max(sentence.wordCount || 1, 1);
+  const startIndex = clamp(0, Math.round(nearestSlot.index), wordCount);
   component.startIndex = startIndex;
   component.endIndex = Math.min(wordCount, startIndex + span);
+  // 드래그한 부사어는 선택한 슬롯에 고정(pinned)되어 다른 종요소 자동 배치에 영향받지 않는다.
+  component.pinnedAnchor = true;
   renderPresentView();
 }
 
@@ -1405,7 +1525,7 @@ function applySettings() {
   elements.themeSelect.value = state.settings.theme;
   const width = window.innerWidth;
   const majorBase = clamp(56, width * 0.07, 124);
-  const minorBase = clamp(28, width * 0.032, 58);
+  const minorBase = clamp(20, width * 0.022, 42);
   elements.app.style.setProperty("--font-major-current", `${Math.round(majorBase)}px`);
   elements.app.style.setProperty("--font-minor-current", `${Math.round(minorBase)}px`);
 }
@@ -1493,7 +1613,7 @@ function fitMinorRows() {
     return;
   }
 
-  const laneRect = elements.minorPresentLane.getBoundingClientRect();
+  const laneRect = getMinorLaneMetrics();
   const edgeGuard = getStageEdgeGuard(laneRect);
   const availableWidth = Math.max(220, laneRect.width - edgeGuard * 2);
   const widestWidth = Math.max(...chips.map((chip) => chip.getBoundingClientRect().width));
@@ -1512,21 +1632,29 @@ function clampMinorBoxes() {
     return;
   }
 
-  const laneRect = elements.minorPresentLane.getBoundingClientRect();
+  const laneRect = getMinorLaneMetrics();
   if (!laneRect.width) {
     return;
   }
 
   elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
     const anchorPercent = Number.parseFloat(chip.style.getPropertyValue("--anchor-percent")) || 50;
+    const desiredBox = Number.parseFloat(chip.style.getPropertyValue("--box-percent"));
+    const targetBox = Number.isFinite(desiredBox) ? desiredBox : anchorPercent;
     const chipRect = chip.getBoundingClientRect();
-    const edgeGuard = getStageEdgeGuard(laneRect);
-    const halfPercent = ((chipRect.width / 2 + edgeGuard) / laneRect.width) * 100;
-    const boxPercent = halfPercent >= 50 ? 50 : clamp(halfPercent, anchorPercent, 100 - halfPercent);
+    // 박스가 가장자리(문장 맨앞/맨뒤 슬롯)까지 충분히 붙을 수 있도록 여백을 작게 잡는다.
+    const boxGuard = clamp(16, laneRect.width * 0.02, 56);
+    const halfPercent = ((chipRect.width / 2 + boxGuard) / laneRect.width) * 100;
+    const boxPercent = halfPercent >= 50 ? 50 : clamp(halfPercent, targetBox, 100 - halfPercent);
     chip.style.setProperty("--box-percent", `${Math.round(boxPercent * 10) / 10}%`);
     const anchorX = (anchorPercent / 100) * laneRect.width;
     const boxCenterX = (boxPercent / 100) * laneRect.width;
-    const connectorPercent = clamp(8, 50 + ((anchorX - boxCenterX) / chipRect.width) * 100, 92);
+    // 점/화살표는 반드시 실제 슬롯(문장 맨앞·단어 사이·맨뒤, 단어와 겹치지 않는 위치)에
+    // 정확히 닿아야 한다. 긴 종요소 박스가 화면 안에 들어오도록 가운데로 재배치되면
+    // 슬롯이 박스 밖에 놓이는데, 이때 연결선을 박스 밖까지 뻗어 슬롯에 닿게 한다.
+    // (앵커는 이미 lane 가장자리 안으로 보정되어 있어 화면 밖으로 나가지 않는다.)
+    const rawConnector = 50 + ((anchorX - boxCenterX) / chipRect.width) * 100;
+    const connectorPercent = clamp(-120, rawConnector, 220);
     chip.style.setProperty("--connector-x", `${Math.round(connectorPercent * 10) / 10}%`);
   });
 }
@@ -1542,7 +1670,7 @@ function updateMinorConnectorLengths() {
     return;
   }
 
-  const dotY = majorRect.top + majorRect.height * 0.5 - stageRect.top;
+  const dotY = majorRect.top + majorRect.height * 0.85 - stageRect.top;
   elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
     const chipRect = chip.getBoundingClientRect();
     const chipTop = chipRect.top - stageRect.top;
@@ -1567,18 +1695,52 @@ function getModifierTargetBottomY(component, stageRect) {
   }
 
   const bottom = Math.max(...targetWords.map((word) => word.getBoundingClientRect().bottom));
-  return bottom - stageRect.top + 42;
+  return bottom - stageRect.top + 10;
 }
 
 function updateMinorPositions() {
-  const components = getComponentsByLane(getCurrentSentence(), "minor").slice(0, state.minorRevealCount);
-  const anchorGroups = getMinorAnchorGroups(components);
+  const sentence = getCurrentSentence();
+  if (!sentence) {
+    return;
+  }
+
+  const components = getComponentsByLane(sentence, "minor").slice(0, state.minorRevealCount);
+  const metrics = getMinorLaneMetrics();
+  const edgePercent = metrics.width ? (getStageEdgeGuard(metrics) / metrics.width) * 100 : 6;
+  const anchorById = new Map();
+  const boxById = new Map();
+  const autoAdverbs = [];
+
+  components.forEach((component) => {
+    if (component.role === "adjective") {
+      // 형용사어: 화살표는 항상 수식 대상 정중앙. 박스만 드래그로 옮길 수 있다.
+      anchorById.set(component.id, getModifierTargetCenterPercent(component));
+      if (Number.isFinite(component.boxPercent)) {
+        boxById.set(component.id, clamp(edgePercent, component.boxPercent, 100 - edgePercent));
+      }
+      return;
+    }
+    if (component.pinnedAnchor) {
+      // 드래그로 직접 옮긴 부사어: 선택한 슬롯(단어 사이)에 고정하고 자동 배치(spread)에서 제외해 독립적으로 움직인다.
+      anchorById.set(component.id, getClosestSlot(Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1).percent);
+      return;
+    }
+    autoAdverbs.push({
+      component,
+      order: component.order,
+      percent: getClosestSlot(Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1).percent
+    });
+  });
+
+  spreadAnchors(autoAdverbs, metrics, edgePercent).forEach((percent, id) => anchorById.set(id, percent));
+
   elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
-    const component = components.find((item) => item.id === chip.dataset.componentId);
-    if (component) {
-      const anchorPercent = getShiftedAnchorPercent(component, anchorGroups);
-      chip.style.setProperty("--anchor-percent", `${anchorPercent}%`);
-      chip.style.setProperty("--box-percent", `${anchorPercent}%`);
+    const id = chip.dataset.componentId;
+    const anchor = anchorById.get(id);
+    if (Number.isFinite(anchor)) {
+      chip.style.setProperty("--anchor-percent", `${anchor}%`);
+      const box = boxById.has(id) ? boxById.get(id) : anchor;
+      chip.style.setProperty("--box-percent", `${box}%`);
     }
   });
 }
@@ -1693,6 +1855,8 @@ function buildAnalysisPayload() {
         modifierTargetStart: component.modifierTargetStart,
         modifierTargetEnd: component.modifierTargetEnd,
         modifierTargetIndexes: component.modifierTargetIndexes,
+        pinnedAnchor: component.pinnedAnchor,
+        boxPercent: component.boxPercent,
         words: getComponentWords(component)
       }))
     }))
@@ -1811,20 +1975,24 @@ function normalizeImportedComponent(component, sentenceIndex, componentIndex) {
   const endIndex = Number(component?.endIndex);
   const modifierTargetStart = Number(component?.modifierTargetStart);
   const modifierTargetEnd = Number(component?.modifierTargetEnd);
+  const boxPercent = Number(component?.boxPercent);
   return {
-    id: String(component?.id || `s${sentenceIndex + 1}-import-${componentIndex + 1}`),
+    // 저장 파일에 중복 id가 있을 수 있으므로 불러올 때 항상 고유 id를 새로 부여한다.
+    // (수식 대상은 modifierTargetIndexes(단어 인덱스)로 복원되므로 id 변경의 영향이 없다)
+    id: `s${sentenceIndex + 1}-c${componentIndex + 1}`,
     text,
     role,
     lane,
     order: Number.isFinite(Number(component?.order)) ? Number(component.order) : componentIndex + 1,
     startIndex: Number.isFinite(startIndex) ? startIndex : undefined,
     endIndex: Number.isFinite(endIndex) ? endIndex : undefined,
-    modifierTargetId: component?.modifierTargetId ? String(component.modifierTargetId) : undefined,
     modifierTargetStart: Number.isFinite(modifierTargetStart) ? modifierTargetStart : undefined,
     modifierTargetEnd: Number.isFinite(modifierTargetEnd) ? modifierTargetEnd : undefined,
     modifierTargetIndexes: Array.isArray(component?.modifierTargetIndexes)
       ? component.modifierTargetIndexes.map((index) => Number(index)).filter((index) => Number.isInteger(index) && index >= 0)
-      : undefined
+      : undefined,
+    pinnedAnchor: component?.pinnedAnchor === true ? true : undefined,
+    boxPercent: Number.isFinite(boxPercent) ? boxPercent : undefined
   };
 }
 
@@ -1854,7 +2022,8 @@ function updateNavButtons() {
   elements.presentNextButton.disabled = isLastPresentationStep;
   elements.presentFirstSentenceButton.disabled = isFirst;
   elements.presentLastSentenceButton.textContent = isLast ? "이전 단계" : "마지막 문장";
-  elements.presentLastSentenceButton.disabled = state.sentences.length <= 1 && isFirstPresentationStep;
+  // "마지막 문장"(마지막 문장으로 이동) / "이전 단계"(2단계 수정 화면으로 이동) 모두 항상 유효한 동작이므로 비활성화하지 않는다.
+  elements.presentLastSentenceButton.disabled = state.sentences.length === 0;
 }
 
 function goToInputStart() {
@@ -1895,8 +2064,10 @@ function bindEvents() {
   elements.inputExportTxtButton.addEventListener("click", exportAnalysisTxt);
   elements.inputImportButton.addEventListener("click", triggerAnalysisImport);
   elements.editImportButton.addEventListener("click", triggerAnalysisImport);
+  elements.applySentenceTextButton.addEventListener("click", updateSentenceText);
+  elements.addSentenceButton.addEventListener("click", insertNewSentence);
+  elements.deleteSentenceButton.addEventListener("click", deleteCurrentSentence);
   elements.exportTxtButton.addEventListener("click", exportAnalysisTxt);
-  elements.presentSaveTxtButton.addEventListener("click", exportAnalysisTxt);
   elements.analysisFileInput.addEventListener("change", handleAnalysisFileSelected);
 
   elements.themeSelect.addEventListener("change", () => {
@@ -1908,6 +2079,12 @@ function bindEvents() {
   elements.backToInputButton.addEventListener("click", () => setMode("input"));
   elements.returnInputButton.addEventListener("click", goToInputStart);
   elements.startPresentButton.addEventListener("click", () => setMode("present"));
+  elements.presentFitButton.addEventListener("click", () => {
+    elements.app.style.removeProperty("--font-major-current");
+    elements.app.style.removeProperty("--font-minor-current");
+    applySettings();
+    schedulePresentationFit();
+  });
   elements.returnEditButton.addEventListener("click", () => setMode("edit"));
   elements.presentFirstSentenceButton.addEventListener("click", goToPresentationFirstSentence);
   elements.presentLastSentenceButton.addEventListener("click", handlePresentationLastButton);

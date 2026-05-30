@@ -71,8 +71,21 @@
         </div>
 
         <div class="sentence-meta">
-          <span id="editProgress" class="progress-badge">0 / 0</span>
-          <p id="sourceSentence" class="source-sentence"></p>
+          <div class="meta-top-row">
+            <span id="editProgress" class="progress-badge">0 / 0</span>
+            <div class="sentence-manage-buttons">
+              <button class="button secondary compact" type="button" id="addSentenceButton">+ 문장 추가</button>
+              <button class="button secondary compact" type="button" id="deleteSentenceButton" style="color: var(--color-warning); border-color: var(--color-warning);">- 문장 삭제</button>
+            </div>
+          </div>
+          <div class="sentence-edit-panel">
+            <label for="sentenceTextEditor" class="sr-only">현재 문장 텍스트 수정</label>
+            <textarea id="sentenceTextEditor" rows="2" class="sentence-editor-textarea" placeholder="현재 문장을 수정하려면 입력해 주세요."></textarea>
+            <div class="editor-action-row">
+              <span class="editor-warning">⚠️ 적용 시 수동 성분 분석 수정 사항은 초기화됩니다.</span>
+              <button class="button primary compact" type="button" id="applySentenceTextButton">문장 수정 적용</button>
+            </div>
+          </div>
         </div>
 
         <div class="edit-board" aria-label="문장 성분 수정 영역">
@@ -109,12 +122,13 @@
             <span><i class="legend-dot role-verb"></i>동사</span>
             <span><i class="legend-dot role-object"></i>목적어</span>
             <span><i class="legend-dot role-complement"></i>보어</span>
-            <span><i class="legend-dot role-minor"></i>종요소</span>
+            <span><i class="legend-dot role-adjective"></i>형용사어</span>
+            <span><i class="legend-dot role-adverb"></i>부사어</span>
           </div>
           <div class="present-actions">
-            <button class="button secondary compact" type="button" id="returnEditButton">수정</button>
-            <button class="button secondary compact" type="button" id="presentSaveTxtButton">TXT 저장</button>
-            <button class="button secondary compact" type="button" id="returnInputButton">첫화면</button>
+            <button class="button primary compact" type="button" id="presentFitButton">화면 크기 맞춤 (🔍)</button>
+            <button class="button secondary compact" type="button" id="returnEditButton">2단계로 돌아가기</button>
+            <button class="button secondary compact" type="button" id="returnInputButton">홈화면</button>
           </div>
         </div>
 
