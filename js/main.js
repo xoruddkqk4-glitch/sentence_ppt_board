@@ -1188,6 +1188,23 @@ function goToPresentationFirstSentence() {
   goToSentence(0, 0);
 }
 
+// "전체화면" 버튼: 발표 화면을 전체화면으로 들어가거나 빠져나온다.
+function togglePresentFullscreen() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen?.();
+    return;
+  }
+  elements.presentView.requestFullscreen?.().catch(() => {});
+}
+
+function handleFullscreenChange() {
+  const isFullscreen = Boolean(document.fullscreenElement);
+  elements.presentFitButton.textContent = isFullscreen ? "전체화면 종료 (🔍)" : "전체화면 (🔍)";
+  // 전체화면 진입/이탈로 화면 크기가 바뀌므로 글자 크기와 배치를 다시 맞춘다.
+  applySettings();
+  schedulePresentationFit();
+}
+
 function handlePresentationLastButton() {
   const lastIndex = state.sentences.length - 1;
   if (state.currentSentenceIndex >= lastIndex) {
@@ -1581,11 +1598,14 @@ function getMajorEdgeAnchorReserve(laneWidth) {
     return 0;
   }
 
-  const visibleMinorComponents = getComponentsByLane(getCurrentSentence(), "minor").slice(0, state.minorRevealCount);
-  const startAnchorCount = visibleMinorComponents.filter((component) => {
+  // 공개된 종요소 수에 따라 주요소 줄 크기가 달라지면, 종요소를 1~2개만 공개했을 때
+  // 가장자리 점이 첫/마지막 단어와 겹친다. 공개 단계와 무관하게 항상 동일한 여백을 두도록
+  // 현재 문장의 모든 종요소를 기준으로 가장자리 점 개수를 계산한다.
+  const allMinorComponents = getComponentsByLane(getCurrentSentence(), "minor");
+  const startAnchorCount = allMinorComponents.filter((component) => {
     return Number.isFinite(component.startIndex) && component.startIndex <= 0;
   }).length;
-  const endAnchorCount = visibleMinorComponents.filter((component) => {
+  const endAnchorCount = allMinorComponents.filter((component) => {
     return Number.isFinite(component.startIndex) && component.startIndex >= wordCount;
   }).length;
   const maxEdgeAnchorCount = Math.max(startAnchorCount, endAnchorCount);
@@ -2079,12 +2099,8 @@ function bindEvents() {
   elements.backToInputButton.addEventListener("click", () => setMode("input"));
   elements.returnInputButton.addEventListener("click", goToInputStart);
   elements.startPresentButton.addEventListener("click", () => setMode("present"));
-  elements.presentFitButton.addEventListener("click", () => {
-    elements.app.style.removeProperty("--font-major-current");
-    elements.app.style.removeProperty("--font-minor-current");
-    applySettings();
-    schedulePresentationFit();
-  });
+  elements.presentFitButton.addEventListener("click", togglePresentFullscreen);
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
   elements.returnEditButton.addEventListener("click", () => setMode("edit"));
   elements.presentFirstSentenceButton.addEventListener("click", goToPresentationFirstSentence);
   elements.presentLastSentenceButton.addEventListener("click", handlePresentationLastButton);

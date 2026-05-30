@@ -651,6 +651,17 @@ input:focus {
   flex-direction: column;
 }
 
+/* 전체화면에서도 발표 화면 배경을 평소와 동일하게 유지한다. (전자칠판 판서를 위해 검정 배경 방지) */
+.present-view:fullscreen,
+.present-view:fullscreen::backdrop {
+  background: var(--color-bg-soft);
+}
+
+.app-shell[data-theme="dark"] .present-view:fullscreen,
+.app-shell[data-theme="dark"] .present-view:fullscreen::backdrop {
+  background: var(--color-dark-bg);
+}
+
 .present-topbar {
   padding-top: var(--space-4);
 }
