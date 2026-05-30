@@ -36,10 +36,14 @@ const COMMON_VERBS = new Set([
   "can", "could", "will", "would", "should", "may", "might", "must"
 ]);
 const PREPOSITIONS = new Set([
-  "in", "on", "at", "by", "for", "from", "to", "with", "without", "about",
+  "in", "on", "at", "by", "for", "from", "to", "with", "without", "about", "of",
   "before", "after", "during", "through", "under", "over", "into", "near",
   "around", "because", "while"
 ]);
+const APOSTROPHE_LIKE_PATTERN = /[\u0060\u00b4\u2018\u2019\u201b\u2032\u02bb\u02bc\uff07]/g;
+const CONTRACTION_SUFFIXES = new Set(["s", "t", "re", "ve", "ll", "d", "m"]);
+const MINOR_ANCHOR_GROUP_THRESHOLD = 7;
+const MINOR_ANCHOR_SPREAD = 6.8;
 const SAMPLE_TEXT = "The young students read the story carefully. Their teacher explained the difficult words on the board. They were extremely excited about the new lesson yesterday.";
 const EXPORT_MARKER = "WHITEBOARD_PPT_ANALYSIS_TXT_V1";
 const EXPORT_JSON_START = "-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----";
@@ -56,6 +60,7 @@ const state = {
     align: "center"
   },
   draggedComponentId: null,
+  minorRevealCount: 0,
   minorSlots: []
 };
 
@@ -89,8 +94,8 @@ const elements = {
   returnEditButton: document.getElementById("returnEditButton"),
   returnInputButton: document.getElementById("returnInputButton"),
   presentSaveTxtButton: document.getElementById("presentSaveTxtButton"),
-  presentHomeButton: document.getElementById("presentHomeButton"),
-  screenOffButton: document.getElementById("screenOffButton"),
+  presentFirstSentenceButton: document.getElementById("presentFirstSentenceButton"),
+  presentLastSentenceButton: document.getElementById("presentLastSentenceButton"),
   screenOffOverlay: document.getElementById("screenOffOverlay"),
   screenOnButton: document.getElementById("screenOnButton"),
   editFirstButton: document.getElementById("editFirstButton"),
@@ -102,7 +107,7 @@ const elements = {
 };
 
 function splitSentences(text) {
-  const normalized = text.trim().replace(/\s+/g, " ");
+  const normalized = normalizeApostrophes(text).trim().replace(/\s+/g, " ");
   if (!normalized) {
     return [];
   }
@@ -223,17 +228,53 @@ function splitMinorPhrase(words) {
   const core = [];
   const minors = [];
   let coreStartOffset = null;
+  let coreClosed = false;
 
   for (let index = 0; index < words.length; index += 1) {
     const lowerWord = words[index].toLowerCase();
     if (lowerWord.endsWith("ly")) {
       minors.push({ words: [words[index]], startOffset: index });
+      if (core.length > 0) {
+        coreClosed = true;
+      }
       continue;
     }
 
     if (PREPOSITIONS.has(lowerWord)) {
-      minors.push({ words: words.slice(index), startOffset: index });
-      break;
+      const startOffset = index;
+      const phrase = [words[index]];
+      if (core.length > 0) {
+        coreClosed = true;
+      }
+      index += 1;
+      while (index < words.length) {
+        const nextLowerWord = words[index].toLowerCase();
+        if (PREPOSITIONS.has(nextLowerWord) || nextLowerWord.endsWith("ly")) {
+          index -= 1;
+          break;
+        }
+        phrase.push(words[index]);
+        index += 1;
+      }
+      minors.push({ words: phrase, startOffset });
+      continue;
+    }
+
+    if (coreClosed) {
+      const startOffset = index;
+      const phrase = [words[index]];
+      index += 1;
+      while (index < words.length) {
+        const nextLowerWord = words[index].toLowerCase();
+        if (PREPOSITIONS.has(nextLowerWord) || nextLowerWord.endsWith("ly")) {
+          index -= 1;
+          break;
+        }
+        phrase.push(words[index]);
+        index += 1;
+      }
+      minors.push({ words: phrase, startOffset });
+      continue;
     }
 
     if (coreStartOffset === null) {
@@ -278,13 +319,18 @@ function preparePresentation() {
     components: analyzeSentence(sentenceText, index)
   }));
   state.currentSentenceIndex = 0;
+  state.minorRevealCount = 0;
   state.componentSerial = 1;
 
   return state.sentences.length;
 }
 
 function setMode(mode) {
+  const previousMode = state.mode;
   state.mode = mode;
+  if (mode === "present" && previousMode !== "present") {
+    state.minorRevealCount = 0;
+  }
   elements.app.dataset.mode = mode;
   document.documentElement.classList.toggle("present-lock", mode === "present");
   elements.inputView.classList.toggle("hidden", mode !== "input");
@@ -324,6 +370,7 @@ function renderEditLane(container, components) {
 }
 
 function createEditChip(component) {
+  ensureModifierTarget(component);
   const chip = document.createElement("article");
   chip.className = "component-chip edit-chip";
   chip.draggable = true;
@@ -351,6 +398,9 @@ function createEditChip(component) {
   text.textContent = component.text;
 
   chip.append(handle, select, text);
+  if (component.role === "adjective") {
+    chip.appendChild(createModifierTargetControl(component));
+  }
   if (getComponentWords(component).length > 1) {
     chip.appendChild(createSplitControls(component));
   }
@@ -404,6 +454,46 @@ function createSplitControls(component) {
   return wrapper;
 }
 
+function createModifierTargetControl(component) {
+  const sentence = getCurrentSentence();
+  const wrapper = document.createElement("span");
+  wrapper.className = "modifier-control";
+  wrapper.addEventListener("mousedown", (event) => event.stopPropagation());
+  wrapper.addEventListener("click", (event) => event.stopPropagation());
+
+  const title = document.createElement("span");
+  title.className = "modifier-control-title";
+  title.textContent = "수식 대상";
+  wrapper.appendChild(title);
+
+  const selectedIndexes = new Set(getModifierTargetIndexes(component));
+  const ownIndexes = new Set(getIndexRange(component.startIndex, component.endIndex));
+  getDisplayWords(sentence?.text || "").forEach((word, index) => {
+    if (ownIndexes.has(index)) {
+      return;
+    }
+    const label = document.createElement("label");
+    label.className = "modifier-word-option";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = String(index);
+    checkbox.checked = selectedIndexes.has(index);
+    checkbox.addEventListener("change", () => {
+      const indexes = [...wrapper.querySelectorAll("input:checked")].map((input) => Number(input.value));
+      updateModifierTargetWords(component.id, indexes);
+    });
+
+    const wordText = document.createElement("span");
+    wordText.textContent = word;
+
+    label.append(checkbox, wordText);
+    wrapper.appendChild(label);
+  });
+
+  return wrapper;
+}
+
 function renderPresentView() {
   const sentence = getCurrentSentence();
   if (!sentence) {
@@ -412,22 +502,25 @@ function renderPresentView() {
 
   const majorComponents = getComponentsByLane(sentence, "major");
   const minorComponents = getComponentsByLane(sentence, "minor");
+  state.minorRevealCount = clamp(0, state.minorRevealCount, minorComponents.length);
+  const visibleMinorComponents = minorComponents.slice(0, state.minorRevealCount);
 
   elements.presentProgress.textContent = getProgressText();
   setWordGrid(sentence);
   applySettings();
-  renderMajorPresentLane(elements.majorPresentLane, majorComponents);
+  renderMajorPresentLane(elements.majorPresentLane, majorComponents, visibleMinorComponents);
   elements.minorAnchorLane.innerHTML = "";
-  renderMinorPresentRows(elements.minorPresentLane, minorComponents);
-  elements.emptyMinorNote.classList.toggle("hidden", minorComponents.length > 0);
+  renderMinorPresentRows(elements.minorPresentLane, visibleMinorComponents);
+  renderModifierTargetBrackets(visibleMinorComponents);
+  elements.emptyMinorNote.classList.add("hidden");
   updateNavButtons();
   schedulePresentationFit();
 }
 
-function renderMajorPresentLane(container, components) {
+function renderMajorPresentLane(container, components, visibleMinorComponents = []) {
   container.innerHTML = "";
   components.forEach((component) => {
-    const chip = createPresentChip(component);
+    const chip = createPresentChip(component, getVisibleModifierTargetIndexes(visibleMinorComponents));
     placeComponentOnGrid(chip, component);
     container.appendChild(chip);
   });
@@ -435,12 +528,13 @@ function renderMajorPresentLane(container, components) {
 
 function renderMinorPresentRows(container, components) {
   container.innerHTML = "";
+  const anchorGroups = getMinorAnchorGroups(components);
   components.forEach((component, index) => {
     const row = document.createElement("div");
     row.className = "minor-row";
     placeMinorRow(row, index);
     const chip = createPresentChip(component);
-    placeMinorComponentOnGrid(chip, component, index);
+    placeMinorComponentOnGrid(chip, component, index, getShiftedAnchorPercent(component, anchorGroups));
     chip.draggable = true;
     chip.dataset.componentId = component.id;
     chip.addEventListener("dragstart", handlePresentMinorDragStart);
@@ -458,18 +552,62 @@ function placeMinorRow(row, rowIndex) {
   row.style.zIndex = String(100 - rowIndex);
 }
 
-function createPresentChip(component) {
+function getMinorAnchorGroups(components) {
+  const groups = [];
+  const anchors = components
+    .map((component) => ({
+      id: component.id,
+      percent: getMinorAnchorPercent(component)
+    }))
+    .sort((a, b) => a.percent - b.percent);
+
+  anchors.forEach((anchor) => {
+    const group = groups[groups.length - 1];
+    const previous = group?.anchors[group.anchors.length - 1];
+    if (!group || Math.abs(anchor.percent - previous.percent) > MINOR_ANCHOR_GROUP_THRESHOLD) {
+      groups.push({ anchors: [anchor] });
+      return;
+    }
+    group.anchors.push(anchor);
+  });
+
+  return groups;
+}
+
+function getShiftedAnchorPercent(component, anchorGroups) {
+  const percent = getMinorAnchorPercent(component);
+  const group = anchorGroups.find((item) => item.anchors.some((anchor) => anchor.id === component.id));
+  if (!group || group.anchors.length <= 1) {
+    return clamp(5.5, percent, 94.5);
+  }
+
+  const groupIndex = group.anchors.findIndex((anchor) => anchor.id === component.id);
+  const groupCenter = group.anchors.reduce((sum, anchor) => sum + anchor.percent, 0) / group.anchors.length;
+  const halfSpread = ((group.anchors.length - 1) * MINOR_ANCHOR_SPREAD) / 2;
+  const center = clamp(5.5 + halfSpread, groupCenter, 94.5 - halfSpread);
+  const offset = (groupIndex - (group.anchors.length - 1) / 2) * MINOR_ANCHOR_SPREAD;
+  return Math.round((center + offset) * 10) / 10;
+}
+
+function createPresentChip(component, modifierTargetIndexes = new Set()) {
   const chip = document.createElement("span");
   chip.className = `component-chip present-chip ${ROLE_COLOR_CLASS[component.role]}`;
+  if (component.role === "adjective") {
+    chip.classList.add("modifier-chip");
+  }
   chip.style.setProperty("--component-color", COMPONENT_PALETTE[component.role]);
   chip.dataset.componentId = component.id;
   chip.dataset.role = component.role;
 
   const text = document.createElement("span");
   text.className = "text-part";
-  getComponentWords(component).forEach((word) => {
+  getComponentWords(component).forEach((word, index) => {
     const wordElement = document.createElement("span");
     wordElement.className = "present-word";
+    const wordIndex = Number.isFinite(component.startIndex) ? component.startIndex + index : null;
+    if (wordIndex !== null) {
+      wordElement.dataset.wordIndex = String(wordIndex);
+    }
     wordElement.textContent = word;
     text.appendChild(wordElement);
   });
@@ -488,8 +626,7 @@ function placeComponentOnGrid(element, component) {
   element.style.gridColumn = `${start} / ${Math.max(end, start + 1)}`;
 }
 
-function placeMinorComponentOnGrid(element, component, rowIndex) {
-  const anchorPercent = getMinorAnchorPercent(component);
+function placeMinorComponentOnGrid(element, component, rowIndex, anchorPercent = getMinorAnchorPercent(component)) {
   element.style.setProperty("--anchor-percent", `${anchorPercent}%`);
   element.style.setProperty("--box-percent", `${anchorPercent}%`);
   element.style.setProperty("--connector-x", "50%");
@@ -507,9 +644,36 @@ function getMinorAnchorPercent(component) {
     return 50;
   }
 
+  if (component.role === "adjective") {
+    return getModifierTargetCenterPercent(component);
+  }
+
   const start = Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1;
   const slot = getClosestSlot(start);
   return slot.percent;
+}
+
+function getComponentCenterPercent(component) {
+  const slots = getMinorSlots();
+  const startIndex = Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1;
+  const endIndex = Number.isFinite(component.endIndex) ? component.endIndex : startIndex + 1;
+  const startSlot = getClosestSlot(startIndex);
+  const endSlot = getClosestSlot(endIndex);
+  return Math.round(((startSlot.percent + endSlot.percent) / 2) * 10) / 10;
+}
+
+function getModifierTargetCenterPercent(component) {
+  const indexes = getModifierTargetIndexes(component);
+  if (indexes.length === 0) {
+    return getClosestSlot(Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1).percent;
+  }
+
+  const percents = indexes.map((index) => {
+    const startSlot = getClosestSlot(index);
+    const endSlot = getClosestSlot(index + 1);
+    return (startSlot.percent + endSlot.percent) / 2;
+  });
+  return Math.round((percents.reduce((sum, percent) => sum + percent, 0) / percents.length) * 10) / 10;
 }
 
 function getPlainWords(sentenceText) {
@@ -521,24 +685,34 @@ function getComponentWords(component) {
 }
 
 function getDisplayWords(text) {
-  const tokens = text.match(/[A-Za-z]+(?:'[A-Za-z]+)?|[.,!?;:]+/g) || [];
-  const words = [];
-
-  tokens.forEach((token) => {
-    if (/^[.,!?;:]+$/.test(token)) {
-      if (words.length > 0) {
-        words[words.length - 1] += token;
-      }
-      return;
-    }
-    words.push(token);
-  });
-
-  return words.length > 0 ? words : [text].filter(Boolean);
+  const normalizedText = normalizeApostrophes(text);
+  const words = normalizedText.match(/["'“‘(\[]*[A-Za-z]+(?:'[A-Za-z]+)?["'”’)\].,!?;:]*/g) || [];
+  const mergedWords = mergeContractionFragments(words);
+  return mergedWords.length > 0 ? mergedWords : [normalizedText].filter(Boolean);
 }
 
 function getWordCore(word) {
-  return word.match(/[A-Za-z]+(?:'[A-Za-z]+)?/)?.[0] || "";
+  return normalizeApostrophes(word).match(/[A-Za-z]+(?:'[A-Za-z]+)?/)?.[0] || "";
+}
+
+function normalizeApostrophes(text) {
+  return String(text || "").replace(APOSTROPHE_LIKE_PATTERN, "'");
+}
+
+function mergeContractionFragments(words) {
+  const mergedWords = [];
+  words.forEach((word) => {
+    const previous = mergedWords[mergedWords.length - 1];
+    const suffixMatch = word.match(/^([A-Za-z]+)([.,!?;:]*)$/);
+    const previousMatch = previous?.match(/^(.+?[A-Za-z])([.,!?;:]*)$/);
+    const suffix = suffixMatch?.[1]?.toLowerCase();
+    if (previousMatch && suffixMatch && CONTRACTION_SUFFIXES.has(suffix) && previousMatch[2] === "") {
+      mergedWords[mergedWords.length - 1] = `${previousMatch[1]}'${suffixMatch[1]}${suffixMatch[2]}`;
+      return;
+    }
+    mergedWords.push(word);
+  });
+  return mergedWords;
 }
 
 function getMinorSlots() {
@@ -632,12 +806,317 @@ function getProgressText() {
   return `${state.currentSentenceIndex + 1} / ${state.sentences.length}`;
 }
 
-function goToSentence(index) {
+function goToSentence(index, revealCount = 0) {
   if (state.sentences.length === 0) {
     return;
   }
   state.currentSentenceIndex = Math.max(0, Math.min(index, state.sentences.length - 1));
+  state.minorRevealCount = clamp(0, revealCount, getCurrentMinorCount());
   render();
+}
+
+function getCurrentMinorCount() {
+  const sentence = getCurrentSentence();
+  return sentence ? getComponentsByLane(sentence, "minor").length : 0;
+}
+
+function getModifierTargetOptions(component) {
+  const sentence = getCurrentSentence();
+  if (!sentence) {
+    return [];
+  }
+
+  const preferred = sentence.components
+    .filter((target) => target.id !== component.id && target.role !== "verb" && target.lane === "major")
+    .sort(compareComponentsBySentenceOrder);
+
+  if (preferred.length > 0) {
+    return preferred;
+  }
+
+  return sentence.components
+    .filter((target) => target.id !== component.id)
+    .sort(compareComponentsBySentenceOrder);
+}
+
+function compareComponentsBySentenceOrder(a, b) {
+  const aIndex = Number.isFinite(a.startIndex) ? a.startIndex : a.order;
+  const bIndex = Number.isFinite(b.startIndex) ? b.startIndex : b.order;
+  return aIndex - bIndex;
+}
+
+function updateModifierTarget(componentId, targetId) {
+  const sentence = getCurrentSentence();
+  const component = sentence?.components.find((item) => item.id === componentId);
+  const target = sentence?.components.find((item) => item.id === targetId);
+  if (!sentence || !component || component.role !== "adjective") {
+    return;
+  }
+
+  if (!target) {
+    delete component.modifierTargetId;
+    delete component.modifierTargetStart;
+    delete component.modifierTargetEnd;
+    renderEditView();
+    return;
+  }
+
+  setModifierTarget(component, target);
+  renderEditView();
+}
+
+function setModifierTarget(component, target) {
+  component.modifierTargetId = target.id;
+  component.modifierTargetStart = target.startIndex;
+  component.modifierTargetEnd = target.endIndex;
+  component.modifierTargetIndexes = getIndexRange(target.startIndex, target.endIndex);
+}
+
+function updateModifierTargetWords(componentId, indexes) {
+  const sentence = getCurrentSentence();
+  const component = sentence?.components.find((item) => item.id === componentId);
+  if (!sentence || !component || component.role !== "adjective") {
+    return;
+  }
+
+  setModifierTargetWords(component, indexes);
+  renderEditView();
+}
+
+function setModifierTargetWords(component, indexes) {
+  const wordCount = getPlainWords(getCurrentSentence()?.text || "").length;
+  const normalizedIndexes = [...new Set(indexes)]
+    .filter((index) => Number.isInteger(index) && index >= 0 && index < wordCount)
+    .sort((a, b) => a - b);
+
+  if (normalizedIndexes.length === 0) {
+    delete component.modifierTargetId;
+    delete component.modifierTargetStart;
+    delete component.modifierTargetEnd;
+    delete component.modifierTargetIndexes;
+    return;
+  }
+
+  component.modifierTargetIndexes = normalizedIndexes;
+  component.modifierTargetStart = normalizedIndexes[0];
+  component.modifierTargetEnd = normalizedIndexes[normalizedIndexes.length - 1] + 1;
+  delete component.modifierTargetId;
+}
+
+function ensureModifierTarget(component) {
+  if (component.role !== "adjective" || getModifierTargetIndexes(component).length > 0) {
+    return;
+  }
+
+  const target = findDefaultModifierTarget(component);
+  if (target) {
+    setModifierTarget(component, target);
+  }
+}
+
+function findDefaultModifierTarget(component) {
+  const options = getModifierTargetOptions(component);
+  if (options.length === 0) {
+    return null;
+  }
+
+  const componentStart = Number.isFinite(component.startIndex) ? component.startIndex : component.order;
+  return options.find((target) => Number.isFinite(target.startIndex) && target.startIndex > componentStart) || options[options.length - 1];
+}
+
+function getModifierTargetIndexes(component) {
+  if (Array.isArray(component.modifierTargetIndexes)) {
+    return component.modifierTargetIndexes
+      .map((index) => Number(index))
+      .filter((index) => Number.isInteger(index) && index >= 0)
+      .sort((a, b) => a - b);
+  }
+
+  if (Number.isFinite(component.modifierTargetStart) && Number.isFinite(component.modifierTargetEnd)) {
+    return getIndexRange(component.modifierTargetStart, component.modifierTargetEnd);
+  }
+
+  return [];
+}
+
+function getIndexRange(startIndex, endIndex) {
+  if (!Number.isFinite(startIndex) || !Number.isFinite(endIndex)) {
+    return [];
+  }
+
+  const indexes = [];
+  for (let index = startIndex; index < endIndex; index += 1) {
+    indexes.push(index);
+  }
+  return indexes;
+}
+
+function getVisibleModifierTargetIndexes(visibleMinorComponents) {
+  const indexes = new Set();
+  visibleMinorComponents
+    .filter((component) => component.role === "adjective")
+    .forEach((component) => getModifierTargetIndexes(component).forEach((index) => indexes.add(index)));
+  return indexes;
+}
+
+function renderModifierTargetBrackets(visibleMinorComponents) {
+  const stage = document.querySelector(".presentation-stage");
+  if (!stage) {
+    return;
+  }
+
+  stage.querySelectorAll(".modifier-target-bracket").forEach((bracket) => bracket.remove());
+  visibleMinorComponents
+    .filter((component) => component.role === "adjective")
+    .forEach((component) => {
+      getContiguousGroups(getModifierTargetIndexes(component)).forEach((indexes) => {
+        const bracket = document.createElement("span");
+        bracket.className = "modifier-target-bracket";
+        bracket.dataset.indexes = indexes.join(",");
+        stage.appendChild(bracket);
+      });
+    });
+  updateModifierTargetBrackets();
+}
+
+function updateModifierTargetBrackets() {
+  if (state.mode !== "present") {
+    return;
+  }
+
+  const stage = document.querySelector(".presentation-stage");
+  const stageRect = stage?.getBoundingClientRect();
+  if (!stageRect) {
+    return;
+  }
+
+  stage.querySelectorAll(".modifier-target-bracket").forEach((bracket) => {
+    const indexes = (bracket.dataset.indexes || "")
+      .split(",")
+      .map((index) => Number(index))
+      .filter((index) => Number.isInteger(index));
+    const targetWords = getVisibleWordElementsByIndexes(indexes);
+    if (targetWords.length === 0) {
+      bracket.classList.add("hidden");
+      return;
+    }
+
+    const left = Math.min(...targetWords.map((word) => word.getBoundingClientRect().left)) - stageRect.left;
+    const right = Math.max(...targetWords.map((word) => word.getBoundingClientRect().right)) - stageRect.left;
+    const bottom = Math.max(...targetWords.map((word) => word.getBoundingClientRect().bottom)) - stageRect.top;
+    bracket.classList.remove("hidden");
+    bracket.style.left = `${Math.round(left)}px`;
+    bracket.style.top = `${Math.round(bottom + 8)}px`;
+    bracket.style.width = `${Math.round(right - left)}px`;
+  });
+}
+
+function getVisibleWordElementsByIndexes(indexes) {
+  const indexSet = new Set(indexes);
+  return [...document.querySelectorAll(".presentation-stage .present-word[data-word-index]")]
+    .filter((word) => indexSet.has(Number(word.dataset.wordIndex)));
+}
+
+function getContiguousGroups(indexes) {
+  const sortedIndexes = [...new Set(indexes)].sort((a, b) => a - b);
+  const groups = [];
+  sortedIndexes.forEach((index) => {
+    const lastGroup = groups[groups.length - 1];
+    if (!lastGroup || lastGroup[lastGroup.length - 1] + 1 !== index) {
+      groups.push([index]);
+      return;
+    }
+    lastGroup.push(index);
+  });
+  return groups;
+}
+
+function getModifierTargetComponent(component) {
+  const sentence = getCurrentSentence();
+  if (!sentence || component.role !== "adjective") {
+    return null;
+  }
+
+  const byId = sentence.components.find((target) => target.id === component.modifierTargetId);
+  if (byId) {
+    return byId;
+  }
+
+  return sentence.components.find((target) => {
+    return target.id !== component.id
+      && Number.isFinite(component.modifierTargetStart)
+      && Number.isFinite(component.modifierTargetEnd)
+      && target.startIndex === component.modifierTargetStart
+      && target.endIndex === component.modifierTargetEnd;
+  }) || null;
+}
+
+function isVisibleModifierTarget(component, visibleMinorComponents) {
+  return visibleMinorComponents.some((minor) => getModifierTargetComponent(minor)?.id === component.id);
+}
+
+function goToPresentationNext() {
+  const minorCount = getCurrentMinorCount();
+  if (state.minorRevealCount < minorCount) {
+    state.minorRevealCount += 1;
+    renderPresentView();
+    return;
+  }
+
+  if (state.currentSentenceIndex >= state.sentences.length - 1) {
+    return;
+  }
+  goToSentence(state.currentSentenceIndex + 1, 0);
+}
+
+function goToPresentationPrev() {
+  if (state.minorRevealCount > 0) {
+    state.minorRevealCount -= 1;
+    renderPresentView();
+    return;
+  }
+
+  const previousIndex = state.currentSentenceIndex - 1;
+  if (previousIndex < 0) {
+    return;
+  }
+  const previousSentence = state.sentences[previousIndex];
+  const previousMinorCount = getComponentsByLane(previousSentence, "minor").length;
+  goToSentence(previousIndex, previousMinorCount);
+}
+
+function goToPresentationSentence(offset) {
+  const nextIndex = state.currentSentenceIndex + offset;
+  if (nextIndex < 0 || nextIndex >= state.sentences.length) {
+    return;
+  }
+  goToSentence(nextIndex, 0);
+}
+
+function goToPresentationFirstSentence() {
+  goToSentence(0, 0);
+}
+
+function handlePresentationLastButton() {
+  const lastIndex = state.sentences.length - 1;
+  if (state.currentSentenceIndex >= lastIndex) {
+    goToPresentationPrev();
+    return;
+  }
+  goToSentence(lastIndex, 0);
+}
+
+function handlePresentationClick(event) {
+  if (state.mode !== "present") {
+    return;
+  }
+
+  const interactiveTarget = event.target.closest("button, input, select, textarea, a, [draggable='true']");
+  if (interactiveTarget) {
+    return;
+  }
+
+  goToPresentationNext();
 }
 
 function moveComponent(componentId, targetLane, targetIndex = null) {
@@ -653,6 +1132,12 @@ function moveComponent(componentId, targetLane, targetIndex = null) {
   }
   if (targetLane === "minor" && MAJOR_ROLES.has(component.role)) {
     component.role = "adverb";
+  }
+  if (component.role !== "adjective") {
+    delete component.modifierTargetId;
+    delete component.modifierTargetStart;
+    delete component.modifierTargetEnd;
+    delete component.modifierTargetIndexes;
   }
 
   const laneComponents = getComponentsByLane(sentence, targetLane).filter((item) => item.id !== componentId);
@@ -733,6 +1218,14 @@ function updateComponentRole(componentId, role) {
 
   component.role = role;
   component.lane = ROLE_BY_VALUE[role].lane;
+  if (role === "adjective") {
+    ensureModifierTarget(component);
+  } else {
+    delete component.modifierTargetId;
+    delete component.modifierTargetStart;
+    delete component.modifierTargetEnd;
+    delete component.modifierTargetIndexes;
+  }
   reorderLane(sentence, "major");
   reorderLane(sentence, "minor");
   renderEditView();
@@ -825,6 +1318,12 @@ function mergeComponents(sourceId, targetId, targetLane) {
   }
   if (!Number.isFinite(merged.endIndex)) {
     delete merged.endIndex;
+  }
+  if (merged.role !== "adjective") {
+    delete merged.modifierTargetId;
+    delete merged.modifierTargetStart;
+    delete merged.modifierTargetEnd;
+    delete merged.modifierTargetIndexes;
   }
 
   const insertIndex = sentence.components.findIndex((item) => item.id === target.id);
@@ -919,6 +1418,7 @@ function schedulePresentationFit() {
     updateMinorPositions();
     fitMinorRows();
     clampMinorBoxes();
+    updateModifierTargetBrackets();
     updateMinorConnectorLengths();
     pass += 1;
     if (pass < 5) {
@@ -937,7 +1437,9 @@ function fitMajorLine() {
   const currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current"));
   const laneRect = lane.getBoundingClientRect();
   const edgeGuard = getStageEdgeGuard(laneRect);
-  const edgeReserve = edgeGuard * 2;
+  const anchorReserve = getMajorEdgeGap() * 2;
+  const edgeGroupReserve = getMajorEdgeAnchorReserve(laneRect.width);
+  const edgeReserve = edgeGuard * 2 + anchorReserve + edgeGroupReserve;
   const availableWidth = Math.max(220, lane.clientWidth - edgeReserve);
   const bounds = getRenderedBounds(elements.majorPresentLane.querySelectorAll(".present-word"));
   if (!bounds || !availableWidth) {
@@ -951,6 +1453,23 @@ function fitMajorLine() {
 
   const nextSize = Math.max(24, Math.floor(currentSize * Math.max(0.18, ratio) * 0.98));
   elements.app.style.setProperty("--font-major-current", `${nextSize}px`);
+}
+
+function getMajorEdgeAnchorReserve(laneWidth) {
+  const wordCount = elements.majorPresentLane.querySelectorAll(".present-word").length;
+  if (wordCount === 0) {
+    return 0;
+  }
+
+  const visibleMinorComponents = getComponentsByLane(getCurrentSentence(), "minor").slice(0, state.minorRevealCount);
+  const startAnchorCount = visibleMinorComponents.filter((component) => {
+    return Number.isFinite(component.startIndex) && component.startIndex <= 0;
+  }).length;
+  const endAnchorCount = visibleMinorComponents.filter((component) => {
+    return Number.isFinite(component.startIndex) && component.startIndex >= wordCount;
+  }).length;
+  const maxEdgeAnchorCount = Math.max(startAnchorCount, endAnchorCount);
+  return Math.max(0, maxEdgeAnchorCount - 1) * laneWidth * (MINOR_ANCHOR_SPREAD / 100);
 }
 
 function getRenderedBounds(nodeList) {
@@ -975,14 +1494,16 @@ function fitMinorRows() {
   }
 
   const laneRect = elements.minorPresentLane.getBoundingClientRect();
-  const overflowingChip = chips.find((chip) => chip.getBoundingClientRect().width > laneRect.width - 24);
-  if (!overflowingChip) {
+  const edgeGuard = getStageEdgeGuard(laneRect);
+  const availableWidth = Math.max(220, laneRect.width - edgeGuard * 2);
+  const widestWidth = Math.max(...chips.map((chip) => chip.getBoundingClientRect().width));
+  if (widestWidth <= availableWidth) {
     return;
   }
 
   const currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-minor-current"));
-  const ratio = (laneRect.width - 24) / overflowingChip.getBoundingClientRect().width;
-  const nextSize = Math.max(10, Math.floor(currentSize * ratio * 0.96));
+  const ratio = availableWidth / widestWidth;
+  const nextSize = Math.max(8, Math.floor(currentSize * ratio * 0.9));
   elements.app.style.setProperty("--font-minor-current", `${nextSize}px`);
 }
 
@@ -999,7 +1520,8 @@ function clampMinorBoxes() {
   elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
     const anchorPercent = Number.parseFloat(chip.style.getPropertyValue("--anchor-percent")) || 50;
     const chipRect = chip.getBoundingClientRect();
-    const halfPercent = ((chipRect.width / 2 + 12) / laneRect.width) * 100;
+    const edgeGuard = getStageEdgeGuard(laneRect);
+    const halfPercent = ((chipRect.width / 2 + edgeGuard) / laneRect.width) * 100;
     const boxPercent = halfPercent >= 50 ? 50 : clamp(halfPercent, anchorPercent, 100 - halfPercent);
     chip.style.setProperty("--box-percent", `${Math.round(boxPercent * 10) / 10}%`);
     const anchorX = (anchorPercent / 100) * laneRect.width;
@@ -1024,17 +1546,37 @@ function updateMinorConnectorLengths() {
   elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
     const chipRect = chip.getBoundingClientRect();
     const chipTop = chipRect.top - stageRect.top;
-    const connectorLength = Math.max(28, Math.round(chipTop - dotY));
+    const component = getCurrentSentence()?.components.find((item) => item.id === chip.dataset.componentId);
+    const targetBottomY = component?.role === "adjective"
+      ? getModifierTargetBottomY(component, stageRect) ?? dotY
+      : dotY;
+    const connectorLength = Math.max(28, Math.round(chipTop - targetBottomY));
     chip.style.setProperty("--connector-length", `${connectorLength}px`);
   });
 }
 
+function getModifierTargetBottomY(component, stageRect) {
+  const indexes = getModifierTargetIndexes(component);
+  if (indexes.length === 0) {
+    return null;
+  }
+
+  const targetWords = getVisibleWordElementsByIndexes(indexes);
+  if (targetWords.length === 0) {
+    return null;
+  }
+
+  const bottom = Math.max(...targetWords.map((word) => word.getBoundingClientRect().bottom));
+  return bottom - stageRect.top + 42;
+}
+
 function updateMinorPositions() {
-  const components = getComponentsByLane(getCurrentSentence(), "minor");
+  const components = getComponentsByLane(getCurrentSentence(), "minor").slice(0, state.minorRevealCount);
+  const anchorGroups = getMinorAnchorGroups(components);
   elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
     const component = components.find((item) => item.id === chip.dataset.componentId);
     if (component) {
-      const anchorPercent = getMinorAnchorPercent(component);
+      const anchorPercent = getShiftedAnchorPercent(component, anchorGroups);
       chip.style.setProperty("--anchor-percent", `${anchorPercent}%`);
       chip.style.setProperty("--box-percent", `${anchorPercent}%`);
     }
@@ -1147,6 +1689,10 @@ function buildAnalysisPayload() {
         order: component.order,
         startIndex: component.startIndex,
         endIndex: component.endIndex,
+        modifierTargetId: component.modifierTargetId,
+        modifierTargetStart: component.modifierTargetStart,
+        modifierTargetEnd: component.modifierTargetEnd,
+        modifierTargetIndexes: component.modifierTargetIndexes,
         words: getComponentWords(component)
       }))
     }))
@@ -1189,6 +1735,7 @@ function importAnalysisTxt(content) {
   state.passageText = loaded.passageText;
   state.sentences = loaded.sentences;
   state.currentSentenceIndex = loaded.currentSentenceIndex;
+  state.minorRevealCount = 0;
   state.componentSerial = loaded.componentSerial;
   state.settings = { ...state.settings, ...loaded.settings };
   elements.passageInput.value = state.passageText;
@@ -1262,6 +1809,8 @@ function normalizeImportedComponent(component, sentenceIndex, componentIndex) {
 
   const startIndex = Number(component?.startIndex);
   const endIndex = Number(component?.endIndex);
+  const modifierTargetStart = Number(component?.modifierTargetStart);
+  const modifierTargetEnd = Number(component?.modifierTargetEnd);
   return {
     id: String(component?.id || `s${sentenceIndex + 1}-import-${componentIndex + 1}`),
     text,
@@ -1269,7 +1818,13 @@ function normalizeImportedComponent(component, sentenceIndex, componentIndex) {
     lane,
     order: Number.isFinite(Number(component?.order)) ? Number(component.order) : componentIndex + 1,
     startIndex: Number.isFinite(startIndex) ? startIndex : undefined,
-    endIndex: Number.isFinite(endIndex) ? endIndex : undefined
+    endIndex: Number.isFinite(endIndex) ? endIndex : undefined,
+    modifierTargetId: component?.modifierTargetId ? String(component.modifierTargetId) : undefined,
+    modifierTargetStart: Number.isFinite(modifierTargetStart) ? modifierTargetStart : undefined,
+    modifierTargetEnd: Number.isFinite(modifierTargetEnd) ? modifierTargetEnd : undefined,
+    modifierTargetIndexes: Array.isArray(component?.modifierTargetIndexes)
+      ? component.modifierTargetIndexes.map((index) => Number(index)).filter((index) => Number.isInteger(index) && index >= 0)
+      : undefined
   };
 }
 
@@ -1284,15 +1839,22 @@ function clamp(min, value, max) {
 function updateNavButtons() {
   const isFirst = state.currentSentenceIndex === 0;
   const isLast = state.currentSentenceIndex >= state.sentences.length - 1;
-  [elements.editFirstButton, elements.editPrevButton, elements.presentPrevButton].forEach((button) => {
+  const minorCount = getCurrentMinorCount();
+  const isFirstPresentationStep = isFirst && state.minorRevealCount === 0;
+  const isLastPresentationStep = isLast && state.minorRevealCount >= minorCount;
+
+  [elements.editFirstButton, elements.editPrevButton].forEach((button) => {
     button.disabled = isFirst;
   });
-  [elements.editLastButton, elements.editNextButton, elements.presentNextButton].forEach((button) => {
+  elements.presentPrevButton.disabled = isFirstPresentationStep;
+
+  [elements.editLastButton, elements.editNextButton].forEach((button) => {
     button.disabled = isLast;
   });
-  [elements.presentHomeButton, elements.screenOffButton].forEach((button) => {
-    button.classList.toggle("hidden", !isLast || state.mode !== "present");
-  });
+  elements.presentNextButton.disabled = isLastPresentationStep;
+  elements.presentFirstSentenceButton.disabled = isFirst;
+  elements.presentLastSentenceButton.textContent = isLast ? "이전 단계" : "마지막 문장";
+  elements.presentLastSentenceButton.disabled = state.sentences.length <= 1 && isFirstPresentationStep;
 }
 
 function goToInputStart() {
@@ -1327,6 +1889,7 @@ function bindEvents() {
     elements.inputMessage.textContent = "";
     state.sentences = [];
     state.currentSentenceIndex = 0;
+    state.minorRevealCount = 0;
   });
 
   elements.inputExportTxtButton.addEventListener("click", exportAnalysisTxt);
@@ -1346,8 +1909,8 @@ function bindEvents() {
   elements.returnInputButton.addEventListener("click", goToInputStart);
   elements.startPresentButton.addEventListener("click", () => setMode("present"));
   elements.returnEditButton.addEventListener("click", () => setMode("edit"));
-  elements.presentHomeButton.addEventListener("click", goToInputStart);
-  elements.screenOffButton.addEventListener("click", () => setScreenOff(true));
+  elements.presentFirstSentenceButton.addEventListener("click", goToPresentationFirstSentence);
+  elements.presentLastSentenceButton.addEventListener("click", handlePresentationLastButton);
   elements.screenOnButton.addEventListener("click", () => setScreenOff(false));
   elements.screenOffOverlay.addEventListener("click", (event) => {
     if (event.target === elements.screenOffOverlay) {
@@ -1359,8 +1922,9 @@ function bindEvents() {
   elements.editPrevButton.addEventListener("click", () => goToSentence(state.currentSentenceIndex - 1));
   elements.editNextButton.addEventListener("click", () => goToSentence(state.currentSentenceIndex + 1));
   elements.editLastButton.addEventListener("click", () => goToSentence(state.sentences.length - 1));
-  elements.presentPrevButton.addEventListener("click", () => goToSentence(state.currentSentenceIndex - 1));
-  elements.presentNextButton.addEventListener("click", () => goToSentence(state.currentSentenceIndex + 1));
+  elements.presentPrevButton.addEventListener("click", goToPresentationPrev);
+  elements.presentNextButton.addEventListener("click", goToPresentationNext);
+  elements.presentView.addEventListener("click", handlePresentationClick);
 
   [elements.majorEditLane, elements.minorEditLane].forEach((lane) => {
     lane.addEventListener("dragover", handleLaneDragOver);
@@ -1396,19 +1960,28 @@ function handleKeyboard(event) {
 
   if (event.key === "ArrowRight" || event.key === " ") {
     event.preventDefault();
-    goToSentence(state.currentSentenceIndex + 1);
+    goToPresentationNext();
   }
   if (event.key === "ArrowLeft") {
     event.preventDefault();
-    goToSentence(state.currentSentenceIndex - 1);
+    goToPresentationPrev();
+  }
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    goToPresentationSentence(1);
+  }
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    goToPresentationSentence(-1);
   }
   if (event.key === "Home") {
     event.preventDefault();
-    goToSentence(0);
+    goToSentence(0, 0);
   }
   if (event.key === "End") {
     event.preventDefault();
-    goToSentence(state.sentences.length - 1);
+    const lastSentence = state.sentences[state.sentences.length - 1];
+    goToSentence(state.sentences.length - 1, getComponentsByLane(lastSentence, "minor").length);
   }
   if (event.key === "Escape") {
     event.preventDefault();

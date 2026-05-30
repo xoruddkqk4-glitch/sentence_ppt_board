@@ -1,16 +1,21 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-05-30T06:29:54.874Z",
+  "lastUpdated": "2026-05-30T10:13:35.608Z",
   "activeFeatures": [
     "sentence-presentation-app"
   ],
   "primaryFeature": "sentence-presentation-app",
   "features": {
     "sentence-presentation-app": {
-      "phase": "check",
-      "matchRate": null,
-      "iterationCount": 0,
-      "documents": {},
+      "phase": "completed",
+      "matchRate": 94,
+      "iterationCount": 1,
+      "documents": {
+        "plan": "docs/01-plan/features/sentence-presentation-app.plan.md",
+        "design": "docs/02-design/features/sentence-presentation-app.design.md",
+        "analysis": "docs/03-analysis/sentence-presentation-app.analysis.md",
+        "report": "docs/04-report/sentence-presentation-app.report.md"
+      },
       "taskChain": [
         {
           "phase": "plan",
@@ -32,19 +37,22 @@
         },
         {
           "phase": "check",
-          "status": "active",
-          "createdAt": "2026-05-30T06:08:33.485Z"
+          "status": "completed",
+          "createdAt": "2026-05-30T06:08:33.485Z",
+          "completedAt": "2026-05-30T10:09:49.884Z"
         },
         {
           "phase": "report",
-          "status": "pending",
-          "createdAt": "2026-05-30T06:08:33.485Z"
+          "status": "completed",
+          "createdAt": "2026-05-30T06:08:33.485Z",
+          "completedAt": "2026-05-30T10:13:35.608Z"
         }
       ],
       "timestamps": {
         "started": "2026-05-30T06:08:33.488Z",
-        "lastUpdated": "2026-05-30T06:29:54.874Z"
-      }
+        "lastUpdated": "2026-05-30T10:13:35.608Z"
+      },
+      "completedAt": "2026-05-30T10:13:35.603Z"
     }
   },
   "pipeline": {
@@ -55,7 +63,7 @@
   "session": {
     "startedAt": "2026-05-30T06:08:33.482Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-05-30T06:29:54.874Z"
+    "lastActivity": "2026-05-30T10:13:35.608Z"
   },
   "history": [
     {
@@ -102,6 +110,26 @@
       "phase": "do",
       "nextPhase": "check",
       "timestamp": "2026-05-30T06:29:54.868Z"
+    },
+    {
+      "feature": "sentence-presentation-app",
+      "from": "check",
+      "to": "report",
+      "timestamp": "2026-05-30T10:09:49.884Z"
+    },
+    {
+      "feature": "sentence-presentation-app",
+      "action": "phase_complete",
+      "phase": "act",
+      "nextPhase": "report",
+      "timestamp": "2026-05-30T10:09:49.887Z"
+    },
+    {
+      "feature": "sentence-presentation-app",
+      "action": "phase_complete",
+      "phase": "report",
+      "nextPhase": "completed",
+      "timestamp": "2026-05-30T10:13:35.605Z"
     }
   ]
 }

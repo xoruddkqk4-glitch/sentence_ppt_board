@@ -457,6 +457,49 @@ input:focus {
   font-weight: 800;
 }
 
+.modifier-select {
+  max-width: 180px;
+  border-color: #d6b35f;
+  color: var(--color-minor-ink);
+  font-weight: 900;
+}
+
+.modifier-control {
+  display: flex;
+  align-items: center;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  order: 9;
+  gap: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+  padding: var(--space-2);
+}
+
+.modifier-control-title {
+  color: var(--color-minor-ink);
+  font-size: var(--font-ui-sm);
+  font-weight: 900;
+}
+
+.modifier-word-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #d6b35f;
+  border-radius: var(--radius-pill);
+  padding: 6px 10px;
+  color: var(--color-minor-ink);
+  font-size: var(--font-ui-sm);
+  font-weight: 900;
+}
+
+.modifier-word-option input {
+  width: 16px;
+  height: 16px;
+}
+
 .chip-action {
   min-height: 40px;
   border: 1px solid var(--color-border);
@@ -617,6 +660,7 @@ input:focus {
 }
 
 .presentation-stage {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -667,6 +711,23 @@ input:focus {
   min-width: max-content;
 }
 
+.major-lane .present-chip.modifier-target-chip {
+  position: relative;
+}
+
+.major-lane .present-chip.modifier-target-chip::after {
+  content: "";
+  position: absolute;
+  left: -0.08em;
+  right: -0.08em;
+  bottom: -0.13em;
+  height: 0.28em;
+  border-right: 0.06em solid var(--color-minor-ink);
+  border-bottom: 0.06em solid var(--color-minor-ink);
+  border-left: 0.06em solid var(--color-minor-ink);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
 .minor-anchor-lane {
   display: none;
 }
@@ -691,6 +752,7 @@ input:focus {
   position: absolute;
   left: var(--box-percent, var(--anchor-percent, 50%));
   top: var(--minor-box-top, calc(var(--font-minor-current) * 0.45));
+  box-sizing: border-box;
   display: inline-flex;
   color: var(--color-minor-ink);
   border: 4px solid currentColor;
@@ -716,6 +778,29 @@ input:focus {
   background: currentColor;
   transform: translateX(-50%);
   z-index: 2;
+}
+
+.minor-row .present-chip.modifier-chip::before {
+  top: calc(-1 * var(--connector-length, 42px) + 6px);
+  width: 0;
+  height: 0;
+  border-right: 10px solid transparent;
+  border-bottom: 17px solid currentColor;
+  border-left: 10px solid transparent;
+  border-radius: 0;
+  background: transparent;
+}
+
+.modifier-target-bracket {
+  position: absolute;
+  z-index: 4;
+  height: clamp(14px, 2.4vh, 28px);
+  min-width: 18px;
+  border-right: 5px solid var(--color-minor-ink);
+  border-bottom: 5px solid var(--color-minor-ink);
+  border-left: 5px solid var(--color-minor-ink);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  pointer-events: none;
 }
 
 .minor-row .present-chip::after {
@@ -791,6 +876,7 @@ input:focus {
 
 .present-nav {
   justify-content: space-between;
+  flex-wrap: nowrap;
   padding: 0 clamp(var(--space-4), 5vw, var(--space-16));
 }
 
