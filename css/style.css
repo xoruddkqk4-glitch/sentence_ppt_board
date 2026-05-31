@@ -1136,3 +1136,277 @@ input:focus {
     padding-inline: var(--space-16);
   }
 }
+
+/* 중요 문장 토글 버튼 (기본적으로 파스텔톤 노랑 강조) */
+#toggleImportantButton {
+  background-color: #fef9c3;
+  border-color: #fde047;
+  color: #713f12;
+  font-weight: 800;
+}
+#toggleImportantButton:hover {
+  background-color: #fef08a;
+  border-color: #eab308;
+}
+#toggleImportantButton.is-important {
+  background-color: #fef08a;
+  border-color: #ca8a04;
+  font-weight: 900;
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+}
+.app-shell[data-theme="dark"] #toggleImportantButton {
+  background-color: #2e2a16;
+  border-color: #4e441b;
+  color: #fde047;
+}
+.app-shell[data-theme="dark"] #toggleImportantButton:hover {
+  background-color: #3f381c;
+  border-color: #ca8a04;
+}
+.app-shell[data-theme="dark"] #toggleImportantButton.is-important {
+  background-color: #ca8a04;
+  border-color: #eab308;
+  color: #0f172a;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.2);
+}
+
+/* 3단계 발표 화면 메인 레이아웃 분할 */
+.present-main-layout {
+  display: flex;
+  flex: 1;
+  gap: var(--space-6);
+  min-height: 0;
+  width: 100%;
+}
+
+.presentation-stage-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* 중요 문장 사이드바 네비게이션 (패널 박스 및 백그라운드 제거) */
+.important-present-nav {
+  width: 110px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  max-height: 75vh;
+  overflow-y: auto;
+  box-shadow: none;
+}
+
+/* 사이드바 개별 번호 아이템 (동적 감싸는 배경 및 프리미엄 카드 디자인 적용) */
+.important-nav-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  width: 92px;
+  min-height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-soft);
+  color: var(--color-ink);
+  padding: 4px var(--space-2);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 120ms ease;
+  user-select: none;
+}
+
+.app-shell[data-theme="dark"] .important-nav-item {
+  border-color: #334155;
+  background-color: #1e293b;
+  color: var(--color-dark-ink);
+}
+
+.important-nav-item:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-drop);
+}
+
+.app-shell[data-theme="dark"] .important-nav-item:hover {
+  border-color: #475569;
+  background-color: #334155;
+}
+
+/* 중요 지정된 번호 스타일 (비활성 상태) */
+.important-nav-item.important {
+  border-color: #ca8a04;
+  background-color: #fffbeb;
+  color: var(--color-ink);
+}
+
+.app-shell[data-theme="dark"] .important-nav-item.important {
+  border-color: #f59e0b;
+  background-color: #291500;
+  color: var(--color-dark-ink);
+}
+
+.important-nav-item.important:hover {
+  background-color: #fef3c7;
+  border-color: #ca8a04;
+}
+
+.app-shell[data-theme="dark"] .important-nav-item.important:hover {
+  background-color: #3d2b15;
+  border-color: #f59e0b;
+}
+
+/* 현재 활성화된(선택된) 문장 번호 강조 (동적 배경 및 색상 변경) */
+.important-nav-item.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary-strong, #004f9e);
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 900;
+  box-shadow: 0 4px 10px rgba(0, 102, 204, 0.25);
+}
+
+.app-shell[data-theme="dark"] .important-nav-item.active {
+  background-color: var(--color-primary);
+  border-color: #004f9e;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.4);
+}
+
+.important-nav-item.active:hover {
+  background-color: var(--color-primary-strong, #004f9e);
+  border-color: var(--color-primary-strong, #004f9e);
+}
+
+/* 현재 활성화되었으면서 중요 지정도 함께 된 상태 (골드 테두리와 최우선 배경색 대비 보완) */
+.important-nav-item.active.important {
+  background-color: var(--color-primary);
+  border-color: #facc15;
+  border-width: 2px;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.25);
+}
+
+.app-shell[data-theme="dark"] .important-nav-item.active.important {
+  background-color: var(--color-primary);
+  border-color: #f59e0b;
+  border-width: 2px;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+/* 3단계 발표 화면 별표 토글 버튼 */
+.star-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: transform 100ms ease, color 120ms ease;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.app-shell[data-theme="dark"] .star-toggle-btn {
+  color: #475569;
+}
+
+.star-toggle-btn:hover {
+  transform: scale(1.15);
+  color: #eab308;
+}
+
+/* 중요 문장일 때의 노란색 별 채우기 */
+.important .star-toggle-btn {
+  color: #eab308;
+}
+
+.app-shell[data-theme="dark"] .important .star-toggle-btn {
+  color: #f59e0b;
+}
+
+/* 활성화 상태(현재 문장)일 때 별표 색상 대비 */
+.important-nav-item.active .star-toggle-btn {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.important-nav-item.active.important .star-toggle-btn {
+  color: #facc15; /* 활성화 및 중요 상태의 별은 선명한 금색 */
+}
+
+.important-nav-item.active .star-toggle-btn:hover {
+  color: #ffffff;
+}
+
+.important-nav-item.active.important .star-toggle-btn:hover {
+  color: #ffd700;
+}
+
+/* 문장 번호 텍스트 */
+.sentence-num {
+  flex: 1;
+  text-align: center;
+  line-height: 1;
+}
+
+/* 단축 번호키 배지 래퍼 및 배지 디자인 (키캡 스타일) */
+.shortcut-badge-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.shortcut-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background-color: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.important-nav-item.important .shortcut-badge {
+  background-color: #fef08a;
+  border-color: #ca8a04;
+  color: #78350f;
+}
+
+.app-shell[data-theme="dark"] .shortcut-badge {
+  background-color: #334155;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+.app-shell[data-theme="dark"] .important-nav-item.important .shortcut-badge {
+  background-color: #78350f;
+  border-color: #b45309;
+  color: #fef3c7;
+}
+
+.important-nav-item.active .shortcut-badge {
+  background-color: #ffffff;
+  border-color: #ffffff;
+  color: var(--color-primary);
+}

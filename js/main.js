@@ -1180,12 +1180,14 @@ const elements = {
   applySentenceTextButton: document.getElementById("applySentenceTextButton"),
   addSentenceButton: document.getElementById("addSentenceButton"),
   deleteSentenceButton: document.getElementById("deleteSentenceButton"),
+  toggleImportantButton: document.getElementById("toggleImportantButton"),
   majorEditLane: document.getElementById("majorEditLane"),
   minorEditLane: document.getElementById("minorEditLane"),
   majorPresentLane: document.getElementById("majorPresentLane"),
   minorAnchorLane: document.getElementById("minorAnchorLane"),
   minorPresentLane: document.getElementById("minorPresentLane"),
   emptyMinorNote: document.getElementById("emptyMinorNote"),
+  importantPresentNav: document.getElementById("importantPresentNav"),
   presentFitButton: document.getElementById("presentFitButton"),
   backToInputButton: document.getElementById("backToInputButton"),
   startPresentButton: document.getElementById("startPresentButton"),
@@ -1368,6 +1370,7 @@ function preparePresentation() {
   state.sentences = sentences.map((sentenceText, index) => ({
     id: `sentence-${index + 1}`,
     text: sentenceText,
+    isImportant: false,
     wordCount: getPlainWords(sentenceText).length,
     components: analyzeSentence(sentenceText, index)
   }));
@@ -1410,9 +1413,24 @@ function renderEditView() {
 
   elements.editProgress.textContent = getProgressText();
   elements.sentenceTextEditor.value = sentence.text;
+
+  // 중요 문장 지정 버튼 렌더링
+  const isImp = sentence.isImportant === true;
+  elements.toggleImportantButton.classList.toggle("is-important", isImp);
+  elements.toggleImportantButton.innerHTML = isImp ? "★ 중요 지정 해제" : "☆ 중요 문장 지정";
+
   renderEditLane(elements.majorEditLane, getComponentsByLane(sentence, "major"));
   renderEditLane(elements.minorEditLane, getComponentsByLane(sentence, "minor"));
   updateNavButtons();
+}
+
+function toggleImportantSentence() {
+  const sentence = getCurrentSentence();
+  if (!sentence) {
+    return;
+  }
+  sentence.isImportant = !sentence.isImportant;
+  render();
 }
 
 function renderEditLane(container, components) {
@@ -1607,8 +1625,70 @@ function renderPresentView() {
   renderMinorPresentRows(elements.minorPresentLane, visibleMinorComponents);
   renderModifierTargetBrackets(visibleMinorComponents);
   elements.emptyMinorNote.classList.add("hidden");
+  
+  // 중요 문장 사이드바 렌더링 호출
+  renderImportantSidebar();
+
   updateNavButtons();
   schedulePresentationFit();
+}
+
+function renderImportantSidebar() {
+  if (!elements.importantPresentNav) {
+    return;
+  }
+  elements.importantPresentNav.innerHTML = "";
+  
+  let shortcutCounter = 1;
+  state.sentences.forEach((sentence, idx) => {
+    const btn = document.createElement("div");
+    btn.className = "important-nav-item";
+    if (idx === state.currentSentenceIndex) {
+      btn.classList.add("active");
+    }
+    
+    const isImp = sentence.isImportant === true;
+    if (isImp) {
+      btn.classList.add("important");
+    }
+    
+    // 별표 토글 버튼 (클릭 시 중요 지정 여부 켜고 끔)
+    const starBtn = document.createElement("button");
+    starBtn.type = "button";
+    starBtn.className = "star-toggle-btn";
+    starBtn.textContent = isImp ? "★" : "☆";
+    starBtn.setAttribute("aria-label", `${idx + 1}번 문장 중요도 설정 토글`);
+    starBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // 문장 이동 이벤트 전파 방지
+      sentence.isImportant = !sentence.isImportant;
+      render();
+    });
+    
+    // 문장 번호 표시
+    const numSpan = document.createElement("span");
+    numSpan.className = "sentence-num";
+    numSpan.textContent = String(idx + 1);
+    
+    // 단축 번호키 배지용 래퍼 컨테이너 (정렬 일관성 유지 목적)
+    const badgeWrapper = document.createElement("div");
+    badgeWrapper.className = "shortcut-badge-wrapper";
+    
+    if (isImp && shortcutCounter <= 9) {
+      const shortcutBadge = document.createElement("span");
+      shortcutBadge.className = "shortcut-badge";
+      shortcutBadge.textContent = String(shortcutCounter);
+      badgeWrapper.appendChild(shortcutBadge);
+      shortcutCounter += 1;
+    }
+    
+    btn.append(starBtn, numSpan, badgeWrapper);
+    
+    btn.addEventListener("click", () => {
+      goToSentence(idx, 0);
+    });
+    
+    elements.importantPresentNav.appendChild(btn);
+  });
 }
 
 function renderMajorPresentLane(container, components, visibleMinorComponents = []) {
@@ -2027,6 +2107,7 @@ function insertNewSentence() {
   const newSentence = {
     id: `sentence-inserted-${Date.now()}`,
     text: defaultText,
+    isImportant: false,
     wordCount: getPlainWords(defaultText).length,
     components: analyzeSentence(defaultText, insertIndex)
   };
@@ -3077,6 +3158,7 @@ function buildAnalysisPayload() {
       id: sentence.id || `sentence-${sentenceIndex + 1}`,
       sentenceIndex: sentenceIndex + 1,
       text: sentence.text,
+      isImportant: sentence.isImportant === true,
       wordCount: Number.isFinite(sentence.wordCount) ? sentence.wordCount : getPlainWords(sentence.text).length,
       components: sentence.components.map((component, componentIndex) => ({
         id: component.id,
@@ -3272,6 +3354,7 @@ function normalizeImportedSentence(sentence, sentenceIndex) {
   return {
     id: String(sentence.id || `sentence-${sentenceIndex + 1}`),
     text,
+    isImportant: sentence.isImportant === true,
     wordCount: Number.isFinite(Number(sentence.wordCount)) ? Number(sentence.wordCount) : getPlainWords(text).length,
     components
   };
@@ -3406,44 +3489,40 @@ function loadQuickTxtFromUploadedFile(fileName) {
   try {
     state.currentFileName = fileName;
     
-    // 로컬 스토리지 캐시 우선 조회
+    // 1. 로컬 스토리지 수정본 캐시 우선 조회
     const cachedContent = localStorage.getItem(`sentence_board_file_cache_${fileName}`);
     if (cachedContent) {
       importAnalysisTxt(cachedContent);
-      elements.inputMessage.style.color = "var(--color-primary)";
-      elements.inputMessage.textContent = `✅ ${fileName.replace(/\.txt$/, "")} 지문을 성공적으로 불러왔습니다.`;
-      setTimeout(() => {
-        if (elements.inputMessage.textContent.includes("성공적으로")) {
-          elements.inputMessage.textContent = "";
-          elements.inputMessage.style.color = "";
-        }
-      }, 3000);
+      showSuccessfulLoadMessage(fileName);
       return;
     }
 
     const file = state.quickFilesMap.get(fileName);
-    if (!file) {
-      throw new Error("파일 객체를 찾을 수 없습니다.");
+    
+    // 2. 파일 객체가 없거나, mock 객체인 경우 (또는 로컬 스토리지에 원본 백업 캐시가 존재하는 경우)
+    if (!file || file.isMock) {
+      const rawCache = localStorage.getItem(`sentence_board_file_raw_cache_${fileName}`);
+      if (rawCache) {
+        // 첫 로딩 시 로컬 스토리지 수정본 캐시로도 복사
+        localStorage.setItem(`sentence_board_file_cache_${fileName}`, rawCache);
+        importAnalysisTxt(rawCache);
+        showSuccessfulLoadMessage(fileName);
+        return;
+      }
+      throw new Error("파일 객체 또는 캐시 데이터를 찾을 수 없습니다.");
     }
 
+    // 3. 실제 파일 읽기 진행
     const reader = new FileReader();
     reader.onload = () => {
       try {
         const resultText = String(reader.result || "");
-        // 첫 로딩 시 로컬 스토리지에 캐시
         localStorage.setItem(`sentence_board_file_cache_${fileName}`, resultText);
+        localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, resultText);
         importAnalysisTxt(resultText);
-
-        elements.inputMessage.style.color = "var(--color-primary)";
-        elements.inputMessage.textContent = `✅ ${fileName.replace(/\.txt$/, "")} 지문을 성공적으로 불러왔습니다.`;
-        setTimeout(() => {
-          if (elements.inputMessage.textContent.includes("성공적으로")) {
-            elements.inputMessage.textContent = "";
-            elements.inputMessage.style.color = "";
-          }
-        }, 3000);
+        showSuccessfulLoadMessage(fileName);
       } catch (error) {
-        alert(`지문을 불러오지 못했습니다: ${error.message}`);
+        alert(`지문을 분석하는 중 오류가 발생했습니다: ${error.message}`);
       }
     };
     reader.onerror = () => alert("파일을 읽는 중 오류가 발생했습니다.");
@@ -3455,15 +3534,26 @@ function loadQuickTxtFromUploadedFile(fileName) {
   }
 }
 
+function showSuccessfulLoadMessage(fileName) {
+  elements.inputMessage.style.color = "var(--color-primary)";
+  elements.inputMessage.textContent = `✅ ${fileName.replace(/\.txt$/, "")} 지문을 성공적으로 불러왔습니다.`;
+  setTimeout(() => {
+    if (elements.inputMessage.textContent.includes("성공적으로")) {
+      elements.inputMessage.textContent = "";
+      elements.inputMessage.style.color = "";
+    }
+  }, 3000);
+}
+
 function handleFolderSelected(event) {
   try {
     const files = Array.from(event.target.files || []);
+    clearRawFolderCache(); // 이전 폴더 원본 백업 캐시 소거
     state.quickFilesMap.clear();
 
     const txtFiles = [];
     files.forEach((file) => {
       const pathParts = file.webkitRelativePath.split("/");
-      // webkitRelativePath가 'folderName/fileName.txt'와 같이 슬래시가 1개만 포함된 루트 레벨 파일만 적재
       if (pathParts.length === 2 && file.name.toLowerCase().endsWith(".txt")) {
         state.quickFilesMap.set(file.name, file);
         txtFiles.push(file.name);
@@ -3471,16 +3561,45 @@ function handleFolderSelected(event) {
     });
 
     if (txtFiles.length === 0) {
+      localStorage.removeItem("sentence_board_has_folder_selected");
+      localStorage.removeItem("sentence_board_selected_folder_name");
+      localStorage.removeItem("sentence_board_selected_folder_files");
+      
       elements.inputMessage.style.color = "var(--color-warning)";
       elements.inputMessage.textContent = "⚠️ 선택한 폴더 바로 아래에 .txt 파일이 존재하지 않습니다.";
       return;
     }
 
     state.hasFolderSelected = true;
+    
+    // 로컬 스토리지에 폴더 메타데이터 저장
+    const folderName = files[0]?.webkitRelativePath.split("/")[0] || "지정 폴더";
+    try {
+      localStorage.setItem("sentence_board_has_folder_selected", "true");
+      localStorage.setItem("sentence_board_selected_folder_name", folderName);
+      localStorage.setItem("sentence_board_selected_folder_files", JSON.stringify(txtFiles));
+    } catch (e) {
+      console.warn("Storage quota exceeded or storage disallowed for metadata:", e);
+    }
+
+    // 각 파일의 원본 콘텐츠를 비동기적으로 읽어서 localStorage에 캐싱
+    txtFiles.forEach((fileName) => {
+      const file = state.quickFilesMap.get(fileName);
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const content = String(reader.result || "");
+          localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, content);
+        } catch (e) {
+          console.warn(`Failed to cache raw content of ${fileName}:`, e);
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    });
+
     renderTxtGrid();
 
-    // 임포트 완료 피드백 출력
-    const folderName = files[0]?.webkitRelativePath.split("/")[0] || "지정 폴더";
     elements.inputMessage.style.color = "var(--color-primary)";
     elements.inputMessage.textContent = `📁 ${folderName} 폴더에서 ${txtFiles.length}개의 지문 파일을 성공적으로 연결했습니다.`;
   } catch (error) {
@@ -3528,6 +3647,7 @@ function bindEvents() {
   elements.inputImportButton.addEventListener("click", triggerAnalysisImport);
   elements.editImportButton.addEventListener("click", triggerAnalysisImport);
   elements.applySentenceTextButton.addEventListener("click", updateSentenceText);
+  elements.toggleImportantButton.addEventListener("click", toggleImportantSentence);
   elements.addSentenceButton.addEventListener("click", insertNewSentence);
   elements.deleteSentenceButton.addEventListener("click", deleteCurrentSentence);
   elements.exportTxtButton.addEventListener("click", exportAnalysisTxt);
@@ -3597,6 +3717,18 @@ function handleKeyboard(event) {
     return;
   }
 
+  if (event.key >= "1" && event.key <= "9") {
+    event.preventDefault();
+    const importantSentences = state.sentences
+      .map((s, idx) => ({ ...s, originalIndex: idx }))
+      .filter(s => s.isImportant);
+    const targetIndex = Number(event.key) - 1;
+    if (importantSentences[targetIndex]) {
+      goToSentence(importantSentences[targetIndex].originalIndex, 0);
+    }
+    return;
+  }
+
   if (event.key === "ArrowRight" || event.key === " ") {
     event.preventDefault();
     goToPresentationNext();
@@ -3628,6 +3760,59 @@ function handleKeyboard(event) {
   }
 }
 
+function clearRawFolderCache() {
+  try {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("sentence_board_file_raw_cache_")) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+  } catch (e) {
+    console.error("Error clearing raw folder cache:", e);
+  }
+}
+
+function restoreSelectedFolder() {
+  try {
+    const hasFolder = localStorage.getItem("sentence_board_has_folder_selected") === "true";
+    if (!hasFolder) {
+      renderTxtGrid();
+      return;
+    }
+    
+    const folderName = localStorage.getItem("sentence_board_selected_folder_name") || "지정 폴더";
+    const filesJson = localStorage.getItem("sentence_board_selected_folder_files");
+    if (!filesJson) {
+      renderTxtGrid();
+      return;
+    }
+    
+    const txtFiles = JSON.parse(filesJson);
+    if (!Array.isArray(txtFiles) || txtFiles.length === 0) {
+      renderTxtGrid();
+      return;
+    }
+    
+    state.hasFolderSelected = true;
+    state.quickFilesMap.clear();
+    
+    txtFiles.forEach((fileName) => {
+      state.quickFilesMap.set(fileName, { name: fileName, isMock: true });
+    });
+    
+    elements.inputMessage.style.color = "var(--color-primary)";
+    elements.inputMessage.textContent = `📁 [연동됨] ${folderName} 폴더에서 ${txtFiles.length}개의 지문 파일이 연결되어 있습니다.`;
+    
+    renderTxtGrid();
+  } catch (error) {
+    console.error("Failed to restore folder selection:", error);
+    renderTxtGrid();
+  }
+}
+
 bindEvents();
 applySettings();
-renderTxtGrid();
+restoreSelectedFolder();

@@ -81,6 +81,7 @@
           <div class="meta-top-row">
             <span id="editProgress" class="progress-badge">0 / 0</span>
             <div class="sentence-manage-buttons">
+              <button class="button secondary compact" type="button" id="toggleImportantButton">⭐ 중요 문장 지정</button>
               <button class="button secondary compact" type="button" id="addSentenceButton">+ 문장 추가</button>
               <button class="button secondary compact" type="button" id="deleteSentenceButton" style="color: var(--color-warning); border-color: var(--color-warning);">- 문장 삭제</button>
             </div>
@@ -144,11 +145,16 @@
 
         <h2 id="presentTitle" class="sr-only">학생 발표 화면</h2>
 
-        <div class="presentation-stage">
-          <div id="majorPresentLane" class="component-lane present-lane major-lane" aria-label="주요소 줄"></div>
-          <div id="minorAnchorLane" class="minor-anchor-lane" aria-hidden="true"></div>
-          <div id="minorPresentLane" class="present-lane minor-lane" aria-label="종요소 줄"></div>
-          <p id="emptyMinorNote" class="empty-note hidden">종요소 없음</p>
+        <div class="present-main-layout">
+          <nav id="importantPresentNav" class="important-present-nav" aria-label="중요 문장 빠른 이동"></nav>
+          <div class="presentation-stage-container">
+            <div class="presentation-stage">
+              <div id="majorPresentLane" class="component-lane present-lane major-lane" aria-label="주요소 줄"></div>
+              <div id="minorAnchorLane" class="minor-anchor-lane" aria-hidden="true"></div>
+              <div id="minorPresentLane" class="present-lane minor-lane" aria-label="종요소 줄"></div>
+              <p id="emptyMinorNote" class="empty-note hidden">종요소 없음</p>
+            </div>
+          </div>
         </div>
 
         <div class="present-nav">
