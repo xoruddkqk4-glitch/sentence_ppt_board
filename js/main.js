@@ -60,7 +60,9 @@ const state = {
   },
   draggedComponentId: null,
   minorRevealCount: 0,
-  minorSlots: []
+  minorSlots: [],
+  lastModifierClickIndex: null,
+  lastModifierComponentId: null
 };
 
 const elements = {
@@ -382,6 +384,10 @@ function createSplitControls(component) {
   const panel = document.createElement("span");
   panel.className = "split-panel hidden";
 
+  // Shift+클릭으로 직전 선택 단어와 현재 단어 사이를 범위 선택하기 위한 기준 인덱스.
+  let lastSplitClickIndex = null;
+  const splitCheckboxes = [];
+
   getComponentWords(component).forEach((word, index) => {
     const label = document.createElement("label");
     label.className = "split-word-option";
@@ -389,6 +395,11 @@ function createSplitControls(component) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.value = String(index);
+    splitCheckboxes[index] = checkbox;
+    checkbox.addEventListener("click", (event) => {
+      applyShiftRangeSelection(event, splitCheckboxes, index, lastSplitClickIndex, checkbox.checked);
+      lastSplitClickIndex = index;
+    });
 
     const wordText = document.createElement("span");
     wordText.textContent = word;
@@ -426,6 +437,7 @@ function createModifierTargetControl(component) {
 
   const selectedIndexes = new Set(getModifierTargetIndexes(component));
   const ownIndexes = new Set(getIndexRange(component.startIndex, component.endIndex));
+  const modifierCheckboxes = [];
   getDisplayWords(sentence?.text || "").forEach((word, index) => {
     if (ownIndexes.has(index)) {
       return;
@@ -437,6 +449,17 @@ function createModifierTargetControl(component) {
     checkbox.type = "checkbox";
     checkbox.value = String(index);
     checkbox.checked = selectedIndexes.has(index);
+    modifierCheckboxes[index] = checkbox;
+    checkbox.addEventListener("click", (event) => {
+      // Shift+클릭이면 직전 클릭과 현재 사이의 체크박스 상태를 먼저 일괄로 바꾼다.
+      // 형용사어 수식 대상은 change 시 즉시 renderEditView()로 재렌더되므로,
+      // 여기서는 change를 따로 발생시키지 않고 아래 change 핸들러가
+      // 한 번만 실행되면서 최종 선택 결과를 읽어 적용하게 한다.
+      const lastIndex = state.lastModifierComponentId === component.id ? state.lastModifierClickIndex : null;
+      applyShiftRangeSelection(event, modifierCheckboxes, index, lastIndex, checkbox.checked);
+      state.lastModifierClickIndex = index;
+      state.lastModifierComponentId = component.id;
+    });
     checkbox.addEventListener("change", () => {
       const indexes = [...wrapper.querySelectorAll("input:checked")].map((input) => Number(input.value));
       updateModifierTargetWords(component.id, indexes);
@@ -450,6 +473,26 @@ function createModifierTargetControl(component) {
   });
 
   return wrapper;
+}
+
+// Shift+클릭 시 직전 클릭한 체크박스와 현재 체크박스 사이의 체크박스들을
+// 현재 상태(checked)에 맞춰 함께 맞춘다.
+// 주의: 형용사어 수식 대상처럼 change 시 renderEditView()로 패널이 통째로 재생성되는
+// 경우, 중간에 change를 다시 발생시키면 참조 중인 체크박스가 화면에서 떨어져
+// 나머지 반영이 끊긴다. 따라서 checked 값만 바꾸고, 최종 반영은 클릭된 체크박스의
+// 기본 change 이벤트(wrapper 전체 :checked를 다시 읽음)에게 맡긴다(한 번만 실행).
+function applyShiftRangeSelection(event, checkboxes, currentIndex, anchorIndex, checked) {
+  if (!event.shiftKey || anchorIndex === null || anchorIndex === currentIndex) {
+    return;
+  }
+  const from = Math.min(anchorIndex, currentIndex);
+  const to = Math.max(anchorIndex, currentIndex);
+  for (let index = from; index <= to; index += 1) {
+    const box = checkboxes[index];
+    if (box && index !== currentIndex && box.checked !== checked) {
+      box.checked = checked;
+    }
+  }
 }
 
 function renderPresentView() {
@@ -737,8 +780,6 @@ function rebuildMinorSlotsFromWords() {
   const first = wordRects[0];
   const last = wordRects[wordRects.length - 1];
   const edgeGap = getMajorEdgeGap();
-  const leftEdge = slotRect.left + getStageEdgeGuard(slotRect);
-  const rightEdge = slotRect.right - getStageEdgeGuard(slotRect);
 
   // 문장 맨 앞/맨 뒤 슬롯에 몰리는 종요소 개수만큼 가장자리 점을 더 벌려 둔다.
   const visibleMinorComponents = getComponentsByLane(sentence, "minor").slice(0, state.minorRevealCount);
@@ -754,10 +795,19 @@ function rebuildMinorSlotsFromWords() {
   const startShiftPx = startAnchorCount > 1 ? ((startAnchorCount - 1) * MINOR_ANCHOR_SPREAD / 2 / 100) * slotRect.width : 0;
   const endShiftPx = endAnchorCount > 1 ? ((endAnchorCount - 1) * MINOR_ANCHOR_SPREAD / 2 / 100) * slotRect.width : 0;
 
+  // 가장자리 점이 첫/마지막 단어와 절대 겹치지 않도록, 단어 경계에서 떨어뜨릴 최소 간격(px).
+  // 점(::before) 지름 18px의 절반 + 여유. 주요소 글씨가 클수록(짧은 문장) 더 크게 잡아
+  // 큰 글자 옆에서도 점이 단어 위로 올라타지 않게 한다.
+  const dotClearance = getMinorDotClearance();
+
   // 문장 맨 앞 슬롯 (첫 단어 앞)
+  // 점은 제일 먼저 "첫 단어 왼쪽 경계 - clearance" 위치에 둔다(점 중심 기준).
+  // 그보다 더 왼쪽(edgeGap)이 필요하면 더 왼쪽에 두되, 화면(슬롯 영역) 밖으로는 나가지 않는다.
+  const startClearancePx = first.left - dotClearance - startShiftPx;
+  const startTargetPx = Math.min(startClearancePx, first.left - edgeGap - startShiftPx);
   slots.push({
     index: firstIndex - 0.5,
-    percent: rectXToPercent(Math.max(leftEdge, first.left - edgeGap - startShiftPx), slotRect)
+    percent: clampEdgeSlotPercent(startTargetPx, startClearancePx, slotRect, "start")
   });
 
   // 단어와 단어 사이 슬롯: 양쪽 주요소 단어의 원문 인덱스 중간값으로 표시
@@ -773,9 +823,13 @@ function rebuildMinorSlotsFromWords() {
   });
 
   // 문장 맨 뒤 슬롯 (마지막 단어 뒤)
+  // 점은 제일 먼저 "마지막 단어 오른쪽 경계 + clearance" 위치에 둔다.
+  // 그보다 더 오른쪽(edgeGap)이 필요하면 더 오른쪽에 두되, 화면 밖으로는 나가지 않는다.
+  const endClearancePx = last.right + dotClearance + endShiftPx;
+  const endTargetPx = Math.max(endClearancePx, last.right + edgeGap + endShiftPx);
   slots.push({
     index: lastIndex + 0.5,
-    percent: rectXToPercent(Math.min(rightEdge, last.right + edgeGap + endShiftPx), slotRect)
+    percent: clampEdgeSlotPercent(endTargetPx, endClearancePx, slotRect, "end")
   });
 
   state.minorSlots = slots;
@@ -786,9 +840,39 @@ function rectXToPercent(x, rect) {
   return Math.round(clamp(edgeGuard, ((x - rect.left) / rect.width) * 100, 100 - edgeGuard) * 10) / 10;
 }
 
+// 가장자리 점(문장 맨앞/맨뒤 슬롯)의 percent를 계산한다.
+// 핵심 규칙: 점은 반드시 첫 단어보다 왼쪽 / 마지막 단어보다 오른쪽(clearancePx)에 있어야 한다.
+// 점이 슬롯 영역(화면) 밖으로 나가면 안 되므로, 그 때만 화면 경계(점 반지름 여유 포함)로 당긴다.
+// 단어와의 겹침 방지를 최우선으로 하되, 화면을 벗어나지 않게만 보정한다.
+function clampEdgeSlotPercent(targetPx, clearancePx, rect, side) {
+  const dotRadiusPx = 11; // 점 반지름(9px) + 약간의 여유
+  const minX = rect.left + dotRadiusPx;
+  const maxX = rect.right - dotRadiusPx;
+
+  let valuePx;
+  if (side === "start") {
+    // 첫 단어 왼쪽 clearance 위치를 목표로 하되, 화면 왼쪽 경계(minX)보다는 오른쪽이어야 한다.
+    // 단, clearancePx보다 오른쪽으로는 가지 않는다(단어와 겹침 방지).
+    valuePx = Math.max(minX, Math.min(targetPx, clearancePx));
+  } else {
+    // 마지막 단어 오른쪽 clearance 위치를 목표로 하되, 화면 오른쪽 경계(maxX)보다는 왼쪽이어야 한다.
+    valuePx = Math.min(maxX, Math.max(targetPx, clearancePx));
+  }
+
+  const percent = ((valuePx - rect.left) / rect.width) * 100;
+  return Math.round(clamp(0, percent, 100) * 10) / 10;
+}
+
+// 가장자리 점과 단어 사이 최소 간격(px). 점 반지름(9px) + 여유 + 글씨 크기 비례.
+// 주요소 글씨가 매우 클 때도 점이 첫/마지막 글자 위로 겹치지 않도록 글씨 크기에 비례시킨다.
+function getMinorDotClearance() {
+  const majorSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current")) || 56;
+  return Math.round(clamp(26, 18 + majorSize * 0.32, 160));
+}
+
 function getMajorEdgeGap() {
   const currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current"));
-  return clamp(80, currentSize * 1.0, 180);
+  return clamp(100, currentSize * 1.6, 320);
 }
 
 function getStageEdgeGuard(rect) {
@@ -1574,7 +1658,9 @@ function fitMajorLine() {
   const currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current"));
   const laneRect = lane.getBoundingClientRect();
   const edgeGuard = getStageEdgeGuard(laneRect);
-  const anchorReserve = getMajorEdgeGap() * 2;
+  // 가장자리 점이 들어갈 공간을 양쪽에 예약한다. dotClearance(점~단어 최소 간격)도
+  // 함께 반영해 주요소가 줄어들어도 점이 첫/마지막 단어와 겹치지 않게 한다.
+  const anchorReserve = Math.max(getMajorEdgeGap(), getMinorDotClearance()) * 2;
   const edgeGroupReserve = getMajorEdgeAnchorReserve(laneRect.width);
   const edgeReserve = edgeGuard * 2 + anchorReserve + edgeGroupReserve;
   const availableWidth = Math.max(220, lane.clientWidth - edgeReserve);
@@ -1665,16 +1751,24 @@ function clampMinorBoxes() {
     // 박스가 가장자리(문장 맨앞/맨뒤 슬롯)까지 충분히 붙을 수 있도록 여백을 작게 잡는다.
     const boxGuard = clamp(16, laneRect.width * 0.02, 56);
     const halfPercent = ((chipRect.width / 2 + boxGuard) / laneRect.width) * 100;
-    const boxPercent = halfPercent >= 50 ? 50 : clamp(halfPercent, targetBox, 100 - halfPercent);
+    const halfWidthPercent = ((chipRect.width / 2) / laneRect.width) * 100;
+
+    // 박스가 화면 영역 내에 위치하되, 앵커(점/화살표)가 박스의 가로 폭 영역(0% ~ 100%)을 벗어나지 않도록 제한
+    let minBox = Math.max(halfPercent, anchorPercent - halfWidthPercent);
+    let maxBox = Math.min(100 - halfPercent, anchorPercent + halfWidthPercent);
+    if (minBox > maxBox) {
+      minBox = halfPercent;
+      maxBox = 100 - halfPercent;
+    }
+
+    const boxPercent = halfPercent >= 50 ? 50 : clamp(minBox, targetBox, maxBox);
     chip.style.setProperty("--box-percent", `${Math.round(boxPercent * 10) / 10}%`);
     const anchorX = (anchorPercent / 100) * laneRect.width;
     const boxCenterX = (boxPercent / 100) * laneRect.width;
-    // 점/화살표는 반드시 실제 슬롯(문장 맨앞·단어 사이·맨뒤, 단어와 겹치지 않는 위치)에
-    // 정확히 닿아야 한다. 긴 종요소 박스가 화면 안에 들어오도록 가운데로 재배치되면
-    // 슬롯이 박스 밖에 놓이는데, 이때 연결선을 박스 밖까지 뻗어 슬롯에 닿게 한다.
-    // (앵커는 이미 lane 가장자리 안으로 보정되어 있어 화면 밖으로 나가지 않는다.)
+
+    // 수직선이 항상 박스 내에 안착할 수 있도록 0% ~ 100% 범위로 clamp
     const rawConnector = 50 + ((anchorX - boxCenterX) / chipRect.width) * 100;
-    const connectorPercent = clamp(-120, rawConnector, 220);
+    const connectorPercent = clamp(0, rawConnector, 100);
     chip.style.setProperty("--connector-x", `${Math.round(connectorPercent * 10) / 10}%`);
   });
 }
@@ -1698,8 +1792,10 @@ function updateMinorConnectorLengths() {
     const targetBottomY = component?.role === "adjective"
       ? getModifierTargetBottomY(component, stageRect) ?? dotY
       : dotY;
-    const connectorLength = Math.max(28, Math.round(chipTop - targetBottomY));
-    chip.style.setProperty("--connector-length", `${connectorLength}px`);
+
+    // CSS custom properties 설정
+    chip.style.setProperty("--connector-length", `${Math.max(28, Math.round(chipTop - targetBottomY))}px`);
+    chip.style.setProperty("--connector-top", "-4px");
   });
 }
 
@@ -1714,8 +1810,20 @@ function getModifierTargetBottomY(component, stageRect) {
     return null;
   }
 
+  const indexSet = new Set(indexes);
+  const brackets = [...document.querySelectorAll(".modifier-target-bracket")];
+  const matchingBrackets = brackets.filter((bracket) => {
+    const bIndexes = (bracket.dataset.indexes || "").split(",").map(Number);
+    return bIndexes.length > 0 && bIndexes.every((idx) => indexSet.has(idx));
+  });
+
+  if (matchingBrackets.length > 0) {
+    const bottoms = matchingBrackets.map((b) => b.getBoundingClientRect().bottom);
+    return Math.max(...bottoms) - stageRect.top;
+  }
+
   const bottom = Math.max(...targetWords.map((word) => word.getBoundingClientRect().bottom));
-  return bottom - stageRect.top + 10;
+  return bottom - stageRect.top + 26; // 8px (bracket top offset) + ~18px (average bracket height)
 }
 
 function updateMinorPositions() {

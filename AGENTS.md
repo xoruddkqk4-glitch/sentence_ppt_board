@@ -10,14 +10,18 @@
 
 - 프로젝트 레벨: `Starter`
 - 활성 기능: `sentence-presentation-app`
-- 현재 단계: `Do`
-- 완료 단계: `Plan`, `Design`
-- 다음 작업: 설계 문서를 기준으로 실제 앱 구현
+- 현재 단계: `completed` (Report 완료)
+- 완료 단계: `Plan`, `Design`, `Do`, `Check`, `Report`
+- 최종 Match Rate: 94% (목표 90% 초과)
+- PDCA 반복 횟수: 1회
+- 다음 작업: archive (구현·검증·보고 완료, 보관 단계 대기)
 
 주요 문서:
 
 - 계획 문서: `docs/01-plan/features/sentence-presentation-app.plan.md`
 - 설계 문서: `docs/02-design/features/sentence-presentation-app.design.md`
+- 분석 문서: `docs/03-analysis/sentence-presentation-app.analysis.md`
+- 완료 보고서: `docs/04-report/sentence-presentation-app.report.md`
 - 루트 디자인 가이드: `DESIGN.md`
 
 주의:
@@ -31,7 +35,7 @@
 - 레벨: Starter
 - 방식: 정적 웹 앱
 - 언어: HTML, CSS, JavaScript
-- 예정 파일 구조:
+- 현재 파일 구조:
 
 ```text
 whiteboard_ppt/
@@ -42,8 +46,12 @@ whiteboard_ppt/
 │  └─ main.js
 ├─ docs/
 │  ├─ 01-plan/
-│  └─ 02-design/
-└─ AGENTS.md
+│  ├─ 02-design/
+│  ├─ 03-analysis/
+│  └─ 04-report/
+├─ AGENTS.md
+├─ DESIGN.md
+└─ README.md
 ```
 
 첫 버전에서는 서버, 데이터베이스, 로그인, 빌드 도구, 패키지 매니저를 추가하지 않는다.
@@ -87,11 +95,11 @@ whiteboard_ppt/
 - 화면이 좁아 줄바꿈이 필요하면 성분 묶음 내부가 아니라 성분 묶음 사이에서만 줄바꿈한다.
 - 종요소 위치를 가리키는 동그라미 점은 문장 맨 앞, 단어 사이, 문장 맨 뒤에만 놓고 주요소 단어와 겹치지 않는다.
 - 여러 종요소의 점은 서로 겹치지 않고 문장 순서대로 배치한다.
-- 가장자리 점 여백은 공개된 종요소 수가 아니라 문장의 전체 종요소를 기준으로 잡아, 종요소를 1~2개만 공개해도 첫/마지막 단어와 겹치지 않게 한다.
-- 긴 종요소 박스가 화면 안으로 들어오도록 가운데로 보정되어도, 연결선을 박스 밖까지 뻗어 점이 실제 슬롯 위치를 정확히 가리키게 한다.
+- 가장자리 점 여백은 공개된 종요소 수가 아니라 문장의 전체 종요소를 기준으로 잡아, 종요소를 1~2개만 공개해도 첫/마지막 단어와 겹치지 않게 한다. 주요소의 단어 수가 짧아 글자 크기가 큰 경우에는 가장자리 점의 위치를 폰트 크기에 비례하여 더 바깥으로 밀어내어 넓게 여백을 확보한다.
+- 종요소 앵커(점/화살표)가 항상 박스의 가로 폭 영역(0%~100%) 내에 위치하도록 박스 Clamping 범위를 제한하고, 박스 상단에서 앵커까지 완벽하게 수직인 정렬선으로 매끄럽게 연결한다.
 - 종요소 행 사이 세로 간격은 촘촘하게 유지한다.
 - 형용사어는 발표 화면에서 수식 대상에 밑줄과 화살표로 수식 관계를 표시한다.
-- 형용사어 화살표는 수식 대상(주요소 포함)의 밑줄 정가운데를 정확히 가리켜야 한다.
+- 형용사어 화살표는 수식 대상(주요소 포함)을 나타내는 괄호(bracket)의 밑변 정가운데를 정확히 가리켜야 한다.
 - 형용사어는 자기 자신의 단어를 수식 대상으로 삼지 않는다.
 
 ## 교사 보정 기능
@@ -254,10 +262,11 @@ const component = {
 - Plan 문서와 Design 문서를 기준으로 구현한다.
 - 소스 파일을 수정하기 전에는 가능하면 bkit pre-write 체크를 수행한다.
 - 구현 후에는 설계 문서와 실제 코드의 차이를 분석한다.
-- 현재 기능 구현 후 다음 단계는 Check, 즉 gap analysis다.
+- `sentence-presentation-app` 기능은 Plan → Design → Do → Check → Report 단계를 모두 마쳤다.
+- 추가 변경이 필요하면 새 PDCA 반복을 시작하거나, 현재 사이클을 archive로 마감한다.
 
 권장 다음 명령:
 
 ```text
-$pdca do sentence-presentation-app
+$pdca archive sentence-presentation-app
 ```

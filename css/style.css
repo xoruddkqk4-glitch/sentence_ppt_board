@@ -862,7 +862,7 @@ input:focus {
 .minor-row .present-chip::before {
   content: "";
   position: absolute;
-  top: calc(-1 * var(--connector-length, 42px) - 9px);
+  top: calc(-1 * var(--connector-length, 42px) - 13px);
   left: var(--connector-x, 50%);
   width: 18px;
   height: 18px;
@@ -873,7 +873,7 @@ input:focus {
 }
 
 .minor-row .present-chip.modifier-chip::before {
-  top: calc(-1 * var(--connector-length, 42px) + 6px);
+  top: calc(-1 * var(--connector-length, 42px) - 4px);
   width: 0;
   height: 0;
   border-right: 10px solid transparent;
@@ -881,6 +881,7 @@ input:focus {
   border-left: 10px solid transparent;
   border-radius: 0;
   background: transparent;
+  transform: translateX(-50%);
 }
 
 .modifier-target-bracket {
@@ -898,7 +899,7 @@ input:focus {
 .minor-row .present-chip::after {
   content: "";
   position: absolute;
-  top: calc(-1 * var(--connector-length, 42px));
+  top: calc(-1 * var(--connector-length, 42px) - 4px);
   left: var(--connector-x, 50%);
   width: 4px;
   height: var(--connector-length, 42px);
