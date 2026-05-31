@@ -47,6 +47,1093 @@ const SAMPLE_TEXT = "The young students read the story carefully. Their teacher 
 const EXPORT_MARKER = "WHITEBOARD_PPT_ANALYSIS_TXT_V1";
 const EXPORT_JSON_START = "-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----";
 const EXPORT_JSON_END = "-----END WHITEBOARD_PPT_ANALYSIS_JSON-----";
+const QUICK_TXT_DATA = {
+  "p30.txt": `WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-05-30T15:27:29.029Z
+총 문장 수: 3
+
+[문장 및 성분 인덱스]
+
+[문장 1] In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon.
+  단어 수: 25
+  - 성분 1: id=s1-c1-0, lane=minor, role=adverb, order=1, wordIndex0=0-2, wordIndex1=1-2, text="In 1835,"
+  - 성분 2: id=s1-c1-0, lane=major, role=subject, order=1, wordIndex0=2-7, wordIndex1=3-7, text="the New York Sun newspaper"
+  - 성분 3: id=s1-c1-0, lane=major, role=verb, order=2, wordIndex0=7-8, wordIndex1=8-8, text="caused"
+  - 성분 4: id=s1-c1-0, lane=major, role=object, order=3, wordIndex0=8-11, wordIndex1=9-11, text="a big stir"
+  - 성분 5: id=s1-c1-0, lane=minor, role=adverb, order=2, wordIndex0=11-16, wordIndex1=12-16, text="with a series of articles"
+  - 성분 6: id=s1-c1-0, lane=minor, role=adjective, order=3, wordIndex0=16-25, wordIndex1=17-25, text="claiming that life had been discovered on the moon."
+
+[문장 2] The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings.
+  단어 수: 26
+  - 성분 1: id=s2-c1-0, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The articles"
+  - 성분 2: id=s2-c1-0, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="described"
+  - 성분 3: id=s2-c1-0, lane=minor, role=adverb, order=1, wordIndex0=3-6, wordIndex1=4-6, text="in great detail"
+  - 성분 4: id=s2-c1-0, lane=major, role=object, order=3, wordIndex0=6-19, wordIndex1=7-19, text="the moon's beautiful landscapes as well as the existence of strange, magical creatures"
+  - 성분 5: id=s2-c2-0, lane=minor, role=adjective, order=2, wordIndex0=19-26, wordIndex1=20-26, text="that looked like bat-like humanoids with wings."
+
+[문장 3] These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel.
+  단어 수: 29
+  - 성분 1: id=s3-c1-0, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="These discoveries"
+  - 성분 2: id=s3-c2-0-s3-c3-0-u64, lane=major, role=verb, order=2, wordIndex0=2-5, wordIndex1=3-5, text="were made"
+  - 성분 3: id=s3-c4-0, lane=minor, role=adverb, order=1, wordIndex0=3-4, wordIndex1=4-4, text="supposedly"
+  - 성분 4: id=s3-c5-1-s3-c6-2-u65-u66, lane=minor, role=adverb, order=2, wordIndex0=5-15, wordIndex1=6-15, text="by Dr. Andrew Grant, a character created for the hoax,"
+  - 성분 5: id=s3-c5-1-s3-c6-2-u65-u67-s3-c7-3-s3-c8-4-u68-s3-c9-5-u69-s3-c10-6-u70-u71, lane=minor, role=adjective, order=3, wordIndex0=15-29, wordIndex1=16-29, text="who was falsely said to be working with the real astronomer Sir John Herschel."
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 1,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-05-30T15:27:29.029Z",
+  "passageText": "In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon. The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings. These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel.",
+  "currentSentenceIndex": 2,
+  "componentSerial": 71,
+  "settings": {
+    "theme": "light",
+    "align": "center"
+  },
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon.",
+      "wordCount": 25,
+      "components": [
+        {
+          "id": "s1-c1-0",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "In 1835,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "In",
+            "1835,"
+          ]
+        },
+        {
+          "id": "s1-c1-0",
+          "sentenceIndex": 1,
+          "componentIndex": 2,
+          "text": "the New York Sun newspaper",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 7,
+          "words": [
+            "the",
+            "New",
+            "York",
+            "Sun",
+            "newspaper"
+          ]
+        },
+        {
+          "id": "s1-c1-0",
+          "sentenceIndex": 1,
+          "componentIndex": 3,
+          "text": "caused",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 7,
+          "endIndex": 8,
+          "words": [
+            "caused"
+          ]
+        },
+        {
+          "id": "s1-c1-0",
+          "sentenceIndex": 1,
+          "componentIndex": 4,
+          "text": "a big stir",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 8,
+          "endIndex": 11,
+          "words": [
+            "a",
+            "big",
+            "stir"
+          ]
+        },
+        {
+          "id": "s1-c1-0",
+          "sentenceIndex": 1,
+          "componentIndex": 5,
+          "text": "with a series of articles",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 11,
+          "endIndex": 16,
+          "words": [
+            "with",
+            "a",
+            "add",
+            "series",
+            "of",
+            "articles"
+          ]
+        },
+        {
+          "id": "s1-c1-0",
+          "sentenceIndex": 1,
+          "componentIndex": 6,
+          "text": "claiming that life had been discovered on the moon.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 16,
+          "endIndex": 25,
+          "modifierTargetStart": 12,
+          "modifierTargetEnd": 16,
+          "modifierTargetIndexes": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "words": [
+            "claiming",
+            "that",
+            "life",
+            "had",
+            "been",
+            "discovered",
+            "on",
+            "the",
+            "moon."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings.",
+      "wordCount": 26,
+      "components": [
+        {
+          "id": "s2-c1-0",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "The articles",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "articles"
+          ]
+        },
+        {
+          "id": "s2-c1-0",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "described",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "described"
+          ]
+        },
+        {
+          "id": "s2-c1-0",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "in great detail",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 6,
+          "words": [
+            "in",
+            "great",
+            "detail"
+          ]
+        },
+        {
+          "id": "s2-c1-0",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "the moon's beautiful landscapes as well as the existence of strange, magical creatures",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 19,
+          "words": [
+            "the",
+            "moon's",
+            "beautiful",
+            "landscapes",
+            "as",
+            "well",
+            "as",
+            "the",
+            "existence",
+            "of",
+            "strange,",
+            "magical",
+            "creatures"
+          ]
+        },
+        {
+          "id": "s2-c2-0",
+          "sentenceIndex": 2,
+          "componentIndex": 5,
+          "text": "that looked like bat-like humanoids with wings.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 19,
+          "endIndex": 26,
+          "modifierTargetStart": 16,
+          "modifierTargetEnd": 19,
+          "modifierTargetIndexes": [
+            16,
+            17,
+            18
+          ],
+          "words": [
+            "that",
+            "looked",
+            "like",
+            "bat-like",
+            "humanoids",
+            "with",
+            "wings."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel.",
+      "wordCount": 29,
+      "components": [
+        {
+          "id": "s3-c1-0",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "These discoveries",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "These",
+            "discoveries"
+          ]
+        },
+        {
+          "id": "s3-c2-0-s3-c3-0-u64",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "were made",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 5,
+          "words": [
+            "were",
+            "made"
+          ]
+        },
+        {
+          "id": "s3-c4-0",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "supposedly",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "supposedly"
+          ]
+        },
+        {
+          "id": "s3-c5-1-s3-c6-2-u65-u66",
+          "sentenceIndex": 3,
+          "componentIndex": 4,
+          "text": "by Dr. Andrew Grant, a character created for the hoax,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 15,
+          "words": [
+            "by",
+            "Dr.",
+            "Andrew",
+            "Grant,",
+            "a",
+            "character",
+            "created",
+            "for",
+            "the",
+            "hoax,"
+          ]
+        },
+        {
+          "id": "s3-c5-1-s3-c6-2-u65-u67-s3-c7-3-s3-c8-4-u68-s3-c9-5-u69-s3-c10-6-u70-u71",
+          "sentenceIndex": 3,
+          "componentIndex": 5,
+          "text": "who was falsely said to be working with the real astronomer Sir John Herschel.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 15,
+          "endIndex": 29,
+          "modifierTargetStart": 6,
+          "modifierTargetEnd": 15,
+          "modifierTargetIndexes": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "words": [
+            "who",
+            "was",
+            "falsely",
+            "said",
+            "to",
+            "be",
+            "working",
+            "with",
+            "the",
+            "real",
+            "astronomer",
+            "Sir",
+            "John",
+            "Herschel."
+          ]
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----`,
+  "p31.txt": `WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-05-30T17:46:20.111Z
+총 문장 수: 3
+
+[문장 및 성분 인덱스]
+
+[문장 1] In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon.
+  단어 수: 25
+  - 성분 1: id=s1-c1, lane=minor, role=adverb, order=1, wordIndex0=2-4, wordIndex1=3-4, text="In 1835,"
+  - 성분 2: id=s1-c2, lane=major, role=subject, order=1, wordIndex0=2-7, wordIndex1=3-7, text="the New York Sun newspaper"
+  - 성분 3: id=s1-c3, lane=major, role=verb, order=2, wordIndex0=7-8, wordIndex1=8-8, text="caused"
+  - 성분 4: id=s1-c4, lane=major, role=object, order=3, wordIndex0=8-11, wordIndex1=9-11, text="a big stir"
+  - 성분 5: id=s1-c5, lane=minor, role=adverb, order=2, wordIndex0=11-16, wordIndex1=12-16, text="with a series of articles"
+  - 성분 6: id=s1-c6, lane=minor, role=adjective, order=3, wordIndex0=16-25, wordIndex1=17-25, text="claiming that life had been discovered on the moon."
+
+[문장 2] The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings.
+  단어 수: 26
+  - 성분 1: id=s2-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The articles"
+  - 성분 2: id=s2-c2, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="described"
+  - 성분 3: id=s2-c3, lane=minor, role=adverb, order=1, wordIndex0=3-6, wordIndex1=4-6, text="in great detail"
+  - 성분 4: id=s2-c4, lane=major, role=object, order=3, wordIndex0=6-19, wordIndex1=7-19, text="the moon's beautiful landscapes as well as the existence of strange, magical creatures"
+  - 성분 5: id=s2-c5, lane=minor, role=adjective, order=2, wordIndex0=19-26, wordIndex1=20-26, text="that looked like bat-like humanoids with wings."
+
+[문장 3] These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel.
+  단어 수: 29
+  - 성분 1: id=s3-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="These discoveries"
+  - 성분 2: id=s3-c2, lane=major, role=verb, order=2, wordIndex0=2-5, wordIndex1=3-5, text="were made"
+  - 성분 3: id=s3-c3, lane=minor, role=adverb, order=1, wordIndex0=3-4, wordIndex1=4-4, text="supposedly"
+  - 성분 4: id=s3-c4, lane=minor, role=adverb, order=2, wordIndex0=5-15, wordIndex1=6-15, text="by Dr. Andrew Grant, a character created for the hoax,"
+  - 성분 5: id=s3-c5, lane=minor, role=adjective, order=3, wordIndex0=15-29, wordIndex1=16-29, text="who was falsely said to be working with the real astronomer Sir John Herschel."
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 1,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-05-30T17:46:20.111Z",
+  "passageText": "In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon. The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings. These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel.",
+  "currentSentenceIndex": 1,
+  "componentSerial": 36,
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon.",
+      "wordCount": 25,
+      "components": [
+        {
+          "id": "s1-c1",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "In 1835,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 4,
+          "pinnedAnchor": true,
+          "words": [
+            "In",
+            "1835,"
+          ]
+        },
+        {
+          "id": "s1-c2",
+          "sentenceIndex": 1,
+          "componentIndex": 2,
+          "text": "the New York Sun newspaper",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 7,
+          "words": [
+            "the",
+            "New",
+            "York",
+            "Sun",
+            "newspaper"
+          ]
+        },
+        {
+          "id": "s1-c3",
+          "sentenceIndex": 1,
+          "componentIndex": 3,
+          "text": "caused",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 7,
+          "endIndex": 8,
+          "words": [
+            "caused"
+          ]
+        },
+        {
+          "id": "s1-c4",
+          "sentenceIndex": 1,
+          "componentIndex": 4,
+          "text": "a big stir",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 8,
+          "endIndex": 11,
+          "words": [
+            "a",
+            "big",
+            "stir"
+          ]
+        },
+        {
+          "id": "s1-c5",
+          "sentenceIndex": 1,
+          "componentIndex": 5,
+          "text": "with a series of articles",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 11,
+          "endIndex": 16,
+          "pinnedAnchor": true,
+          "words": [
+            "with",
+            "a",
+            "series",
+            "of",
+            "articles"
+          ]
+        },
+        {
+          "id": "s1-c6",
+          "sentenceIndex": 1,
+          "componentIndex": 6,
+          "text": "claiming that life had been discovered on the moon.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 16,
+          "endIndex": 25,
+          "modifierTargetStart": 12,
+          "modifierTargetEnd": 16,
+          "modifierTargetIndexes": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "words": [
+            "claiming",
+            "that",
+            "life",
+            "had",
+            "been",
+            "discovered",
+            "on",
+            "the",
+            "moon."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings.",
+      "wordCount": 26,
+      "components": [
+        {
+          "id": "s2-c1",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "The articles",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "articles"
+          ]
+        },
+        {
+          "id": "s2-c2",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "described",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "described"
+          ]
+        },
+        {
+          "id": "s2-c3",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "in great detail",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 6,
+          "words": [
+            "in",
+            "great",
+            "detail"
+          ]
+        },
+        {
+          "id": "s2-c4",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "the moon's beautiful landscapes as well as the existence of strange, magical creatures",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 19,
+          "words": [
+            "the",
+            "moon's",
+            "beautiful",
+            "landscapes",
+            "as",
+            "well",
+            "as",
+            "the",
+            "existence",
+            "of",
+            "strange,",
+            "magical",
+            "creatures"
+          ]
+        },
+        {
+          "id": "s2-c5",
+          "sentenceIndex": 2,
+          "componentIndex": 5,
+          "text": "that looked like bat-like humanoids with wings.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 19,
+          "endIndex": 26,
+          "modifierTargetStart": 16,
+          "modifierTargetEnd": 26,
+          "modifierTargetIndexes": [
+            16,
+            17,
+            18,
+            24,
+            25
+          ],
+          "words": [
+            "that",
+            "looked",
+            "like",
+            "bat-like",
+            "humanoids",
+            "with",
+            "wings."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel.",
+      "wordCount": 29,
+      "components": [
+        {
+          "id": "s3-c1",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "These discoveries",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "These",
+            "discoveries"
+          ]
+        },
+        {
+          "id": "s3-c2",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "were made",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 5,
+          "words": [
+            "were",
+            "made"
+          ]
+        },
+        {
+          "id": "s3-c3",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "supposedly",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "supposedly"
+          ]
+        },
+        {
+          "id": "s3-c4",
+          "sentenceIndex": 3,
+          "componentIndex": 4,
+          "text": "by Dr. Andrew Grant, a character created for the hoax,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 15,
+          "words": [
+            "by",
+            "Dr.",
+            "Andrew",
+            "Grant,",
+            "a",
+            "character",
+            "created",
+            "for",
+            "the",
+            "hoax,"
+          ]
+        },
+        {
+          "id": "s3-c5",
+          "sentenceIndex": 3,
+          "componentIndex": 5,
+          "text": "who was falsely said to be working with the real astronomer Sir John Herschel.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 15,
+          "endIndex": 29,
+          "modifierTargetStart": 6,
+          "modifierTargetEnd": 15,
+          "modifierTargetIndexes": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "words": [
+            "who",
+            "was",
+            "falsely",
+            "said",
+            "to",
+            "be",
+            "working",
+            "with",
+            "the",
+            "real",
+            "astronomer",
+            "Sir",
+            "John",
+            "Herschel."
+          ]
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----`,
+  "p32.txt": `WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-05-30T18:18:20.104Z
+총 문장 수: 3
+
+[문장 및 성분 인덱스]
+
+[문장 1] The story claimed that these amazing discoveries were possible due to a powerful new telescope in South Africa, where Herschel was actually doing genuine research at the time.
+  단어 수: 28
+  - 성분 1: id=s1-c1-0-u3-u5-s1-c2-0-u6-s1-c3-0-u7-s1-c4-0-u8-s1-c5-1-u9-s1-c6-2-u10-s1-c7-3-u11-s1-c8-4-u12-u16, lane=major, role=object, order=3, wordIndex0=3-9, wordIndex1=4-9, text="that these amazing discoveries were possible"
+  - 성분 2: id=s1-c1-0-u3-u5-s1-c2-0-u6-s1-c3-0-u7-s1-c4-0-u8-s1-c5-1-u9-s1-c6-2-u10-s1-c7-3-u11-s1-c8-4-u12-u17-u18, lane=minor, role=adverb, order=1, wordIndex0=9-18, wordIndex1=10-18, text="due to a powerful new telescope in South Africa,"
+  - 성분 3: id=s1-c1-0-u3-u5-s1-c2-0-u6-s1-c3-0-u7-s1-c4-0-u8-s1-c5-1-u9-s1-c6-2-u10-s1-c7-3-u11-s1-c8-4-u12-u17-u19, lane=minor, role=adjective, order=2, wordIndex0=18-28, wordIndex1=19-28, text="where Herschel was actually doing genuine research at the time."
+  - 성분 4: id=s1-c1-0-u3-u4-s1-c1-0-u2-u13-u14, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The story"
+  - 성분 5: id=s1-c1-0-u3-u4-s1-c1-0-u2-u13-u15, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="claimed"
+
+[문장 2] However, the story was completely made up by New York Sun reporter Richard Adams Locke.
+  단어 수: 15
+  - 성분 1: id=s2-c1-0-u20, lane=minor, role=adverb, order=1, wordIndex0=1-2, wordIndex1=2-2, text="However,"
+  - 성분 2: id=s2-c1-0-u21, lane=major, role=subject, order=1, wordIndex0=1-3, wordIndex1=2-3, text="the story"
+  - 성분 3: id=s2-c2-0-s2-c3-0-u22, lane=major, role=verb, order=2, wordIndex0=3-7, wordIndex1=4-7, text="was made up"
+  - 성분 4: id=s2-c4-0, lane=minor, role=adverb, order=2, wordIndex0=4-5, wordIndex1=5-5, text="completely"
+  - 성분 5: id=s2-c5-1, lane=minor, role=adverb, order=3, wordIndex0=6-14, wordIndex1=7-14, text="by New York Sun reporter Richard Adams Locke."
+
+[문장 3] Locke created the hoax to satirize how fascinated people were with the idea of life on other planets and how easily they believed wild, unproven claims.
+  단어 수: 26
+  - 성분 1: id=s3-c1-0-u23, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Locke"
+  - 성분 2: id=s3-c1-0-u24-u25, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="created"
+  - 성분 3: id=s3-c1-0-u24-u26-u27, lane=major, role=object, order=3, wordIndex0=2-4, wordIndex1=3-4, text="the hoax"
+  - 성분 4: id=s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u45-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u44-u47-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u46-u48-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u53-u54-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u52-u55-u56-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u45-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u44-u47-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u46-u48-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u53-u54-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u52-u55-u57-u58-u59, lane=minor, role=adverb, order=1, wordIndex0=4-18, wordIndex1=5-18, text="to satirize how fascinated people were with the idea of life on other planets"
+  - 성분 5: id=s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u45-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u44-u47-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u44-u47-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u46-u48-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u53-u54-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u52-u55-u56-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u45-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u44-u47-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u46-u48-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u53-u54-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u52-u55-u57-u58-u60, lane=minor, role=adverb, order=2, wordIndex0=18-26, wordIndex1=19-26, text="and how easily they believed wild, unproven claims."
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 1,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-05-30T18:18:20.104Z",
+  "passageText": "The story claimed that these amazing discoveries were possible due to a powerful new telescope in South Africa, where Herschel was actually doing genuine research at the time. However, the story was completely made up by New York Sun reporter Richard Adams Locke. Locke created the hoax to satirize how fascinated people were with the idea of life on other planets and how easily they believed wild, unproven claims.",
+  "currentSentenceIndex": 2,
+  "componentSerial": 60,
+  "settings": {
+    "theme": "light",
+    "align": "center"
+  },
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "The story claimed that these amazing discoveries were possible due to a powerful new telescope in South Africa, where Herschel was actually doing genuine research at the time.",
+      "wordCount": 28,
+      "components": [
+        {
+          "id": "s1-c1-0-u3-u5-s1-c2-0-u6-s1-c3-0-u7-s1-c4-0-u8-s1-c5-1-u9-s1-c6-2-u10-s1-c7-3-u11-s1-c8-4-u12-u16",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "that these amazing discoveries were possible",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 9,
+          "words": [
+            "that",
+            "these",
+            "amazing",
+            "discoveries",
+            "were",
+            "possible"
+          ]
+        },
+        {
+          "id": "s1-c1-0-u3-u5-s1-c2-0-u6-s1-c3-0-u7-s1-c4-0-u8-s1-c5-1-u9-s1-c6-2-u10-s1-c7-3-u11-s1-c8-4-u12-u17-u18",
+          "sentenceIndex": 1,
+          "componentIndex": 2,
+          "text": "due to a powerful new telescope in South Africa,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 9,
+          "endIndex": 18,
+          "words": [
+            "due",
+            "to",
+            "a",
+            "powerful",
+            "new",
+            "telescope",
+            "in",
+            "South",
+            "Africa,"
+          ]
+        },
+        {
+          "id": "s1-c1-0-u3-u5-s1-c2-0-u6-s1-c3-0-u7-s1-c4-0-u8-s1-c5-1-u9-s1-c6-2-u10-s1-c7-3-u11-s1-c8-4-u12-u17-u19",
+          "sentenceIndex": 1,
+          "componentIndex": 3,
+          "text": "where Herschel was actually doing genuine research at the time.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 18,
+          "endIndex": 28,
+          "modifierTargetStart": 11,
+          "modifierTargetEnd": 18,
+          "modifierTargetIndexes": [
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "words": [
+            "where",
+            "Herschel",
+            "was",
+            "actually",
+            "doing",
+            "genuine",
+            "research",
+            "at",
+            "the",
+            "time."
+          ]
+        },
+        {
+          "id": "s1-c1-0-u3-u4-s1-c1-0-u2-u13-u14",
+          "sentenceIndex": 1,
+          "componentIndex": 4,
+          "text": "The story",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "story"
+          ]
+        },
+        {
+          "id": "s1-c1-0-u3-u4-s1-c1-0-u2-u13-u15",
+          "sentenceIndex": 1,
+          "componentIndex": 5,
+          "text": "claimed",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "claimed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "However, the story was completely made up by New York Sun reporter Richard Adams Locke.",
+      "wordCount": 15,
+      "components": [
+        {
+          "id": "s2-c1-0-u20",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "However,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 1,
+          "endIndex": 2,
+          "pinnedAnchor": true,
+          "words": [
+            "However,"
+          ]
+        },
+        {
+          "id": "s2-c1-0-u21",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "the story",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 1,
+          "endIndex": 3,
+          "words": [
+            "the",
+            "story"
+          ]
+        },
+        {
+          "id": "s2-c2-0-s2-c3-0-u22",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "was made up",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 3,
+          "endIndex": 7,
+          "words": [
+            "was",
+            "made",
+            "up"
+          ]
+        },
+        {
+          "id": "s2-c4-0",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "completely",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 4,
+          "endIndex": 5,
+          "words": [
+            "completely"
+          ]
+        },
+        {
+          "id": "s2-c5-1",
+          "sentenceIndex": 2,
+          "componentIndex": 5,
+          "text": "by New York Sun reporter Richard Adams Locke.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 14,
+          "pinnedAnchor": true,
+          "words": [
+            "by",
+            "New",
+            "York",
+            "Sun",
+            "reporter",
+            "Richard",
+            "Adams",
+            "Locke."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "Locke created the hoax to satirize how fascinated people were with the idea of life on other planets and how easily they believed wild, unproven claims.",
+      "wordCount": 26,
+      "components": [
+        {
+          "id": "s3-c1-0-u23",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "Locke",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Locke"
+          ]
+        },
+        {
+          "id": "s3-c1-0-u24-u25",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "created",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "created"
+          ]
+        },
+        {
+          "id": "s3-c1-0-u24-u26-u27",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "the hoax",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 4,
+          "words": [
+            "the",
+            "hoax"
+          ]
+        },
+        {
+          "id": "s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u45-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u44-u47-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u46-u48-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u53-u54-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u52-u55-u56-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u45-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u44-u47-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u46-u48-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u53-u54-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u52-u55-u57-u58-u59, lane=minor, role=adverb, order=1, wordIndex0=4-18, wordIndex1=5-18, text="to satirize how fascinated people were with the idea of life on other planets"
+        },
+        {
+          "id": "s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u45-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u44-u47-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u35-s3-c5-1-u42-u43-u46-u48-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u53-u54-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u50-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u40-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u31-s3-c4-0-u33-s3-c6-2-u34-u36-s3-c1-0-u24-u26-u28-s3-c2-0-u29-s3-c3-0-u30-u32-u37-s3-c7-3-u38-u39-u41-u49-u51-u52-u55-u57-u58-u60, lane=minor, role=adverb, order=2, wordIndex0=18-26, wordIndex1=19-26, text="and how easily they believed wild, unproven claims."
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----`
+};
+
+const QUICK_TXT_FILES = Object.keys(QUICK_TXT_DATA);
 
 const state = {
   passageText: "",
@@ -62,7 +1149,10 @@ const state = {
   minorRevealCount: 0,
   minorSlots: [],
   lastModifierClickIndex: null,
-  lastModifierComponentId: null
+  lastModifierComponentId: null,
+  quickFilesMap: new Map(),
+  hasFolderSelected: false,
+  currentFileName: null
 };
 
 const elements = {
@@ -80,6 +1170,9 @@ const elements = {
   exportTxtButton: document.getElementById("exportTxtButton"),
   editImportButton: document.getElementById("editImportButton"),
   analysisFileInput: document.getElementById("analysisFileInput"),
+  txtGrid: document.getElementById("txtGrid"),
+  selectFolderButton: document.getElementById("selectFolderButton"),
+  folderInput: document.getElementById("folderInput"),
   themeSelect: document.getElementById("themeSelect"),
   editProgress: document.getElementById("editProgress"),
   presentProgress: document.getElementById("presentProgress"),
@@ -1885,7 +2978,23 @@ async function exportAnalysisTxt() {
 
   const content = buildAnalysisText();
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-  const fileName = getAnalysisFileName();
+  
+  let fileName = state.currentFileName;
+  if (!fileName) {
+    fileName = getAnalysisFileName();
+    state.currentFileName = fileName;
+  }
+
+  // 최신 수정본을 로컬 스토리지 캐시 및 빠른 지문 불러오기 맵과 캐시에 즉시 동기화
+  localStorage.setItem(`sentence_board_file_cache_${fileName}`, content);
+  const updatedFile = new File([content], fileName, { type: "text/plain" });
+  state.quickFilesMap.set(fileName, updatedFile);
+  QUICK_TXT_DATA[fileName] = content;
+
+  if (!QUICK_TXT_FILES.includes(fileName)) {
+    QUICK_TXT_FILES.push(fileName);
+  }
+  renderTxtGrid();
 
   if (window.showSaveFilePicker) {
     try {
@@ -2009,29 +3118,106 @@ function handleAnalysisFileSelected(event) {
     return;
   }
 
+  // 최신 가져온 파일명 기록 및 빠른 지문 맵에 등록
+  state.currentFileName = file.name;
+  state.quickFilesMap.set(file.name, file);
+  if (!QUICK_TXT_FILES.includes(file.name)) {
+    QUICK_TXT_FILES.push(file.name);
+  }
+  renderTxtGrid();
+
   const reader = new FileReader();
   reader.onload = () => {
     try {
-      importAnalysisTxt(String(reader.result || ""));
+      const resultText = String(reader.result || "");
+      // 기존 TXT 불러오기로 가져온 최신 데이터를 즉시 로컬 스토리지 캐시에 동기화
+      localStorage.setItem(`sentence_board_file_cache_${file.name}`, resultText);
+      importAnalysisTxt(resultText);
     } catch (error) {
-      alert(error.message || "TXT 파일을 불러오지 못했습니다.");
+      alert(`지문을 불러오지 못했습니다: ${error.message}`);
     }
   };
-  reader.onerror = () => alert("TXT 파일을 읽는 중 오류가 발생했습니다.");
+  reader.onerror = () => alert("파일을 읽는 중 오류가 발생했습니다.");
   reader.readAsText(file, "utf-8");
 }
 
 function importAnalysisTxt(content) {
-  const payload = parseAnalysisTxt(content);
-  const loaded = normalizeImportedAnalysis(payload);
-  state.passageText = loaded.passageText;
-  state.sentences = loaded.sentences;
-  state.currentSentenceIndex = loaded.currentSentenceIndex;
-  state.minorRevealCount = 0;
-  state.componentSerial = loaded.componentSerial;
-  state.settings = { ...state.settings, ...loaded.settings };
-  elements.passageInput.value = state.passageText;
-  elements.inputMessage.textContent = "저장된 분석 결과를 불러왔습니다.";
+  const trimmed = content.trim();
+  const isAnalysisFile = trimmed.startsWith(EXPORT_MARKER) || trimmed.includes(EXPORT_MARKER);
+
+  if (isAnalysisFile) {
+    try {
+      const payload = parseAnalysisTxt(trimmed);
+      const loaded = normalizeImportedAnalysis(payload);
+      state.passageText = loaded.passageText;
+      state.sentences = loaded.sentences;
+      state.currentSentenceIndex = loaded.currentSentenceIndex;
+      state.minorRevealCount = 0;
+      state.componentSerial = loaded.componentSerial;
+      state.settings = { ...state.settings, ...loaded.settings };
+      elements.passageInput.value = state.passageText;
+      elements.inputMessage.textContent = "저장된 분석 결과를 불러왔습니다.";
+      setMode("edit");
+    } catch (error) {
+      console.warn("분석 JSON 파싱 실패, 순수 지문 본문 추출 폴백 시도:", error);
+      try {
+        const plainText = extractPassageTextFromDamagedTxt(trimmed);
+        loadAsPlainPassage(plainText);
+        elements.inputMessage.style.color = "var(--color-primary)";
+        elements.inputMessage.textContent = "⚠️ 분석 파일 복원에 실패하여 지문 텍스트만 추출해 불러왔습니다.";
+      } catch (fallbackError) {
+        throw new Error(`분석 파일 복원 및 지문 추출에 실패했습니다: ${fallbackError.message}`);
+      }
+    }
+  } else {
+    loadAsPlainPassage(trimmed);
+  }
+}
+
+function extractPassageTextFromDamagedTxt(content) {
+  // 1. JSON이 존재하지만 파싱 에러(SyntaxError)가 난 경우를 대비해 passageText 값 추출 시도
+  const start = content.indexOf(EXPORT_JSON_START);
+  const end = content.indexOf(EXPORT_JSON_END);
+  if (start !== -1 && end > start) {
+    const jsonText = content.slice(start + EXPORT_JSON_START.length, end).trim();
+    const match = jsonText.match(/"passageText"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    if (match && match[1]) {
+      try {
+        return JSON.parse(`"${match[1]}"`);
+      } catch (e) {
+        return match[1];
+      }
+    }
+  }
+
+  // 2. JSON에서 추출이 안 되는 경우, [문장 N] 라인들에서 문장 텍스트 추출 시도
+  const lines = content.split(/\r?\n/);
+  const sentences = [];
+  lines.forEach((line) => {
+    const trimmedLine = line.trim();
+    const match = trimmedLine.match(/^\[문장\s*\d+\]\s*(.+)$/i);
+    if (match && match[1]) {
+      sentences.push(match[1].trim());
+    }
+  });
+
+  if (sentences.length > 0) {
+    return sentences.join(" ");
+  }
+
+  throw new Error("분석 파일 내에서 영어 지문을 추출할 수 없습니다.");
+}
+
+function loadAsPlainPassage(content) {
+  if (!content) {
+    throw new Error("빈 텍스트 파일입니다.");
+  }
+  elements.passageInput.value = content;
+  const count = preparePresentation();
+  if (count === 0) {
+    throw new Error("분석할 영어 문장을 찾지 못했습니다.");
+  }
+  elements.inputMessage.textContent = "";
   setMode("edit");
 }
 
@@ -2149,9 +3335,158 @@ function updateNavButtons() {
   });
   elements.presentNextButton.disabled = isLastPresentationStep;
   elements.presentFirstSentenceButton.disabled = isFirst;
-  elements.presentLastSentenceButton.textContent = isLast ? "이전 단계" : "마지막 문장";
-  // "마지막 문장"(마지막 문장으로 이동) / "이전 단계"(2단계 수정 화면으로 이동) 모두 항상 유효한 동작이므로 비활성화하지 않는다.
+  elements.presentLastSentenceButton.textContent = isLast ? "2단계-문장분석" : "마지막 문장";
+  // "마지막 문장"(마지막 문장으로 이동) / "2단계-문장분석"(2단계 수정 화면으로 이동) 모두 항상 유효한 동작이므로 비활성화하지 않는다.
   elements.presentLastSentenceButton.disabled = state.sentences.length === 0;
+}
+
+function renderTxtGrid() {
+  if (!elements.txtGrid) return;
+  elements.txtGrid.innerHTML = "";
+
+  const files = state.hasFolderSelected ? Array.from(state.quickFilesMap.keys()) : QUICK_TXT_FILES;
+  files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+  // 5x5 = 25개의 버튼 생성
+  for (let i = 0; i < 25; i++) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "txt-btn";
+
+    if (i < files.length) {
+      const fileName = files[i];
+      const displayName = fileName.replace(/\.txt$/, "");
+      btn.textContent = displayName;
+      btn.setAttribute("aria-label", `${displayName} 지문 불러오기`);
+      btn.addEventListener("click", () => {
+        if (state.hasFolderSelected) {
+          loadQuickTxtFromUploadedFile(fileName);
+        } else {
+          loadQuickTxt(fileName);
+        }
+      });
+    } else {
+      btn.textContent = "-";
+      btn.disabled = true;
+    }
+
+    elements.txtGrid.appendChild(btn);
+  }
+}
+
+function loadQuickTxt(fileName) {
+  try {
+    state.currentFileName = fileName;
+    
+    // 로컬 스토리지 캐시 우선 조회
+    const cachedContent = localStorage.getItem(`sentence_board_file_cache_${fileName}`);
+    const text = cachedContent || QUICK_TXT_DATA[fileName];
+    if (!text) {
+      throw new Error("정의되지 않은 지문 파일입니다.");
+    }
+    
+    importAnalysisTxt(text);
+
+    elements.inputMessage.style.color = "var(--color-primary)";
+    elements.inputMessage.textContent = `✅ [내장] ${fileName.replace(/\.txt$/, "")} 지문을 성공적으로 불러왔습니다.`;
+    setTimeout(() => {
+      if (elements.inputMessage.textContent.includes("성공적으로")) {
+        elements.inputMessage.textContent = "";
+        elements.inputMessage.style.color = "";
+      }
+    }, 3000);
+  } catch (error) {
+    console.error(error);
+    elements.inputMessage.style.color = "var(--color-warning)";
+    elements.inputMessage.textContent = `❌ 지문을 불러오지 못했습니다: ${error.message}`;
+  }
+}
+
+function loadQuickTxtFromUploadedFile(fileName) {
+  try {
+    state.currentFileName = fileName;
+    
+    // 로컬 스토리지 캐시 우선 조회
+    const cachedContent = localStorage.getItem(`sentence_board_file_cache_${fileName}`);
+    if (cachedContent) {
+      importAnalysisTxt(cachedContent);
+      elements.inputMessage.style.color = "var(--color-primary)";
+      elements.inputMessage.textContent = `✅ ${fileName.replace(/\.txt$/, "")} 지문을 성공적으로 불러왔습니다.`;
+      setTimeout(() => {
+        if (elements.inputMessage.textContent.includes("성공적으로")) {
+          elements.inputMessage.textContent = "";
+          elements.inputMessage.style.color = "";
+        }
+      }, 3000);
+      return;
+    }
+
+    const file = state.quickFilesMap.get(fileName);
+    if (!file) {
+      throw new Error("파일 객체를 찾을 수 없습니다.");
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const resultText = String(reader.result || "");
+        // 첫 로딩 시 로컬 스토리지에 캐시
+        localStorage.setItem(`sentence_board_file_cache_${fileName}`, resultText);
+        importAnalysisTxt(resultText);
+
+        elements.inputMessage.style.color = "var(--color-primary)";
+        elements.inputMessage.textContent = `✅ ${fileName.replace(/\.txt$/, "")} 지문을 성공적으로 불러왔습니다.`;
+        setTimeout(() => {
+          if (elements.inputMessage.textContent.includes("성공적으로")) {
+            elements.inputMessage.textContent = "";
+            elements.inputMessage.style.color = "";
+          }
+        }, 3000);
+      } catch (error) {
+        alert(`지문을 불러오지 못했습니다: ${error.message}`);
+      }
+    };
+    reader.onerror = () => alert("파일을 읽는 중 오류가 발생했습니다.");
+    reader.readAsText(file, "utf-8");
+  } catch (error) {
+    console.error(error);
+    elements.inputMessage.style.color = "var(--color-warning)";
+    elements.inputMessage.textContent = `❌ 지문을 불러오지 못했습니다: ${error.message}`;
+  }
+}
+
+function handleFolderSelected(event) {
+  try {
+    const files = Array.from(event.target.files || []);
+    state.quickFilesMap.clear();
+
+    const txtFiles = [];
+    files.forEach((file) => {
+      const pathParts = file.webkitRelativePath.split("/");
+      // webkitRelativePath가 'folderName/fileName.txt'와 같이 슬래시가 1개만 포함된 루트 레벨 파일만 적재
+      if (pathParts.length === 2 && file.name.toLowerCase().endsWith(".txt")) {
+        state.quickFilesMap.set(file.name, file);
+        txtFiles.push(file.name);
+      }
+    });
+
+    if (txtFiles.length === 0) {
+      elements.inputMessage.style.color = "var(--color-warning)";
+      elements.inputMessage.textContent = "⚠️ 선택한 폴더 바로 아래에 .txt 파일이 존재하지 않습니다.";
+      return;
+    }
+
+    state.hasFolderSelected = true;
+    renderTxtGrid();
+
+    // 임포트 완료 피드백 출력
+    const folderName = files[0]?.webkitRelativePath.split("/")[0] || "지정 폴더";
+    elements.inputMessage.style.color = "var(--color-primary)";
+    elements.inputMessage.textContent = `📁 ${folderName} 폴더에서 ${txtFiles.length}개의 지문 파일을 성공적으로 연결했습니다.`;
+  } catch (error) {
+    console.error(error);
+    alert(`폴더 파일을 읽는 중 오류가 발생했습니다: ${error.message}`);
+  }
 }
 
 function goToInputStart() {
@@ -2236,6 +3571,9 @@ function bindEvents() {
   elements.minorPresentLane.addEventListener("dragover", handlePresentMinorDragOver);
   elements.minorPresentLane.addEventListener("drop", handlePresentMinorDrop);
 
+  elements.selectFolderButton.addEventListener("click", () => elements.folderInput.click());
+  elements.folderInput.addEventListener("change", handleFolderSelected);
+
   document.addEventListener("keydown", handleKeyboard);
   window.addEventListener("resize", () => {
     applySettings();
@@ -2292,3 +3630,4 @@ function handleKeyboard(event) {
 
 bindEvents();
 applySettings();
+renderTxtGrid();
