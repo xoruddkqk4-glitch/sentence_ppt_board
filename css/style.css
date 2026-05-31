@@ -36,8 +36,8 @@
   --font-ui-lg: 20px;
   --font-major: clamp(56px, 7vw, 124px);
   --font-minor: clamp(36px, 4.5vw, 78px);
-  --font-major-current: 96px;
-  --font-minor-current: 48px;
+  --font-major-current: 110px;
+  --font-minor-current: 56px;
   --font-role: clamp(16px, 1.4vw, 24px);
   --component-gap: clamp(16px, 2vw, 36px);
   --word-count: 8;
@@ -831,10 +831,10 @@ input:focus {
   flex-direction: column;
   justify-content: center;
   gap: 0;
-  min-height: 64vh;
+  min-height: 72vh;
   max-width: 100%;
   overflow: hidden;
-  padding: var(--space-4) var(--space-4) var(--space-8);
+  padding: var(--space-2) var(--space-2) var(--space-4);
   text-align: center;
 }
 
@@ -866,7 +866,7 @@ input:focus {
   max-width: 100%;
   overflow: visible;
   white-space: nowrap;
-  padding: 0 clamp(80px, 8vw, 160px);
+  padding: 0 var(--space-4);
 }
 
 .major-lane .present-chip {
@@ -904,7 +904,7 @@ input:focus {
   width: 100%;
   overflow: visible;
   margin-top: clamp(12px, 2vh, 22px);
-  padding: 0 clamp(80px, 8vw, 160px);
+  padding: 0 var(--space-4);
 }
 
 .minor-row {
@@ -1174,7 +1174,7 @@ input:focus {
 .present-main-layout {
   display: flex;
   flex: 1;
-  gap: var(--space-6);
+  gap: var(--space-3);
   min-height: 0;
   width: 100%;
 }
@@ -1189,15 +1189,15 @@ input:focus {
 
 /* 중요 문장 사이드바 네비게이션 (패널 박스 및 백그라운드 제거) */
 .important-present-nav {
-  width: 110px;
+  width: 64px;
   flex-shrink: 0;
   border: none;
   background: transparent;
-  padding: var(--space-2);
+  padding: var(--space-1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   max-height: 75vh;
   overflow-y: auto;
   box-shadow: none;
@@ -1206,21 +1206,23 @@ input:focus {
 /* 사이드바 개별 번호 아이템 (동적 감싸는 배경 및 프리미엄 카드 디자인 적용) */
 .important-nav-item {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-1);
-  width: 92px;
-  min-height: 40px;
+  justify-content: center;
+  gap: 2px;
+  width: 48px;
+  min-height: 48px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-bg-soft);
   color: var(--color-ink);
-  padding: 4px var(--space-2);
-  font-size: 18px;
+  padding: 4px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: all 120ms ease;
   user-select: none;
+  position: relative;
 }
 
 .app-shell[data-theme="dark"] .important-nav-item {
@@ -1267,7 +1269,7 @@ input:focus {
   background-color: var(--color-primary);
   border-color: var(--color-primary-strong, #004f9e);
   color: #ffffff;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 900;
   box-shadow: 0 4px 10px rgba(0, 102, 204, 0.25);
 }
@@ -1303,20 +1305,24 @@ input:focus {
 
 /* 3단계 발표 화면 별표 토글 버튼 */
 .star-toggle-btn {
+  position: absolute;
+  top: 2px;
+  left: 2px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
   padding: 0;
-  width: 20px;
-  height: 20px;
-  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  font-size: 13px;
   cursor: pointer;
   color: #94a3b8;
   transition: transform 100ms ease, color 120ms ease;
   line-height: 1;
   flex-shrink: 0;
+  z-index: 2;
 }
 
 .app-shell[data-theme="dark"] .star-toggle-btn {
@@ -1356,32 +1362,38 @@ input:focus {
 
 /* 문장 번호 텍스트 */
 .sentence-num {
-  flex: 1;
+  flex: none;
   text-align: center;
   line-height: 1;
+  font-size: 16px;
+  margin-top: 1px;
 }
 
 /* 단축 번호키 배지 래퍼 및 배지 디자인 (키캡 스타일) */
 .shortcut-badge-wrapper {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
+  z-index: 2;
 }
 
 .shortcut-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
   background-color: #e2e8f0;
   border: 1px solid #cbd5e1;
   color: #475569;
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 800;
   line-height: 1;
   flex-shrink: 0;
