@@ -3176,10 +3176,29 @@ function updateMinorPositions() {
   });
 }
 
-async function exportAnalysisTxt() {
-  if (state.sentences.length === 0 && elements.passageInput.value.trim()) {
-    preparePresentation();
+function applyPendingEdits() {
+  if (state.mode === "input") {
+    if (elements.passageInput.value.trim()) {
+      preparePresentation();
+    }
+  } else if (state.mode === "edit") {
+    const sentence = getCurrentSentence();
+    if (sentence && elements.sentenceTextEditor) {
+      const newText = elements.sentenceTextEditor.value.trim();
+      if (newText && newText !== sentence.text) {
+        sentence.text = newText;
+        sentence.wordCount = getPlainWords(newText).length;
+        sentence.components = analyzeSentence(newText, state.currentSentenceIndex);
+        state.passageText = state.sentences.map((s) => s.text).join(" ");
+        elements.passageInput.value = state.passageText;
+        render();
+      }
+    }
   }
+}
+
+async function exportAnalysisTxt() {
+  applyPendingEdits();
 
   if (state.sentences.length === 0) {
     alert("저장할 분석 결과가 없습니다.");
