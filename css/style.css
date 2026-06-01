@@ -1540,7 +1540,7 @@ input:focus {
   grid-column: 1 / -1 !important;
   justify-content: center !important;
   padding: var(--space-8) 0 !important;
-  font-size: clamp(3.2rem, 7.5vw, 6.5rem) !important;
+  font-size: var(--font-major-current) !important;
   font-weight: 900 !important;
   white-space: normal !important;
   word-break: keep-all !important;
@@ -1560,7 +1560,7 @@ input:focus {
   grid-column: 1 / -1 !important;
   justify-content: center !important;
   padding: var(--space-6) 0 !important;
-  font-size: clamp(2.2rem, 5vw, 4.2rem) !important;
+  font-size: calc(var(--font-major-current) * 0.7) !important;
   font-weight: 800 !important;
   white-space: normal !important;
   word-break: keep-all !important;
