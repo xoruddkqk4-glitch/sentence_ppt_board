@@ -169,6 +169,14 @@
     <div id="screenOffOverlay" class="screen-off-overlay hidden" role="dialog" aria-modal="true" aria-label="화면 끄기">
       <button class="screen-on-button" type="button" id="screenOnButton">화면 켜기</button>
     </div>
+
+    <div id="elementDetailOverlay" class="element-detail-overlay hidden" role="dialog" aria-modal="true" aria-label="요소 상세 보기">
+      <div class="element-detail-content">
+        <button class="element-close-button" type="button" id="elementCloseButton">끄기</button>
+        <p id="elementDetailRole" class="element-detail-role"></p>
+        <h2 id="elementDetailText" class="element-detail-text"></h2>
+      </div>
+    </div>
   </div>
 
   <input id="analysisFileInput" type="file" accept=".txt,text/plain" hidden>

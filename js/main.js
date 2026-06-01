@@ -4,7 +4,9 @@ const ROLE_OPTIONS = [
   { value: "complement", label: "보어", lane: "major" },
   { value: "object", label: "목적어", lane: "major" },
   { value: "adjective", label: "형용사어", lane: "minor" },
-  { value: "adverb", label: "부사어", lane: "minor" }
+  { value: "adverb", label: "부사어", lane: "minor" },
+  { value: "title", label: "제목", lane: "major" },
+  { value: "subtitle", label: "소제목", lane: "major" }
 ];
 
 const ROLE_BY_VALUE = Object.fromEntries(ROLE_OPTIONS.map((role) => [role.value, role]));
@@ -14,7 +16,9 @@ const ROLE_COLOR_CLASS = {
   object: "role-object",
   complement: "role-complement",
   adjective: "role-adjective",
-  adverb: "role-adverb"
+  adverb: "role-adverb",
+  title: "role-title",
+  subtitle: "role-subtitle"
 };
 const COMPONENT_PALETTE = {
   subject: "#00B8A9",
@@ -22,9 +26,11 @@ const COMPONENT_PALETTE = {
   object: "#FFDE7D",
   complement: "#9BB8FF",
   adjective: "#008000",
-  adverb: "#F8F3D4"
+  adverb: "#F8F3D4",
+  title: "#0066cc",
+  subtitle: "#5d6675"
 };
-const MAJOR_ROLES = new Set(["subject", "verb", "complement", "object"]);
+const MAJOR_ROLES = new Set(["subject", "verb", "complement", "object", "title", "subtitle"]);
 const BE_VERBS = new Set(["am", "are", "is", "was", "were", "be", "been", "being"]);
 const COMMON_VERBS = new Set([
   "read", "reads", "reading", "wrote", "write", "writes", "study", "studies",
@@ -1202,20 +1208,67 @@ const elements = {
   editNextButton: document.getElementById("editNextButton"),
   editLastButton: document.getElementById("editLastButton"),
   presentPrevButton: document.getElementById("presentPrevButton"),
-  presentNextButton: document.getElementById("presentNextButton")
+  presentNextButton: document.getElementById("presentNextButton"),
+  elementDetailOverlay: document.getElementById("elementDetailOverlay"),
+  elementDetailRole: document.getElementById("elementDetailRole"),
+  elementDetailText: document.getElementById("elementDetailText"),
+  elementCloseButton: document.getElementById("elementCloseButton")
 };
 
 function splitSentences(text) {
-  const normalized = normalizeApostrophes(text).trim().replace(/\s+/g, " ");
+  const normalized = normalizeApostrophes(text).trim();
   if (!normalized) {
     return [];
   }
 
-  const matches = normalized.match(/[^.!?]+[.!?]+["')\]]?|[^.!?]+$/g) || [];
-  return matches.map((sentence) => sentence.trim()).filter(Boolean);
+  const tokens = [];
+  const regex = /(\/\/[\s\S]*?\/\/)|(\/[^\/]+?\/)/g;
+  let match;
+  let lastIndex = 0;
+
+  while ((match = regex.exec(normalized)) !== null) {
+    const beforeText = normalized.slice(lastIndex, match.index).trim();
+    if (beforeText) {
+      tokens.push(...splitPlainSentences(beforeText));
+    }
+    tokens.push(match[0].trim());
+    lastIndex = regex.lastIndex;
+  }
+
+  const afterText = normalized.slice(lastIndex).trim();
+  if (afterText) {
+    tokens.push(...splitPlainSentences(afterText));
+  }
+
+  return tokens.filter(Boolean);
+}
+
+function splitPlainSentences(text) {
+  const cleaned = text.replace(/\s+/g, " ");
+  const matches = cleaned.match(/[^.!?]+[.!?]+["')\]]?|[^.!?]+$/g) || [];
+  return matches.map((s) => s.trim()).filter(Boolean);
 }
 
 function analyzeSentence(sentenceText, sentenceIndex) {
+  const isTitle = sentenceText.startsWith("//") && sentenceText.endsWith("//");
+  const isSubtitle = !isTitle && sentenceText.startsWith("/") && sentenceText.endsWith("/");
+
+  if (isTitle || isSubtitle) {
+    const cleanText = isTitle 
+      ? sentenceText.slice(2, -2).trim() 
+      : sentenceText.slice(1, -1).trim();
+
+    return [{
+      id: `s${sentenceIndex + 1}-c1-0`,
+      text: cleanText,
+      role: isTitle ? "title" : "subtitle",
+      lane: "major",
+      startIndex: 0,
+      endIndex: 1,
+      order: 1
+    }];
+  }
+
   const displayWords = getDisplayWords(sentenceText);
   const plainWords = displayWords.map(getWordCore).filter(Boolean);
 
@@ -1452,27 +1505,46 @@ function createEditChip(component) {
   handle.textContent = "::";
   handle.setAttribute("aria-hidden", "true");
 
-  const select = document.createElement("select");
-  select.className = "role-select";
-  select.setAttribute("aria-label", `${component.text} 성분 역할`);
-  ROLE_OPTIONS.forEach((role) => {
-    const option = document.createElement("option");
-    option.value = role.value;
-    option.textContent = role.label;
-    option.selected = role.value === component.role;
-    select.appendChild(option);
-  });
-  select.addEventListener("change", () => updateComponentRole(component.id, select.value));
-
   const text = document.createElement("span");
   text.className = "component-text";
   text.textContent = component.text;
 
-  chip.append(handle, select, text);
+  chip.appendChild(handle);
+
+  const isTitleOrSub = component.role === "title" || component.role === "subtitle";
+  if (isTitleOrSub) {
+    const badge = document.createElement("span");
+    badge.className = "role-badge";
+    badge.style.fontSize = "var(--font-ui-sm)";
+    badge.style.fontWeight = "800";
+    badge.style.padding = "2px 8px";
+    badge.style.borderRadius = "var(--radius-pill)";
+    badge.style.background = component.role === "title" ? "var(--color-primary)" : "var(--color-muted)";
+    badge.style.color = "#ffffff";
+    badge.textContent = component.role === "title" ? "제목" : "소제목";
+    chip.appendChild(badge);
+  } else {
+    const select = document.createElement("select");
+    select.className = "role-select";
+    select.setAttribute("aria-label", `${component.text} 성분 역할`);
+    ROLE_OPTIONS.forEach((role) => {
+      if (role.value === "title" || role.value === "subtitle") return;
+      const option = document.createElement("option");
+      option.value = role.value;
+      option.textContent = role.label;
+      option.selected = role.value === component.role;
+      select.appendChild(option);
+    });
+    select.addEventListener("change", () => updateComponentRole(component.id, select.value));
+    chip.appendChild(select);
+  }
+
+  chip.appendChild(text);
+
   if (component.role === "adjective") {
     chip.appendChild(createModifierTargetControl(component));
   }
-  if (getComponentWords(component).length > 1) {
+  if (!isTitleOrSub && getComponentWords(component).length > 1) {
     chip.appendChild(createSplitControls(component));
   }
   chip.addEventListener("dragstart", handleDragStart);
@@ -1612,12 +1684,38 @@ function renderPresentView() {
     return;
   }
 
+  const isTitleOrSub = sentence.components.some(c => c.role === "title" || c.role === "subtitle");
+
+  elements.presentProgress.textContent = getProgressText();
+  renderImportantSidebar();
+  updateNavButtons();
+
+  if (isTitleOrSub) {
+    setWordGrid(sentence);
+    applySettings();
+    elements.majorPresentLane.innerHTML = "";
+    sentence.components.forEach((component) => {
+      const chip = createPresentChip(component);
+      elements.majorPresentLane.appendChild(chip);
+    });
+    elements.minorAnchorLane.innerHTML = "";
+    elements.minorPresentLane.innerHTML = "";
+    elements.emptyMinorNote.classList.add("hidden");
+    
+    const stage = document.querySelector(".presentation-stage");
+    if (stage) {
+      stage.querySelectorAll(".modifier-target-bracket").forEach((bracket) => bracket.remove());
+    }
+    
+    schedulePresentationFit();
+    return;
+  }
+
   const majorComponents = getComponentsByLane(sentence, "major");
   const minorComponents = getComponentsByLane(sentence, "minor");
   state.minorRevealCount = clamp(0, state.minorRevealCount, minorComponents.length);
   const visibleMinorComponents = minorComponents.slice(0, state.minorRevealCount);
 
-  elements.presentProgress.textContent = getProgressText();
   setWordGrid(sentence);
   applySettings();
   renderMajorPresentLane(elements.majorPresentLane, majorComponents, visibleMinorComponents);
@@ -1625,11 +1723,7 @@ function renderPresentView() {
   renderMinorPresentRows(elements.minorPresentLane, visibleMinorComponents);
   renderModifierTargetBrackets(visibleMinorComponents);
   elements.emptyMinorNote.classList.add("hidden");
-  
-  // 중요 문장 사이드바 렌더링 호출
-  renderImportantSidebar();
 
-  updateNavButtons();
   schedulePresentationFit();
 }
 
@@ -1795,6 +1889,15 @@ function createPresentChip(component, modifierTargetIndexes = new Set()) {
   });
 
   chip.appendChild(text);
+
+  chip.addEventListener("click", (event) => {
+    if (state.mode !== "present") {
+      return;
+    }
+    event.stopPropagation();
+    showElementDetail(component);
+  });
+
   return chip;
 }
 
@@ -2831,6 +2934,32 @@ function fitMajorLine() {
   const lane = document.querySelector(".presentation-stage");
   const currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current"));
   const laneRect = lane.getBoundingClientRect();
+
+  const sentence = getCurrentSentence();
+  const isTitleOrSub = sentence?.components.some(c => c.role === "title" || c.role === "subtitle");
+
+  if (isTitleOrSub) {
+    const availableWidth = Math.max(220, lane.clientWidth - 100);
+    const availableHeight = Math.max(150, lane.clientHeight * 0.75);
+    const chipElement = elements.majorPresentLane.querySelector(".present-chip");
+    if (!chipElement) {
+      return;
+    }
+    const bounds = chipElement.getBoundingClientRect();
+    if (!bounds.width || !bounds.height || !availableWidth || !availableHeight) {
+      return;
+    }
+    const widthRatio = availableWidth / bounds.width;
+    const heightRatio = availableHeight / bounds.height;
+    const ratio = Math.min(widthRatio, heightRatio);
+    if (ratio >= 1) {
+      return;
+    }
+    const nextSize = Math.max(20, Math.floor(currentSize * Math.max(0.12, ratio) * 0.95));
+    elements.app.style.setProperty("--font-major-current", `${nextSize}px`);
+    return;
+  }
+
   const edgeGuard = getStageEdgeGuard(laneRect);
   // 가장자리 점이 들어갈 공간을 양쪽에 예약한다. dotClearance(점~단어 최소 간격)도
   // 함께 반영해 주요소가 줄어들어도 점이 첫/마지막 단어와 겹치지 않게 한다.
@@ -3698,6 +3827,13 @@ function bindEvents() {
   window.addEventListener("resize", () => {
     applySettings();
     schedulePresentationFit();
+    scheduleDetailFit();
+  });
+  elements.elementCloseButton.addEventListener("click", hideElementDetail);
+  elements.elementDetailOverlay.addEventListener("click", (event) => {
+    if (event.target === elements.elementDetailOverlay) {
+      hideElementDetail();
+    }
   });
 }
 
@@ -3756,6 +3892,10 @@ function handleKeyboard(event) {
   }
   if (event.key === "Escape") {
     event.preventDefault();
+    if (!elements.elementDetailOverlay.classList.contains("hidden")) {
+      hideElementDetail();
+      return;
+    }
     setMode("edit");
   }
 }
@@ -3816,3 +3956,78 @@ function restoreSelectedFolder() {
 bindEvents();
 applySettings();
 restoreSelectedFolder();
+
+function showElementDetail(component) {
+  elements.elementDetailOverlay.classList.remove("hidden");
+  elements.elementDetailRole.textContent = ROLE_BY_VALUE[component.role]?.label || "성분";
+  elements.elementDetailRole.style.backgroundColor = COMPONENT_PALETTE[component.role] || "var(--color-primary)";
+
+  elements.elementDetailText.innerHTML = "";
+  const containerDiv = document.createElement("div");
+  containerDiv.className = "detail-text-container";
+
+  const words = component.text.trim().split(/\s+/);
+  const lines = [];
+  for (let i = 0; i < words.length; i += 10) {
+    lines.push(words.slice(i, i + 10).join(" "));
+  }
+
+  lines.forEach((lineText) => {
+    const lineDiv = document.createElement("div");
+    lineDiv.className = "detail-text-line";
+    lineDiv.textContent = lineText;
+    containerDiv.appendChild(lineDiv);
+  });
+  elements.elementDetailText.appendChild(containerDiv);
+
+  scheduleDetailFit();
+}
+
+function hideElementDetail() {
+  elements.elementDetailOverlay.classList.add("hidden");
+}
+
+function scheduleDetailFit() {
+  let pass = 0;
+  const runPass = () => {
+    adjustDetailFontSize();
+    pass += 1;
+    if (pass < 5) {
+      requestAnimationFrame(runPass);
+    }
+  };
+  requestAnimationFrame(runPass);
+}
+
+function adjustDetailFontSize() {
+  if (elements.elementDetailOverlay.classList.contains("hidden")) {
+    return;
+  }
+
+  // Clear previous inline style to get the natural stylesheet-defined size
+  elements.elementDetailText.style.removeProperty("font-size");
+
+  const container = elements.elementDetailText.querySelector(".detail-text-container");
+  if (!container) {
+    return;
+  }
+
+  // Measure bounds at the clean stylesheet font size
+  const bounds = container.getBoundingClientRect();
+  if (!bounds.width || !bounds.height) {
+    return;
+  }
+
+  const maxWidth = window.innerWidth - 120;
+  const maxHeight = window.innerHeight - 200;
+  const style = window.getComputedStyle(elements.elementDetailText);
+  const currentSize = parseFloat(style.fontSize) || 64;
+
+  const widthRatio = maxWidth / bounds.width;
+  const heightRatio = maxHeight / bounds.height;
+  const ratio = Math.min(widthRatio, heightRatio);
+
+  // Scale both up and down to fit the screen bounds perfectly
+  const nextSize = Math.max(16, Math.floor(currentSize * ratio * 0.98));
+  elements.elementDetailText.style.setProperty("font-size", `${nextSize}px`, "important");
+}

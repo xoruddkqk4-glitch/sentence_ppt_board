@@ -846,6 +846,11 @@ input:focus {
   gap: clamp(8px, 1vw, 14px);
   padding: 0;
   justify-content: center;
+  transition: box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.major-lane .present-chip {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .present-word {
@@ -1421,4 +1426,164 @@ input:focus {
   background-color: #ffffff;
   border-color: #ffffff;
   color: var(--color-primary);
+}
+
+/* 요소 상세 확대 오버레이 */
+.element-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-bg-soft);
+  color: var(--color-ink);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.app-shell[data-theme="dark"] .element-detail-overlay {
+  background-color: var(--color-dark-bg);
+  color: var(--color-dark-ink);
+}
+
+.element-detail-content {
+  position: relative;
+  width: 100% !important;
+  max-width: 100% !important;
+  color: inherit;
+  padding: var(--space-12) var(--space-12) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: var(--space-6);
+  box-sizing: border-box !important;
+}
+
+.element-close-button {
+  position: absolute;
+  top: var(--space-6);
+  right: var(--space-12);
+  min-width: 120px;
+  min-height: 56px;
+  font-size: var(--font-ui-lg);
+  font-weight: 800;
+  border-radius: var(--radius-pill);
+  background: var(--color-verb);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(246, 65, 108, 0.4);
+  transition: transform 120ms ease, background-color 120ms ease;
+  z-index: 10;
+}
+
+.element-close-button:hover {
+  background: #d62b54;
+}
+
+.element-close-button:active {
+  transform: scale(0.97);
+}
+
+.element-detail-role {
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 800;
+  border-radius: var(--radius-pill);
+  padding: 6px var(--space-4);
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.element-detail-text {
+  font-size: clamp(2.2rem, 6vw, 6rem);
+  font-weight: 900;
+  line-height: 1.35;
+  margin: var(--space-4) 0;
+  color: inherit !important;
+  text-shadow: none !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.detail-text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  width: fit-content;
+  max-width: none !important;
+}
+
+.detail-text-line {
+  white-space: nowrap;
+  text-align: left;
+  line-height: 5.4 !important;
+}
+
+/* 제목/소제목 슬라이드용 PPT 화면 스타일 */
+.present-chip.role-title {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--color-primary) !important;
+  grid-column: 1 / -1 !important;
+  justify-content: center !important;
+  padding: var(--space-8) 0 !important;
+  font-size: clamp(3.2rem, 7.5vw, 6.5rem) !important;
+  font-weight: 900 !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  text-align: center !important;
+  line-height: 1.35 !important;
+}
+
+.app-shell[data-theme="dark"] .present-chip.role-title {
+  color: #60a5fa !important;
+}
+
+.present-chip.role-subtitle {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--color-muted) !important;
+  grid-column: 1 / -1 !important;
+  justify-content: center !important;
+  padding: var(--space-6) 0 !important;
+  font-size: clamp(2.2rem, 5vw, 4.2rem) !important;
+  font-weight: 800 !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  text-align: center !important;
+  line-height: 1.35 !important;
+  margin-top: var(--space-4) !important;
+}
+
+.app-shell[data-theme="dark"] .present-chip.role-subtitle {
+  color: #94a3b8 !important;
+}
+
+/* 성분 요소 마우스 호버 반응 추가 */
+@media (hover: hover) {
+  .major-lane .present-chip:hover {
+    transform: scale(1.04);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    filter: brightness(1.05);
+    cursor: zoom-in;
+  }
+  .minor-row .present-chip:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    filter: brightness(1.05);
+    cursor: zoom-in;
+  }
 }
