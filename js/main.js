@@ -1777,7 +1777,8 @@ function renderImportantSidebar() {
     
     btn.append(starBtn, numSpan, badgeWrapper);
     
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
       goToSentence(idx, 0);
     });
     
@@ -2581,7 +2582,7 @@ function handlePresentationClick(event) {
     return;
   }
 
-  const interactiveTarget = event.target.closest("button, input, select, textarea, a, [draggable='true']");
+  const interactiveTarget = event.target.closest("button, input, select, textarea, a, [draggable='true'], .important-present-nav");
   if (interactiveTarget) {
     return;
   }
