@@ -4373,7 +4373,8 @@ function setScreenOff(isOff) {
 function bindEvents() {
   elements.passageForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (state.hasLoadedAnalysis) {
+    const isUnchanged = state.sentences.length > 0 && elements.passageInput.value.trim() === state.passageText.trim();
+    if (state.hasLoadedAnalysis || isUnchanged) {
       state.hasLoadedAnalysis = false;
       elements.inputMessage.textContent = "";
       setMode("edit");
