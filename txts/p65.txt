@@ -1,6 +1,6 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-01T13:42:40.737Z
+저장 시각: 2026-06-02T02:34:35.253Z
 총 문장 수: 17
 
 [문장 및 성분 인덱스]
@@ -33,18 +33,18 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 
 [문장 5] [Kaveri] Here is an unexpected side effect of the pandemic
   단어 수: 10
-  - 성분 1: id=s5-c1-0, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="[Kaveri] Here"
-  - 성분 2: id=s5-c2-0, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="is"
-  - 성분 3: id=s5-c3-0, lane=major, role=complement, order=3, wordIndex0=3-7, wordIndex1=4-7, text="an unexpected side effect"
-  - 성분 4: id=s5-c4-0, lane=minor, role=adjective, order=1, wordIndex0=7-10, wordIndex1=8-10, text="of the pandemic"
+  - 성분 1: id=s5-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="[Kaveri] Here"
+  - 성분 2: id=s5-c2, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="is"
+  - 성분 3: id=s5-c3, lane=major, role=complement, order=3, wordIndex0=3-7, wordIndex1=4-7, text="an unexpected side effect"
+  - 성분 4: id=s5-c4, lane=minor, role=adjective, order=1, wordIndex0=7-10, wordIndex1=8-10, text="of the pandemic"
 
 [문장 6] - the water flowing through the canals of Venice is clear for the first time in ages.
   단어 수: 17
-  - 성분 1: id=s6-c1-0-u135, lane=major, role=subject, order=1, wordIndex0=0-3, wordIndex1=1-3, text="- the water"
-  - 성분 2: id=s6-c1-0-u136, lane=minor, role=adjective, order=1, wordIndex0=3-9, wordIndex1=4-9, text="flowing through the canals of Venice"
-  - 성분 3: id=s6-c2-0, lane=major, role=verb, order=2, wordIndex0=9-10, wordIndex1=10-10, text="is"
-  - 성분 4: id=s6-c3-0, lane=major, role=complement, order=3, wordIndex0=10-11, wordIndex1=11-11, text="clear"
-  - 성분 5: id=s6-c4-0-s6-c5-1-u137, lane=minor, role=adverb, order=2, wordIndex0=11-17, wordIndex1=12-17, text="for the first time in ages."
+  - 성분 1: id=s6-c1, lane=major, role=subject, order=1, wordIndex0=0-3, wordIndex1=1-3, text="- the water"
+  - 성분 2: id=s6-c2, lane=minor, role=adjective, order=1, wordIndex0=3-9, wordIndex1=4-9, text="flowing through the canals of Venice"
+  - 성분 3: id=s6-c3, lane=major, role=verb, order=2, wordIndex0=9-10, wordIndex1=10-10, text="is"
+  - 성분 4: id=s6-c4, lane=major, role=complement, order=3, wordIndex0=10-11, wordIndex1=11-11, text="clear"
+  - 성분 5: id=s6-c5, lane=minor, role=adverb, order=2, wordIndex0=11-17, wordIndex1=12-17, text="for the first time in ages."
 
 [문장 7] The fish are visible; the swans have returned.
   단어 수: 8
@@ -89,11 +89,11 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 [문장 12] The dolphins were actually filmed in Sardinia, an Italian island, not Venice, and the swans had always been present in Burano, near Venice, even before the pandemic.
   단어 수: 27
   - 성분 1: id=s12-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The dolphins"
-  - 성분 2: id=s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u154-s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u156-u157-s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u155-u158, lane=major, role=verb, order=2, wordIndex0=2-5, wordIndex1=3-5, text="were actually filmed"
-  - 성분 3: id=s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u148-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u144-u149-u151-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u144-u150-u152, lane=minor, role=adverb, order=1, wordIndex0=8-17, wordIndex1=9-17, text="in Sardinia, an Italian island, not Venice,"
-  - 성분 4: id=s12-c5, lane=major, role=subject, order=3, wordIndex0=12-15, wordIndex1=13-15, text="and the swans"
-  - 성분 5: id=s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u165-s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u167-u168-s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u166-u169-s12-c6-s12-c7-u159-u161-u162-u170, lane=major, role=verb, order=4, wordIndex0=15-18, wordIndex1=16-18, text="had always been present"
-  - 성분 6: id=s12-c8, lane=minor, role=adverb, order=2, wordIndex0=19-23, wordIndex1=20-23, text="even before the pandemic. near Venice, in Burano,"
+  - 성분 2: id=s12-c2, lane=major, role=verb, order=2, wordIndex0=2-5, wordIndex1=3-5, text="were actually filmed"
+  - 성분 3: id=s12-c3, lane=minor, role=adverb, order=1, wordIndex0=8-17, wordIndex1=9-17, text="in Sardinia, an Italian island, not Venice,"
+  - 성분 4: id=s12-c4, lane=major, role=subject, order=3, wordIndex0=12-15, wordIndex1=13-15, text="and the swans"
+  - 성분 5: id=s12-c5, lane=major, role=verb, order=4, wordIndex0=15-18, wordIndex1=16-18, text="had always been present"
+  - 성분 6: id=s12-c6, lane=minor, role=adverb, order=2, wordIndex0=19-23, wordIndex1=20-23, text="even before the pandemic. near Venice, in Burano,"
 
 [문장 13] The story went viral when a woman from New Delhi shared a post that combined these images and stories.
   단어 수: 19
@@ -143,9 +143,9 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-01T13:42:40.737Z",
+  "savedAt": "2026-06-02T02:34:35.253Z",
   "passageText": "/Case 2 - The Venetian Wildlife Hoax (2020)/ During the COVID-19 pandemic in 2020, a heartwarming story spread widely on social media. It claimed that swans and dolphins had returned to the now-empty canals of Venice, showing how nature was returning while people stayed inside. The story was shared by many readers, celebrating it as a positive outcome of the pandemic. [Kaveri] Here is an unexpected side effect of the pandemic - the water flowing through the canals of Venice is clear for the first time in ages. The fish are visible; the swans have returned. [Luca] Venice has not seen clear canal water in a very long time. Dolphins are showing up too. Nature just hit the reset button on us. However, the story was not completely true. The dolphins were actually filmed in Sardinia, an Italian island, not Venice, and the swans had always been present in Burano, near Venice, even before the pandemic. The story went viral when a woman from New Delhi shared a post that combined these images and stories. Her post was widely shared and got over a million likes. She explained that she simply wanted to share something joyful during dark times and did not realize the swans had always been there. Despite the mix-up, she decided not to delete the post, believing the message about clearer waters in Venice still held some truth. This incident highlights how easily misinformation can spread, even when shared with good intentions.",
-  "currentSentenceIndex": 16,
+  "currentSentenceIndex": 0,
   "componentSerial": 170,
   "settings": {
     "theme": "light",
@@ -461,7 +461,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 10,
       "components": [
         {
-          "id": "s5-c1-0",
+          "id": "s5-c1",
           "sentenceIndex": 5,
           "componentIndex": 1,
           "text": "[Kaveri] Here",
@@ -476,7 +476,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s5-c2-0",
+          "id": "s5-c2",
           "sentenceIndex": 5,
           "componentIndex": 2,
           "text": "is",
@@ -490,7 +490,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s5-c3-0",
+          "id": "s5-c3",
           "sentenceIndex": 5,
           "componentIndex": 3,
           "text": "an unexpected side effect",
@@ -507,7 +507,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s5-c4-0",
+          "id": "s5-c4",
           "sentenceIndex": 5,
           "componentIndex": 4,
           "text": "of the pandemic",
@@ -516,7 +516,6 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           "order": 1,
           "startIndex": 7,
           "endIndex": 10,
-          "modifierTargetId": "s5-c3-0",
           "modifierTargetStart": 3,
           "modifierTargetEnd": 7,
           "modifierTargetIndexes": [
@@ -541,7 +540,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 17,
       "components": [
         {
-          "id": "s6-c1-0-u135",
+          "id": "s6-c1",
           "sentenceIndex": 6,
           "componentIndex": 1,
           "text": "- the water",
@@ -557,7 +556,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s6-c1-0-u136",
+          "id": "s6-c2",
           "sentenceIndex": 6,
           "componentIndex": 2,
           "text": "flowing through the canals of Venice",
@@ -582,7 +581,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s6-c2-0",
+          "id": "s6-c3",
           "sentenceIndex": 6,
           "componentIndex": 3,
           "text": "is",
@@ -596,7 +595,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s6-c3-0",
+          "id": "s6-c4",
           "sentenceIndex": 6,
           "componentIndex": 4,
           "text": "clear",
@@ -610,7 +609,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s6-c4-0-s6-c5-1-u137",
+          "id": "s6-c5",
           "sentenceIndex": 6,
           "componentIndex": 5,
           "text": "for the first time in ages.",
@@ -1067,7 +1066,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u154-s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u156-u157-s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u155-u158",
+          "id": "s12-c2",
           "sentenceIndex": 12,
           "componentIndex": 2,
           "text": "were actually filmed",
@@ -1083,7 +1082,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u148-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u144-u149-u151-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u144-u150-u152",
+          "id": "s12-c3",
           "sentenceIndex": 12,
           "componentIndex": 3,
           "text": "in Sardinia, an Italian island, not Venice,",
@@ -1104,7 +1103,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s12-c5",
+          "id": "s12-c4",
           "sentenceIndex": 12,
           "componentIndex": 4,
           "text": "and the swans",
@@ -1120,7 +1119,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u165-s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u167-u168-s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u166-u169-s12-c6-s12-c7-u159-u161-u162-u170",
+          "id": "s12-c5",
           "sentenceIndex": 12,
           "componentIndex": 5,
           "text": "had always been present",
@@ -1137,7 +1136,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s12-c8",
+          "id": "s12-c6",
           "sentenceIndex": 12,
           "componentIndex": 6,
           "text": "even before the pandemic. near Venice, in Burano,",

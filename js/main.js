@@ -1178,6 +1178,7 @@ const elements = {
   inputSaveTxtButton: document.getElementById("inputSaveTxtButton"),
   inputSaveAsTxtButton: document.getElementById("inputSaveAsTxtButton"),
   inputImportButton: document.getElementById("inputImportButton"),
+  fileNameDisplay: document.getElementById("fileNameDisplay"),
   saveTxtButton: document.getElementById("saveTxtButton"),
   saveAsTxtButton: document.getElementById("saveAsTxtButton"),
   analysisFileInput: document.getElementById("analysisFileInput"),
@@ -1556,189 +1557,174 @@ function createEditChip(component) {
 
   chip.appendChild(handle);
 
-  const isTitleOrSub = component.role === "title" || component.role === "subtitle";
-  if (isTitleOrSub) {
-    const badge = document.createElement("span");
-    badge.className = "role-badge";
-    badge.style.fontSize = "var(--font-ui-sm)";
-    badge.style.fontWeight = "800";
-    badge.style.padding = "2px 8px";
-    badge.style.borderRadius = "var(--radius-pill)";
-    badge.style.background = component.role === "title" ? "var(--color-primary)" : "var(--color-muted)";
-    badge.style.color = "#ffffff";
-    badge.textContent = component.role === "title" ? "제목" : "소제목";
-    chip.appendChild(badge);
-  } else {
-    const customSelect = document.createElement("div");
-    customSelect.className = "custom-select";
-    customSelect.setAttribute("tabindex", "0");
-    customSelect.dataset.componentId = component.id;
+  const customSelect = document.createElement("div");
+  customSelect.className = "custom-select";
+  customSelect.setAttribute("tabindex", "0");
+  customSelect.dataset.componentId = component.id;
 
-    const currentRole = ROLE_OPTIONS.find((r) => r.value === component.role);
-    const prefixMap = {
-      subject: "1. ",
-      verb: "2. ",
-      complement: "3. ",
-      object: "4. ",
-      adjective: "5. ",
-      adverb: "6. "
-    };
+  const currentRole = ROLE_OPTIONS.find((r) => r.value === component.role);
+  const prefixMap = {
+    subject: "1. ",
+    verb: "2. ",
+    complement: "3. ",
+    object: "4. ",
+    adjective: "5. ",
+    adverb: "6. "
+  };
 
-    const trigger = document.createElement("button");
-    trigger.className = "custom-select-trigger";
-    trigger.type = "button";
-    trigger.setAttribute("aria-label", `${component.text} 성분 역할 선택`);
-    trigger.textContent = (prefixMap[component.role] || "") + (currentRole?.label || "");
-    customSelect.appendChild(trigger);
+  const trigger = document.createElement("button");
+  trigger.className = "custom-select-trigger";
+  trigger.type = "button";
+  trigger.setAttribute("aria-label", `${component.text} 성분 역할 선택`);
+  trigger.textContent = (prefixMap[component.role] || "") + (currentRole?.label || "");
+  customSelect.appendChild(trigger);
 
-    const optionsList = document.createElement("ul");
-    optionsList.className = "custom-select-options hidden";
-    customSelect.appendChild(optionsList);
+  const optionsList = document.createElement("ul");
+  optionsList.className = "custom-select-options hidden";
+  customSelect.appendChild(optionsList);
 
-    const items = [];
-    ROLE_OPTIONS.forEach((role) => {
-      if (role.value === "title" || role.value === "subtitle") return;
-      const li = document.createElement("li");
-      li.className = "custom-option";
-      if (role.value === component.role) {
-        li.classList.add("selected");
-      }
-      li.dataset.value = role.value;
-      
-      const numPrefix = prefixMap[role.value] || "";
-      li.textContent = numPrefix + role.label;
-      optionsList.appendChild(li);
-      items.push(li);
+  const items = [];
+  ROLE_OPTIONS.forEach((role) => {
+    const li = document.createElement("li");
+    li.className = "custom-option";
+    if (role.value === component.role) {
+      li.classList.add("selected");
+    }
+    li.dataset.value = role.value;
+    
+    const numPrefix = prefixMap[role.value] || "";
+    li.textContent = numPrefix + role.label;
+    optionsList.appendChild(li);
+    items.push(li);
 
-      li.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        updateComponentRole(component.id, role.value);
-      });
-      li.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        updateComponentRole(component.id, role.value);
-      });
+    li.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      updateComponentRole(component.id, role.value);
     });
+    li.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      updateComponentRole(component.id, role.value);
+    });
+  });
 
-    let isOpen = false;
-    let tempValue = component.role;
+  let isOpen = false;
+  let tempValue = component.role;
 
-    const documentClickHandler = (e) => {
-      if (!customSelect.contains(e.target)) {
-        closeDropdown(false);
-      }
+  const documentClickHandler = (e) => {
+    if (!customSelect.contains(e.target)) {
+      closeDropdown(false);
+    }
+  };
+
+  const openDropdown = () => {
+    document.querySelectorAll(".custom-select-options").forEach((ul) => {
+      if (ul !== optionsList) ul.classList.add("hidden");
+    });
+    optionsList.classList.remove("hidden");
+    isOpen = true;
+    tempValue = component.role;
+    updateHighlights();
+    setTimeout(() => {
+      document.addEventListener("click", documentClickHandler);
+    }, 0);
+  };
+
+  const closeDropdown = (apply = false) => {
+    optionsList.classList.add("hidden");
+    isOpen = false;
+    document.removeEventListener("click", documentClickHandler);
+    if (apply && tempValue !== component.role) {
+      updateComponentRole(component.id, tempValue);
+    } else {
+      const tempRole = ROLE_OPTIONS.find((r) => r.value === component.role);
+      trigger.textContent = (prefixMap[component.role] || "") + (tempRole?.label || "");
+    }
+  };
+
+  const updateHighlights = () => {
+    items.forEach((item) => {
+      const isTemp = item.dataset.value === tempValue;
+      item.classList.toggle("highlighted", isTemp);
+    });
+    const tempRole = ROLE_OPTIONS.find((r) => r.value === tempValue);
+    trigger.textContent = (prefixMap[tempValue] || "") + (tempRole?.label || "");
+  };
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (isOpen) {
+      closeDropdown(false);
+    } else {
+      openDropdown();
+    }
+  });
+
+  customSelect.addEventListener("keydown", (e) => {
+    const keyMap = {
+      "1": "subject",
+      "2": "verb",
+      "3": "complement",
+      "4": "object",
+      "5": "adjective",
+      "6": "adverb"
     };
 
-    const openDropdown = () => {
-      document.querySelectorAll(".custom-select-options").forEach((ul) => {
-        if (ul !== optionsList) ul.classList.add("hidden");
-      });
-      optionsList.classList.remove("hidden");
-      isOpen = true;
-      tempValue = component.role;
-      updateHighlights();
-      setTimeout(() => {
-        document.addEventListener("click", documentClickHandler);
-      }, 0);
-    };
-
-    const closeDropdown = (apply = false) => {
-      optionsList.classList.add("hidden");
-      isOpen = false;
-      document.removeEventListener("click", documentClickHandler);
-      if (apply && tempValue !== component.role) {
-        updateComponentRole(component.id, tempValue);
-      } else {
-        const tempRole = ROLE_OPTIONS.find((r) => r.value === component.role);
-        trigger.textContent = (prefixMap[component.role] || "") + (tempRole?.label || "");
-      }
-    };
-
-    const updateHighlights = () => {
-      items.forEach((item) => {
-        const isTemp = item.dataset.value === tempValue;
-        item.classList.toggle("highlighted", isTemp);
-      });
-      const tempRole = ROLE_OPTIONS.find((r) => r.value === tempValue);
-      trigger.textContent = (prefixMap[tempValue] || "") + (tempRole?.label || "");
-    };
-
-    trigger.addEventListener("click", (e) => {
+    const targetRole = keyMap[e.key];
+    if (targetRole) {
+      e.preventDefault();
       e.stopPropagation();
       if (isOpen) {
-        closeDropdown(false);
+        if (tempValue === targetRole) {
+          closeDropdown(true);
+        } else {
+          tempValue = targetRole;
+          updateHighlights();
+        }
+      } else {
+        updateComponentRole(component.id, targetRole);
+      }
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isOpen) {
+        closeDropdown(true);
       } else {
         openDropdown();
       }
-    });
-
-    customSelect.addEventListener("keydown", (e) => {
-      const keyMap = {
-        "1": "subject",
-        "2": "verb",
-        "3": "complement",
-        "4": "object",
-        "5": "adjective",
-        "6": "adverb"
-      };
-
-      const targetRole = keyMap[e.key];
-      if (targetRole) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isOpen) {
-          if (tempValue === targetRole) {
-            closeDropdown(true);
-          } else {
-            tempValue = targetRole;
-            updateHighlights();
-          }
-        } else {
-          updateComponentRole(component.id, targetRole);
-        }
-      } else if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isOpen) {
-          closeDropdown(true);
-        } else {
-          openDropdown();
-        }
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isOpen) {
-          closeDropdown(false);
-        }
-      } else if (e.key === "ArrowDown" && isOpen) {
-        e.preventDefault();
-        e.stopPropagation();
-        const currentIndex = items.findIndex((item) => item.dataset.value === tempValue);
-        const nextIndex = (currentIndex + 1) % items.length;
-        tempValue = items[nextIndex].dataset.value;
-        updateHighlights();
-      } else if (e.key === "ArrowUp" && isOpen) {
-        e.preventDefault();
-        e.stopPropagation();
-        const currentIndex = items.findIndex((item) => item.dataset.value === tempValue);
-        const prevIndex = (currentIndex - 1 + items.length) % items.length;
-        tempValue = items[prevIndex].dataset.value;
-        updateHighlights();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isOpen) {
+        closeDropdown(false);
       }
-    });
+    } else if (e.key === "ArrowDown" && isOpen) {
+      e.preventDefault();
+      e.stopPropagation();
+      const currentIndex = items.findIndex((item) => item.dataset.value === tempValue);
+      const nextIndex = (currentIndex + 1) % items.length;
+      tempValue = items[nextIndex].dataset.value;
+      updateHighlights();
+    } else if (e.key === "ArrowUp" && isOpen) {
+      e.preventDefault();
+      e.stopPropagation();
+      const currentIndex = items.findIndex((item) => item.dataset.value === tempValue);
+      const prevIndex = (currentIndex - 1 + items.length) % items.length;
+      tempValue = items[prevIndex].dataset.value;
+      updateHighlights();
+    }
+  });
 
-    customSelect.addEventListener("focusout", (e) => {
-      if (!customSelect.contains(e.relatedTarget)) {
-        if (isOpen) {
-          closeDropdown(false);
-        }
+  customSelect.addEventListener("focusout", (e) => {
+    if (!customSelect.contains(e.relatedTarget)) {
+      if (isOpen) {
+        closeDropdown(false);
       }
-    });
+    }
+  });
 
-    chip.appendChild(customSelect);
-  }
+  chip.appendChild(customSelect);
 
   chip.appendChild(text);
 
@@ -1764,7 +1750,7 @@ function createEditChip(component) {
   if (component.role === "adjective") {
     chip.appendChild(createModifierTargetControl(component));
   }
-  if (!isTitleOrSub && getComponentWords(component).length > 1) {
+  if (getComponentWords(component).length > 1) {
     chip.appendChild(createSplitControls(component));
   }
   chip.addEventListener("dragstart", handleDragStart);
@@ -1935,12 +1921,14 @@ function renderPresentView() {
   }
 
   const isTitleOrSub = sentence.components.some(c => c.role === "title" || c.role === "subtitle");
+  const hasMinor = sentence.components.some(c => c.lane === "minor");
+  const isPureTitle = isTitleOrSub && !hasMinor;
 
   elements.presentProgress.textContent = getProgressText();
   renderImportantSidebar();
   updateNavButtons();
 
-  if (isTitleOrSub) {
+  if (isPureTitle) {
     setWordGrid(sentence);
     applySettings();
     elements.majorPresentLane.innerHTML = "";
@@ -3241,8 +3229,10 @@ function fitMajorLine() {
 
   const sentence = getCurrentSentence();
   const isTitleOrSub = sentence?.components.some(c => c.role === "title" || c.role === "subtitle");
+  const hasMinor = sentence?.components.some(c => c.lane === "minor");
+  const isPureTitle = isTitleOrSub && !hasMinor;
 
-  if (isTitleOrSub) {
+  if (isPureTitle) {
     const availableWidth = Math.max(220, lane.clientWidth - 100);
     const availableHeight = Math.max(150, lane.clientHeight * 0.75);
     const chipElement = elements.majorPresentLane.querySelector(".present-chip");
@@ -3518,6 +3508,7 @@ async function saveAnalysisTxt(saveAs = false) {
     fileName = getAnalysisFileName();
     state.currentFileName = fileName;
   }
+  updateFileNameDisplay();
 
   // 최신 수정본을 로컬 스토리지 캐시 및 빠른 지문 불러오기 맵과 캐시에 즉시 동기화
   localStorage.setItem(`sentence_board_file_cache_${fileName}`, content);
@@ -3598,6 +3589,7 @@ async function saveAnalysisTxt(saveAs = false) {
       const fileHandle = await window.showSaveFilePicker(pickerOptions);
       state.currentFileHandle = fileHandle;
       state.currentFileName = fileHandle.name;
+      updateFileNameDisplay();
       
       const writable = await fileHandle.createWritable();
       await writable.write(blob);
@@ -3765,6 +3757,7 @@ async function triggerAnalysisImport() {
     }
 
     state.currentFileName = fileHandle.name;
+    updateFileNameDisplay();
     state.currentFileHandle = fileHandle; // 파일 핸들 즉시 저장!
     await saveHandleToDB("currentFileHandle", fileHandle);
     
@@ -3789,6 +3782,7 @@ function handleAnalysisFileSelected(event) {
 
   // 최신 가져온 파일명 기록 및 빠른 지문 맵에 등록
   state.currentFileName = file.name;
+  updateFileNameDisplay();
   state.currentFileHandle = null; // 수동으로 새 파일 로드 시 이전 핸들 초기화
   state.quickFilesMap.set(file.name, file);
   if (!QUICK_TXT_FILES.includes(file.name)) {
@@ -4008,6 +4002,17 @@ function updateNavButtons() {
   elements.presentLastSentenceButton.disabled = state.sentences.length === 0;
 }
 
+function updateFileNameDisplay() {
+  if (!elements.fileNameDisplay) return;
+  if (state.currentFileName) {
+    elements.fileNameDisplay.textContent = state.currentFileName;
+    elements.fileNameDisplay.classList.remove("hidden");
+  } else {
+    elements.fileNameDisplay.textContent = "";
+    elements.fileNameDisplay.classList.add("hidden");
+  }
+}
+
 function renderTxtGrid() {
   if (!elements.txtGrid) return;
   elements.txtGrid.innerHTML = "";
@@ -4045,6 +4050,7 @@ function renderTxtGrid() {
 async function loadQuickTxt(fileName) {
   try {
     state.currentFileName = fileName;
+    updateFileNameDisplay();
     state.currentFileHandle = null; // 새 지문 불러오기 시 이전 파일 핸들 초기화
     await saveHandleToDB("currentFileHandle", null);
     
@@ -4075,6 +4081,7 @@ async function loadQuickTxt(fileName) {
 async function loadQuickTxtFromUploadedFile(fileName) {
   try {
     state.currentFileName = fileName;
+    updateFileNameDisplay();
     state.currentFileHandle = null; // 새 지문 불러오기 시 이전 파일 핸들 초기화
     
     const fileEntry = state.quickFilesMap.get(fileName);
@@ -4166,6 +4173,7 @@ async function selectDirectory() {
     state.directoryHandle = dirHandle;
     state.currentFileHandle = null;
     state.currentFileName = null;
+    updateFileNameDisplay();
     state.hasFolderSelected = true;
     
     await saveHandleToDB("directoryHandle", dirHandle);
@@ -4229,6 +4237,7 @@ function handleFolderSelected(event) {
     state.quickFilesMap.clear();
     state.currentFileHandle = null; // 폴더 변경 시 이전 파일 핸들 초기화
     state.currentFileName = null;
+    updateFileNameDisplay();
 
     const txtFiles = [];
     files.forEach((file) => {
@@ -4317,11 +4326,15 @@ function bindEvents() {
 
   elements.passageInput.addEventListener("input", () => {
     state.hasLoadedAnalysis = false;
+    state.currentFileName = null;
+    updateFileNameDisplay();
   });
 
   elements.sampleButton.addEventListener("click", () => {
     elements.passageInput.value = SAMPLE_TEXT;
     elements.inputMessage.textContent = "";
+    state.currentFileName = null;
+    updateFileNameDisplay();
   });
 
   elements.clearButton.addEventListener("click", async () => {
@@ -4331,6 +4344,7 @@ function bindEvents() {
     state.currentSentenceIndex = 0;
     state.minorRevealCount = 0;
     state.currentFileName = null;
+    updateFileNameDisplay();
     state.currentFileHandle = null;
     await saveHandleToDB("currentFileHandle", null);
   });
@@ -4572,7 +4586,9 @@ async function restoreSelectedFolder() {
     const fileHandle = await getHandleFromDB("currentFileHandle");
     if (fileHandle) {
       state.currentFileHandle = fileHandle;
+      state.currentFileName = fileHandle.name;
     }
+    updateFileNameDisplay();
 
     // 2. localStorage 메타데이터를 활용한 화면 구성 복구 (IndexedDB 스캔이 불가능하거나 실패 시 대비 폴백)
     const hasFolder = localStorage.getItem("sentence_board_has_folder_selected") === "true";

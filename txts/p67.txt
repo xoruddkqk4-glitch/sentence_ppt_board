@@ -1,6 +1,6 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-01T23:52:02.632Z
+저장 시각: 2026-06-02T03:00:13.487Z
 총 문장 수: 23
 
 [문장 및 성분 인덱스]
@@ -150,7 +150,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-01T23:52:02.632Z",
+  "savedAt": "2026-06-02T03:00:13.487Z",
   "passageText": "//Developing Critical Thinking in the Digital Age// Today, because of the Internet and social media, we face the new challenge of separating fact from fiction. Stories spread quickly, and it is easy to believe exciting or shocking claims without checking if they are true. Here are some tips to help you spot misinformation: /How to Spot Fake News/ Consider the Source. Verify the website's purpose, credibility, and contact details. Read Beyond Sometimes headlines are written just to grab readers' attention and get clicks. What is the full story? Check the Author Do a quick search on the author. Are they credible? Are they real? Check the Links Click on the links. Determine if the info given actually supports the story. Check the Date Old news stories may not be relevant to what's happening now. Is It a Joke? If it sounds too strange to be true, it might be meant as a joke. Check with the site and author to make sure. Check Your Biases Consider whether your own beliefs could be affecting your judgment. Ask the Experts Ask someone knowledgeable about the information, or consult a fact-checking site. By following these tips and sharing thoughtfully, you can help create a more informed and reliable online world. “Think critically. Share wisely.\"",
   "currentSentenceIndex": 0,
   "componentSerial": 1,
