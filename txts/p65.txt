@@ -1,6 +1,6 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-02T05:13:19.095Z
+저장 시각: 2026-06-02T07:31:25.517Z
 총 문장 수: 17
 
 [문장 및 성분 인덱스]
@@ -144,7 +144,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-02T05:13:19.095Z",
+  "savedAt": "2026-06-02T07:31:25.517Z",
   "passageText": "/Case 2 - The Venetian Wildlife Hoax (2020)/ During the COVID-19 pandemic in 2020, a heartwarming story spread widely on social media. It claimed that swans and dolphins had returned to the now-empty canals of Venice, showing how nature was returning while people stayed inside. The story was shared by many readers, celebrating it as a positive outcome of the pandemic. [Kaveri] Here is an unexpected side effect of the pandemic - the water flowing through the canals of Venice is clear for the first time in ages. The fish are visible; the swans have returned. [Luca] Venice has not seen clear canal water in a very long time. Dolphins are showing up too. Nature just hit the reset button on us. However, the story was not completely true. The dolphins were actually filmed in Sardinia, an Italian island, not Venice, and the swans had always been present in Burano, near Venice, even before the pandemic. The story went viral when a woman from New Delhi shared a post that combined these images and stories. Her post was widely shared and got over a million likes. She explained that she simply wanted to share something joyful during dark times and did not realize the swans had always been there. Despite the mix-up, she decided not to delete the post, believing the message about clearer waters in Venice still held some truth. This incident highlights how easily misinformation can spread, even when shared with good intentions.",
   "currentSentenceIndex": 16,
   "componentSerial": 172,
@@ -249,6 +249,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           "order": 2,
           "startIndex": 10,
           "endIndex": 11,
+          "pinOrder": 1,
           "words": [
             "widely"
           ]

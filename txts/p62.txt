@@ -1,6 +1,6 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-02T03:54:50.778Z
+저장 시각: 2026-06-02T07:25:52.823Z
 총 문장 수: 8
 
 [문장 및 성분 인덱스]
@@ -50,12 +50,11 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
   단어 수: 17
   - 성분 1: id=s7-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="This"
   - 성분 2: id=s7-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="is"
-  - 성분 3: id=s7-c3, lane=minor, role=adverb, order=1, wordIndex0=3-4, wordIndex1=4-4, text="not"
-  - 성분 4: id=s7-c4, lane=minor, role=adverb, order=2, wordIndex0=3-4, wordIndex1=4-4, text="just"
-  - 성분 5: id=s7-c5, lane=major, role=complement, order=3, wordIndex0=4-7, wordIndex1=5-7, text="an imaginary situation"
-  - 성분 6: id=s7-c6, lane=major, role=subject, order=4, wordIndex0=7-9, wordIndex1=8-9, text="— it"
-  - 성분 7: id=s7-c7, lane=major, role=verb, order=5, wordIndex0=9-11, wordIndex1=10-11, text="is happening"
-  - 성분 8: id=s7-c8, lane=minor, role=adverb, order=3, wordIndex0=11-17, wordIndex1=12-17, text="all over the world right now."
+  - 성분 3: id=s7-c3, lane=minor, role=adverb, order=1, wordIndex0=2-3, wordIndex1=3-3, text="not"
+  - 성분 4: id=s7-c6, lane=major, role=subject, order=4, wordIndex0=7-9, wordIndex1=8-9, text="— it"
+  - 성분 5: id=s7-c5-s7-c4-u40, lane=major, role=complement, order=3, wordIndex0=3-7, wordIndex1=4-7, text="just an imaginary situation"
+  - 성분 6: id=s7-c7, lane=major, role=verb, order=5, wordIndex0=9-11, wordIndex1=10-11, text="is happening"
+  - 성분 7: id=s7-c8, lane=minor, role=adverb, order=2, wordIndex0=11-17, wordIndex1=12-17, text="all over the world right now."
 
 [문장 8] Let's look at some examples of misinformation to help build the skills we need to spot and fight it.
   단어 수: 19
@@ -68,10 +67,10 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-02T03:54:50.778Z",
+  "savedAt": "2026-06-02T07:25:52.823Z",
   "passageText": "//The Dangers of Misinformation in Today's Digital World// In today's fast-paced digital age, misinformation is spreading more than ever. Imagine this: Two news articles pop up online. One is well researched and comes from a trusted source, while the other tells an incredible tale that grabs readers' attention. What happens? The first article gets little interest, while the false one spreads rapidly, taking advantage of how we process information and how social media promotes eye-catching content. This is not just an imaginary situation — it is happening all over the world right now. Let's look at some examples of misinformation to help build the skills we need to spot and fight it.",
-  "currentSentenceIndex": 0,
-  "componentSerial": 39,
+  "currentSentenceIndex": 7,
+  "componentSerial": 40,
   "settings": {
     "theme": "light",
     "align": "center"
@@ -568,48 +567,18 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           "role": "adverb",
           "lane": "minor",
           "order": 1,
-          "startIndex": 3,
-          "endIndex": 4,
+          "startIndex": 2,
+          "endIndex": 3,
           "pinnedAnchor": true,
+          "pinOrder": 1,
           "words": [
             "not"
           ]
         },
         {
-          "id": "s7-c4",
-          "sentenceIndex": 7,
-          "componentIndex": 4,
-          "text": "just",
-          "role": "adverb",
-          "lane": "minor",
-          "order": 2,
-          "startIndex": 3,
-          "endIndex": 4,
-          "pinnedAnchor": true,
-          "words": [
-            "just"
-          ]
-        },
-        {
-          "id": "s7-c5",
-          "sentenceIndex": 7,
-          "componentIndex": 5,
-          "text": "an imaginary situation",
-          "role": "complement",
-          "lane": "major",
-          "order": 3,
-          "startIndex": 4,
-          "endIndex": 7,
-          "words": [
-            "an",
-            "imaginary",
-            "situation"
-          ]
-        },
-        {
           "id": "s7-c6",
           "sentenceIndex": 7,
-          "componentIndex": 6,
+          "componentIndex": 4,
           "text": "— it",
           "role": "subject",
           "lane": "major",
@@ -622,9 +591,26 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
+          "id": "s7-c5-s7-c4-u40",
+          "sentenceIndex": 7,
+          "componentIndex": 5,
+          "text": "just an imaginary situation",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 7,
+          "words": [
+            "just",
+            "an",
+            "imaginary",
+            "situation"
+          ]
+        },
+        {
           "id": "s7-c7",
           "sentenceIndex": 7,
-          "componentIndex": 7,
+          "componentIndex": 6,
           "text": "is happening",
           "role": "verb",
           "lane": "major",
@@ -639,11 +625,11 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
         {
           "id": "s7-c8",
           "sentenceIndex": 7,
-          "componentIndex": 8,
+          "componentIndex": 7,
           "text": "all over the world right now.",
           "role": "adverb",
           "lane": "minor",
-          "order": 3,
+          "order": 2,
           "startIndex": 11,
           "endIndex": 17,
           "words": [

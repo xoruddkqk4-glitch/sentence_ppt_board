@@ -39,13 +39,6 @@
               <li>종요소: 형용사어, 부사어</li>
               <li>분석이 틀리면 드래그앤드롭으로 수정</li>
             </ul>
-            <div class="quick-load-section">
-              <div class="quick-load-header">
-                <h3 class="quick-load-title">빠른 지문 불러오기</h3>
-                <button class="button secondary compact" type="button" id="selectFolderButton">📁 기본 폴더 설정</button>
-              </div>
-              <div id="txtGrid" class="txt-grid"></div>
-            </div>
           </div>
 
           <form id="passageForm" class="passage-panel">
@@ -54,17 +47,13 @@
                 <label for="passageInput">수업 지문</label>
                 <span id="fileNameDisplay" class="file-name-badge hidden"></span>
               </div>
-              <div class="passage-header-actions">
-                <button class="button secondary compact" type="button" id="clearButton">초기화</button>
-                <button class="button secondary compact" type="button" id="inputImportButton">TXT 불러오기</button>
-              </div>
             </div>
             <textarea id="passageInput" rows="12" placeholder="예: The young students read the story carefully. They were extremely excited about the new lesson."></textarea>
             <p id="inputMessage" class="message" aria-live="polite"></p>
             <div class="button-row">
+              <button class="button secondary" type="button" id="clearButton">초기화</button>
               <button class="button secondary" type="button" id="sampleButton">샘플 넣기</button>
-              <button class="button secondary" type="button" id="inputSaveTxtButton">현재 TXT에 저장</button>
-              <button class="button secondary" type="button" id="inputSaveAsTxtButton">다른 이름으로 저장</button>
+              <button class="button secondary" type="button" id="inputImportButton">TXT 불러오기</button>
               <button class="button primary" type="submit">2단계-문장분석 시작</button>
             </div>
           </form>
@@ -193,7 +182,6 @@
   </div>
 
   <input id="analysisFileInput" type="file" accept=".txt,text/plain" hidden>
-  <input id="folderInput" type="file" webkitdirectory directory multiple hidden>
   <script src="js/main.js"></script>
 </body>
 </html>

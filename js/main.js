@@ -1156,11 +1156,8 @@ const state = {
   minorSlots: [],
   lastModifierClickIndex: null,
   lastModifierComponentId: null,
-  quickFilesMap: new Map(),
-  hasFolderSelected: false,
   currentFileName: null,
   currentFileHandle: null,
-  directoryHandle: null,
   hasLoadedAnalysis: false,
   focusedComponentId: null
 };
@@ -1176,16 +1173,11 @@ const elements = {
   editMessage: document.getElementById("editMessage"),
   sampleButton: document.getElementById("sampleButton"),
   clearButton: document.getElementById("clearButton"),
-  inputSaveTxtButton: document.getElementById("inputSaveTxtButton"),
-  inputSaveAsTxtButton: document.getElementById("inputSaveAsTxtButton"),
   inputImportButton: document.getElementById("inputImportButton"),
   fileNameDisplay: document.getElementById("fileNameDisplay"),
   saveTxtButton: document.getElementById("saveTxtButton"),
   saveAsTxtButton: document.getElementById("saveAsTxtButton"),
   analysisFileInput: document.getElementById("analysisFileInput"),
-  txtGrid: document.getElementById("txtGrid"),
-  selectFolderButton: document.getElementById("selectFolderButton"),
-  folderInput: document.getElementById("folderInput"),
   themeSelect: document.getElementById("themeSelect"),
   editProgress: document.getElementById("editProgress"),
   presentProgress: document.getElementById("presentProgress"),
@@ -1261,8 +1253,8 @@ function analyzeSentence(sentenceText, sentenceIndex) {
   const isSubtitle = !isTitle && sentenceText.startsWith("/") && sentenceText.endsWith("/");
 
   if (isTitle || isSubtitle) {
-    const cleanText = isTitle 
-      ? sentenceText.slice(2, -2).trim() 
+    const cleanText = isTitle
+      ? sentenceText.slice(2, -2).trim()
       : sentenceText.slice(1, -1).trim();
 
     return [{
@@ -1489,7 +1481,7 @@ function renderEditView() {
   // 포커스 복원 처리
   if (state.focusedComponentId) {
     const chip = elements.majorEditLane.querySelector(`[data-component-id="${state.focusedComponentId}"]`) ||
-                 elements.minorEditLane.querySelector(`[data-component-id="${state.focusedComponentId}"]`);
+      elements.minorEditLane.querySelector(`[data-component-id="${state.focusedComponentId}"]`);
     const select = chip?.querySelector(".role-select") || chip?.querySelector(".custom-select");
     if (select) {
       select.focus();
@@ -1509,8 +1501,8 @@ function adjustEditViewScale() {
   editView.style.removeProperty("--edit-font-size");
   editView.style.removeProperty("--edit-gap");
 
-  let fontSize = 20; 
-  let gap = 16;      
+  let fontSize = 20;
+  let gap = 16;
   let loopCount = 0;
 
   // 세로 스크롤바가 완전히 사라질 때까지 글자 크기와 줄간격을 점진적으로 축소
@@ -1592,7 +1584,7 @@ function createEditChip(component) {
       li.classList.add("selected");
     }
     li.dataset.value = role.value;
-    
+
     const numPrefix = prefixMap[role.value] || "";
     li.textContent = numPrefix + role.label;
     optionsList.appendChild(li);
@@ -1940,12 +1932,12 @@ function renderPresentView() {
     elements.minorAnchorLane.innerHTML = "";
     elements.minorPresentLane.innerHTML = "";
     elements.emptyMinorNote.classList.add("hidden");
-    
+
     const stage = document.querySelector(".presentation-stage");
     if (stage) {
       stage.querySelectorAll(".modifier-target-bracket").forEach((bracket) => bracket.remove());
     }
-    
+
     schedulePresentationFit();
     return;
   }
@@ -1971,7 +1963,7 @@ function renderImportantSidebar() {
     return;
   }
   elements.importantPresentNav.innerHTML = "";
-  
+
   let shortcutCounter = 1;
   state.sentences.forEach((sentence, idx) => {
     const btn = document.createElement("div");
@@ -1979,12 +1971,12 @@ function renderImportantSidebar() {
     if (idx === state.currentSentenceIndex) {
       btn.classList.add("active");
     }
-    
+
     const isImp = sentence.isImportant === true;
     if (isImp) {
       btn.classList.add("important");
     }
-    
+
     // 별표 토글 버튼 (클릭 시 중요 지정 여부 켜고 끔)
     const starBtn = document.createElement("button");
     starBtn.type = "button";
@@ -1996,16 +1988,16 @@ function renderImportantSidebar() {
       sentence.isImportant = !sentence.isImportant;
       render();
     });
-    
+
     // 문장 번호 표시
     const numSpan = document.createElement("span");
     numSpan.className = "sentence-num";
     numSpan.textContent = String(idx + 1);
-    
+
     // 단축 번호키 배지용 래퍼 컨테이너 (정렬 일관성 유지 목적)
     const badgeWrapper = document.createElement("div");
     badgeWrapper.className = "shortcut-badge-wrapper";
-    
+
     if (isImp && shortcutCounter <= 9) {
       const shortcutBadge = document.createElement("span");
       shortcutBadge.className = "shortcut-badge";
@@ -2013,14 +2005,14 @@ function renderImportantSidebar() {
       badgeWrapper.appendChild(shortcutBadge);
       shortcutCounter += 1;
     }
-    
+
     btn.append(starBtn, numSpan, badgeWrapper);
-    
+
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       goToSentence(idx, 0);
     });
-    
+
     elements.importantPresentNav.appendChild(btn);
   });
 }
@@ -2164,7 +2156,7 @@ function placeMinorComponentOnGrid(element, component, rowIndex, anchorPercent =
   element.style.setProperty("--anchor-percent", `${anchorPercent}%`);
   element.style.setProperty("--box-percent", `${anchorPercent}%`);
   element.style.setProperty("--connector-x", "50%");
-  
+
   const sentence = getCurrentSentence();
   const totalRows = sentence ? getComponentsByLane(sentence, "minor").length : 1;
   const spacing = Math.max(50, 96 - totalRows * 8);
@@ -2465,10 +2457,10 @@ function updateSentenceText() {
   sentence.text = newText;
   sentence.wordCount = getPlainWords(newText).length;
   sentence.components = analyzeSentence(newText, state.currentSentenceIndex);
-  
+
   state.passageText = state.sentences.map((s) => s.text).join(" ");
   elements.passageInput.value = state.passageText;
-  
+
   render();
 }
 
@@ -2485,14 +2477,14 @@ function insertNewSentence() {
     wordCount: getPlainWords(defaultText).length,
     components: analyzeSentence(defaultText, insertIndex)
   };
-  
+
   state.sentences.splice(insertIndex, 0, newSentence);
-  
+
   reindexSentences();
-  
+
   state.currentSentenceIndex = insertIndex;
   state.minorRevealCount = 0;
-  
+
   render();
 }
 
@@ -2504,17 +2496,17 @@ function deleteCurrentSentence() {
     alert("더 이상 문장을 삭제할 수 없습니다. 최소 하나의 문장이 필요합니다.");
     return;
   }
-  
+
   if (!confirm("현재 문장을 정말 삭제하시겠습니까?")) {
     return;
   }
-  
+
   state.sentences.splice(state.currentSentenceIndex, 1);
   reindexSentences();
-  
+
   state.currentSentenceIndex = Math.max(0, Math.min(state.currentSentenceIndex, state.sentences.length - 1));
   state.minorRevealCount = 0;
-  
+
   render();
 }
 
@@ -2847,7 +2839,7 @@ function togglePresentFullscreen() {
     document.exitFullscreen?.();
     return;
   }
-  elements.presentView.requestFullscreen?.().catch(() => {});
+  elements.presentView.requestFullscreen?.().catch(() => { });
 }
 
 function handleFullscreenChange() {
@@ -3503,41 +3495,10 @@ async function saveAnalysisTxt(saveAs = false) {
 
   const content = buildAnalysisText();
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-  
-  let fileName = state.currentFileName;
-  if (!fileName) {
-    fileName = getAnalysisFileName();
-    state.currentFileName = fileName;
-  }
-  updateFileNameDisplay();
 
-  // 최신 수정본을 로컬 스토리지 캐시 및 빠른 지문 불러오기 맵과 캐시에 즉시 동기화
-  localStorage.setItem(`sentence_board_file_cache_${fileName}`, content);
-  
-  const existingEntry = state.quickFilesMap.get(fileName);
-  const isHandle = existingEntry && typeof existingEntry.getFile === "function";
-  if (!isHandle) {
-    const updatedFile = new File([content], fileName, { type: "text/plain" });
-    state.quickFilesMap.set(fileName, updatedFile);
-  }
-  
-  QUICK_TXT_DATA[fileName] = content;
-
-  if (!QUICK_TXT_FILES.includes(fileName)) {
-    QUICK_TXT_FILES.push(fileName);
-  }
-  
-  if (state.hasFolderSelected) {
-    const filesList = Array.from(state.quickFilesMap.keys());
-    localStorage.setItem("sentence_board_selected_folder_files", JSON.stringify(filesList));
-  }
-  
-  renderTxtGrid();
-
-  // "현재 TXT에 저장" (saveAs === false) 이고, 이전에 저장 시점 또는 불러오기 시점에 획득한 파일 핸들이 있는 경우
+  // "현재 TXT에 저장" (saveAs === false) 이고, 불러오기 시점에 획득한 파일 핸들이 있는 경우 직접 덮어쓰기 시도
   if (!saveAs && state.currentFileHandle) {
     try {
-      // 쓰기 권한 재확인 및 요청 (보안상 읽기전용 핸들에서 createWritable 에러 방지)
       const perm = await state.currentFileHandle.queryPermission({ mode: "readwrite" });
       if (perm !== "granted") {
         const reqPerm = await state.currentFileHandle.requestPermission({ mode: "readwrite" });
@@ -3549,8 +3510,11 @@ async function saveAnalysisTxt(saveAs = false) {
       const writable = await state.currentFileHandle.createWritable();
       await writable.write(blob);
       await writable.close();
-      
-      const saveMsg = `💾 ${fileName} 파일에 수정 사항을 저장했습니다.`;
+
+      // 최신 수정본 캐시 업데이트
+      localStorage.setItem(`sentence_board_file_cache_${state.currentFileName}`, content);
+
+      const saveMsg = `💾 ${state.currentFileName} 파일에 수정 사항을 덮어써 저장했습니다.`;
       elements.inputMessage.style.color = "var(--color-primary)";
       elements.inputMessage.textContent = saveMsg;
       if (elements.editMessage) {
@@ -3569,68 +3533,43 @@ async function saveAnalysisTxt(saveAs = false) {
       }, 3000);
       return;
     } catch (error) {
-      console.warn("기존 파일 핸들 쓰기 실패. 새 창을 띄웁니다.", error);
-      // 실패 시 fall through하여 다른 이름으로 저장 진행
+      console.warn("기존 파일 핸들 쓰기 실패. 일반 다운로드 폴백을 실행합니다.", error);
     }
   }
 
-  let startInHandle = null;
-  if (state.directoryHandle) {
-    startInHandle = state.directoryHandle;
-  } else if (state.currentFileHandle) {
-    startInHandle = state.currentFileHandle;
-  }
-
-  if (startInHandle) {
-    try {
-      const perm = await startInHandle.queryPermission({ mode: "readwrite" });
-      if (perm !== "granted") {
-        await startInHandle.requestPermission({ mode: "readwrite" });
-      }
-    } catch (e) {
-      console.warn("Failed to acquire permission for startInHandle:", e);
-    }
-  }
-
+  // "다른 이름으로 저장" (saveAs === true) 이거나 파일 핸들이 없는 경우
+  // 1. showSaveFilePicker가 지원되면 탐색기 창을 먼저 켬
   if (window.showSaveFilePicker) {
     try {
+      const suggestedName = state.currentFileName || getAnalysisFileName();
       const pickerOptions = {
-        suggestedName: fileName,
+        suggestedName: suggestedName,
         types: [
           {
             description: "Text file",
             accept: { "text/plain": [".txt"] }
           }
-        ]
+        ],
+        id: "whiteboard_ppt_board_picker"
       };
-      if (startInHandle) {
-        pickerOptions.startIn = startInHandle;
-      } else {
-        pickerOptions.id = "sentence_ppt_board";
+      if (state.currentFileHandle) {
+        pickerOptions.startIn = state.currentFileHandle;
       }
       const fileHandle = await window.showSaveFilePicker(pickerOptions);
+      if (!fileHandle) {
+        return;
+      }
+
+      // 새 파일 정보로 활성 파일 핸들 및 파일명 즉시 갱신 (A -> B 전환 버그 해결!)
       state.currentFileHandle = fileHandle;
       state.currentFileName = fileHandle.name;
       updateFileNameDisplay();
-      
+
       const writable = await fileHandle.createWritable();
       await writable.write(blob);
       await writable.close();
 
-      // 저장된 새 파일명으로 로컬 스토리지 캐시 및 데이터 동기화 재정렬
       localStorage.setItem(`sentence_board_file_cache_${fileHandle.name}`, content);
-      state.quickFilesMap.set(fileHandle.name, fileHandle); // FileHandle 저장
-      QUICK_TXT_DATA[fileHandle.name] = content;
-      if (!QUICK_TXT_FILES.includes(fileHandle.name)) {
-        QUICK_TXT_FILES.push(fileHandle.name);
-      }
-      
-      if (state.hasFolderSelected) {
-        const filesList = Array.from(state.quickFilesMap.keys());
-        localStorage.setItem("sentence_board_selected_folder_files", JSON.stringify(filesList));
-      }
-      
-      renderTxtGrid();
 
       const saveMsg = `💾 ${fileHandle.name} 파일로 저장했습니다.`;
       elements.inputMessage.style.color = "var(--color-primary)";
@@ -3652,14 +3591,38 @@ async function saveAnalysisTxt(saveAs = false) {
       return;
     } catch (error) {
       if (error?.name === "AbortError") {
-        return;
+        return; // 사용자가 저장을 취소한 경우 조기 종료
       }
-      console.warn("Save picker failed. Falling back to download.", error);
+      console.warn("SaveFilePicker failed. Falling back to browser download.", error);
     }
   }
 
-  // File System Access API 미지원 또는 취소 시 다운로드 링크 생성
-  downloadAnalysisTxt(blob, fileName);
+  // 2. showSaveFilePicker 미지원 시 또는 에러 시 일반 브라우저 다운로드 폴백
+  const fallbackFileName = state.currentFileName || getAnalysisFileName();
+  state.currentFileHandle = null; // 핸들 저장이 불가능하므로 null로 리셋
+  state.currentFileName = fallbackFileName;
+  updateFileNameDisplay();
+
+  localStorage.setItem(`sentence_board_file_cache_${fallbackFileName}`, content);
+  downloadAnalysisTxt(blob, fallbackFileName);
+
+  const saveMsg = `💾 ${fallbackFileName} 파일로 저장했습니다.`;
+  elements.inputMessage.style.color = "var(--color-primary)";
+  elements.inputMessage.textContent = saveMsg;
+  if (elements.editMessage) {
+    elements.editMessage.style.color = "var(--color-primary)";
+    elements.editMessage.textContent = saveMsg;
+  }
+  setTimeout(() => {
+    if (elements.inputMessage.textContent === saveMsg) {
+      elements.inputMessage.textContent = "";
+      elements.inputMessage.style.color = "";
+    }
+    if (elements.editMessage && elements.editMessage.textContent === saveMsg) {
+      elements.editMessage.textContent = "";
+      elements.editMessage.style.color = "";
+    }
+  }, 3000);
 }
 
 function getAnalysisFileName() {
@@ -3750,65 +3713,46 @@ function formatOneBasedRange(startIndex, endIndex) {
 }
 
 async function triggerAnalysisImport() {
-  if (!window.showOpenFilePicker) {
-    elements.analysisFileInput.value = "";
-    elements.analysisFileInput.click();
-    return;
-  }
-  
-  let startInHandle = null;
-  if (state.directoryHandle) {
-    startInHandle = state.directoryHandle;
-  } else if (state.currentFileHandle) {
-    startInHandle = state.currentFileHandle;
-  }
-
-  if (startInHandle) {
+  if (window.showOpenFilePicker) {
     try {
-      const perm = await startInHandle.queryPermission({ mode: "readwrite" });
-      if (perm !== "granted") {
-        await startInHandle.requestPermission({ mode: "readwrite" });
+      const pickerOptions = {
+        types: [
+          {
+            description: "Text file",
+            accept: { "text/plain": [".txt"] }
+          }
+        ],
+        id: "whiteboard_ppt_board_picker"
+      };
+      if (state.currentFileHandle) {
+        pickerOptions.startIn = state.currentFileHandle;
       }
-    } catch (e) {
-      console.warn("Failed to acquire permission for startInHandle:", e);
-    }
-  }
+      const [fileHandle] = await window.showOpenFilePicker(pickerOptions);
+      if (!fileHandle) {
+        return;
+      }
 
-  try {
-    const pickerOptions = {
-      types: [
-        {
-          description: "Text file",
-          accept: { "text/plain": [".txt"] }
-        }
-      ]
-    };
-    if (startInHandle) {
-      pickerOptions.startIn = startInHandle;
-    } else {
-      pickerOptions.id = "sentence_ppt_board";
-    }
-    const [fileHandle] = await window.showOpenFilePicker(pickerOptions);
-    if (!fileHandle) {
+      state.currentFileName = fileHandle.name;
+      state.currentFileHandle = fileHandle;
+      updateFileNameDisplay();
+
+      const file = await fileHandle.getFile();
+      const resultText = await file.text();
+
+      localStorage.setItem(`sentence_board_file_cache_${fileHandle.name}`, resultText);
+      importAnalysisTxt(resultText);
       return;
+    } catch (error) {
+      if (error?.name === "AbortError") {
+        return;
+      }
+      console.warn("OpenFilePicker failed. Falling back to input file.", error);
     }
-
-    state.currentFileName = fileHandle.name;
-    updateFileNameDisplay();
-    state.currentFileHandle = fileHandle; // 파일 핸들 즉시 저장!
-    await saveHandleToDB("currentFileHandle", fileHandle);
-    
-    const file = await fileHandle.getFile();
-    const resultText = await file.text();
-    
-    // 캐시 동기화 및 로드
-    localStorage.setItem(`sentence_board_file_cache_${fileHandle.name}`, resultText);
-    importAnalysisTxt(resultText);
-  } catch (error) {
-    if (error?.name === "AbortError") return;
-    console.error(error);
-    alert(`지문을 불러오지 못했습니다: ${error.message}`);
   }
+
+  state.currentFileHandle = null;
+  elements.analysisFileInput.value = "";
+  elements.analysisFileInput.click();
 }
 
 function handleAnalysisFileSelected(event) {
@@ -3817,15 +3761,10 @@ function handleAnalysisFileSelected(event) {
     return;
   }
 
-  // 최신 가져온 파일명 기록 및 빠른 지문 맵에 등록
+  // 최신 가져온 파일명 기록 및 파일 핸들 초기화
   state.currentFileName = file.name;
+  state.currentFileHandle = null;
   updateFileNameDisplay();
-  state.currentFileHandle = null; // 수동으로 새 파일 로드 시 이전 핸들 초기화
-  state.quickFilesMap.set(file.name, file);
-  if (!QUICK_TXT_FILES.includes(file.name)) {
-    QUICK_TXT_FILES.push(file.name);
-  }
-  renderTxtGrid();
 
   const reader = new FileReader();
   reader.onload = () => {
@@ -4050,315 +3989,7 @@ function updateFileNameDisplay() {
   }
 }
 
-function renderTxtGrid() {
-  if (!elements.txtGrid) return;
-  elements.txtGrid.innerHTML = "";
 
-  const files = state.hasFolderSelected ? Array.from(state.quickFilesMap.keys()) : QUICK_TXT_FILES;
-  files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
-
-  // 5x5 = 25개의 버튼 생성
-  for (let i = 0; i < 25; i++) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "txt-btn";
-
-    if (i < files.length) {
-      const fileName = files[i];
-      const displayName = fileName.replace(/\.txt$/, "");
-      btn.textContent = displayName;
-      btn.setAttribute("aria-label", `${displayName} 지문 불러오기`);
-      btn.addEventListener("click", () => {
-        if (state.hasFolderSelected) {
-          loadQuickTxtFromUploadedFile(fileName);
-        } else {
-          loadQuickTxt(fileName);
-        }
-      });
-    } else {
-      btn.textContent = "-";
-      btn.disabled = true;
-    }
-
-    elements.txtGrid.appendChild(btn);
-  }
-}
-
-async function loadQuickTxt(fileName) {
-  try {
-    state.currentFileName = fileName;
-    updateFileNameDisplay();
-    state.currentFileHandle = null; // 새 지문 불러오기 시 이전 파일 핸들 초기화
-    await saveHandleToDB("currentFileHandle", null);
-    
-    // 로컬 스토리지 캐시 우선 조회
-    const cachedContent = localStorage.getItem(`sentence_board_file_cache_${fileName}`);
-    const text = cachedContent || QUICK_TXT_DATA[fileName];
-    if (!text) {
-      throw new Error("정의되지 않은 지문 파일입니다.");
-    }
-    
-    importAnalysisTxt(text);
-
-    elements.inputMessage.style.color = "var(--color-primary)";
-    elements.inputMessage.textContent = `✅ [내장] ${fileName.replace(/\.txt$/, "")} 지문을 성공적으로 불러왔습니다.`;
-    setTimeout(() => {
-      if (elements.inputMessage.textContent.includes("성공적으로")) {
-        elements.inputMessage.textContent = "";
-        elements.inputMessage.style.color = "";
-      }
-    }, 3000);
-  } catch (error) {
-    console.error(error);
-    elements.inputMessage.style.color = "var(--color-warning)";
-    elements.inputMessage.textContent = `❌ 지문을 불러오지 못했습니다: ${error.message}`;
-  }
-}
-
-async function ensureDirectoryPermissionAndRebuildMap() {
-  if (!state.directoryHandle) {
-    return false;
-  }
-  try {
-    let permission = await state.directoryHandle.queryPermission({ mode: "readwrite" });
-    if (permission !== "granted") {
-      permission = await state.directoryHandle.requestPermission({ mode: "readwrite" });
-    }
-    if (permission === "granted") {
-      state.quickFilesMap.clear();
-      for await (const entry of state.directoryHandle.values()) {
-        if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".txt")) {
-          state.quickFilesMap.set(entry.name, entry);
-        }
-      }
-      return true;
-    }
-  } catch (e) {
-    console.warn("Failed to request directory permission:", e);
-  }
-  return false;
-}
-
-async function loadQuickTxtFromUploadedFile(fileName) {
-  try {
-    state.currentFileName = fileName;
-    updateFileNameDisplay();
-    state.currentFileHandle = null; // 새 지문 불러오기 시 이전 파일 핸들 초기화
-    
-    // 디렉터리 권한 재허가 및 최신 파일 목록 확보
-    await ensureDirectoryPermissionAndRebuildMap();
-    
-    const fileEntry = state.quickFilesMap.get(fileName);
-    
-    // 1. File System Access API의 파일 핸들인 경우 (entry.getFile이 존재) -> 덮어쓰기 권한을 유지하며 데이터 로드
-    if (fileEntry && typeof fileEntry.getFile === "function") {
-      state.currentFileHandle = fileEntry; // 현재 파일 핸들에 저장!
-      await saveHandleToDB("currentFileHandle", fileEntry);
-      try {
-        const file = await fileEntry.getFile();
-        const resultText = await file.text();
-        localStorage.setItem(`sentence_board_file_cache_${fileName}`, resultText);
-        localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, resultText);
-        importAnalysisTxt(resultText);
-        showSuccessfulLoadMessage(fileName);
-        return;
-      } catch (error) {
-        alert(`지문을 분석하는 중 오류가 발생했습니다: ${error.message}`);
-        return;
-      }
-    }
-    
-    // 2. Fallback: input directory 등 일반 File 객체인 경우
-    if (fileEntry && !fileEntry.isMock) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const resultText = String(reader.result || "");
-          localStorage.setItem(`sentence_board_file_cache_${fileName}`, resultText);
-          localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, resultText);
-          importAnalysisTxt(resultText);
-          showSuccessfulLoadMessage(fileName);
-        } catch (error) {
-          alert(`지문을 분석하는 중 오류가 발생했습니다: ${error.message}`);
-        }
-      };
-      reader.onerror = () => alert("파일을 읽는 중 오류가 발생했습니다.");
-      reader.readAsText(fileEntry, "utf-8");
-      return;
-    }
-
-    // 3. 실제 파일 객체가 없거나, mock 객체인 경우 (새로고침 후 자동 복구 상태 등) -> 캐시 우선 사용
-    const cachedContent = localStorage.getItem(`sentence_board_file_cache_${fileName}`);
-    if (cachedContent) {
-      importAnalysisTxt(cachedContent);
-      showSuccessfulLoadMessage(fileName);
-      return;
-    }
-
-    const rawCache = localStorage.getItem(`sentence_board_file_raw_cache_${fileName}`);
-    if (rawCache) {
-      // 첫 로딩 시 로컬 스토리지 수정본 캐시로도 복사
-      localStorage.setItem(`sentence_board_file_cache_${fileName}`, rawCache);
-      importAnalysisTxt(rawCache);
-      showSuccessfulLoadMessage(fileName);
-      return;
-    }
-
-    throw new Error("파일 객체 또는 캐시 데이터를 찾을 수 없습니다.");
-  } catch (error) {
-    console.error(error);
-    elements.inputMessage.style.color = "var(--color-warning)";
-    elements.inputMessage.textContent = `❌ 지문을 불러오지 못했습니다: ${error.message}`;
-  }
-}
-
-function showSuccessfulLoadMessage(fileName) {
-  elements.inputMessage.style.color = "var(--color-primary)";
-  elements.inputMessage.textContent = `✅ ${fileName.replace(/\.txt$/, "")} 지문을 성공적으로 불러왔습니다.`;
-  setTimeout(() => {
-    if (elements.inputMessage.textContent.includes("성공적으로")) {
-      elements.inputMessage.textContent = "";
-      elements.inputMessage.style.color = "";
-    }
-  }, 3000);
-}
-
-async function selectDirectory() {
-  if (!window.showDirectoryPicker) {
-    elements.folderInput.click();
-    return;
-  }
-  try {
-    const dirHandle = await window.showDirectoryPicker({
-      id: "sentence_ppt_board"
-    });
-    clearRawFolderCache(); // 이전 폴더 원본 백업 캐시 소거
-    state.quickFilesMap.clear();
-    state.directoryHandle = dirHandle;
-    state.currentFileHandle = null;
-    state.currentFileName = null;
-    updateFileNameDisplay();
-    state.hasFolderSelected = true;
-    
-    await saveHandleToDB("directoryHandle", dirHandle);
-    await saveHandleToDB("currentFileHandle", null);
-
-    const txtFiles = [];
-    for await (const entry of dirHandle.values()) {
-      if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".txt")) {
-        state.quickFilesMap.set(entry.name, entry); // FileHandle을 직접 맵에 저장
-        txtFiles.push(entry.name);
-      }
-    }
-
-    if (txtFiles.length === 0) {
-      localStorage.removeItem("sentence_board_has_folder_selected");
-      localStorage.removeItem("sentence_board_selected_folder_name");
-      localStorage.removeItem("sentence_board_selected_folder_files");
-      
-      elements.inputMessage.style.color = "var(--color-warning)";
-      elements.inputMessage.textContent = "⚠️ 선택한 폴더 바로 아래에 .txt 파일이 존재하지 않습니다.";
-      return;
-    }
-
-    // 로컬 스토리지에 폴더 메타데이터 저장
-    try {
-      localStorage.setItem("sentence_board_has_folder_selected", "true");
-      localStorage.setItem("sentence_board_selected_folder_name", dirHandle.name);
-      localStorage.setItem("sentence_board_selected_folder_files", JSON.stringify(txtFiles));
-    } catch (e) {
-      console.warn("Storage quota exceeded or storage disallowed for metadata:", e);
-    }
-
-    // 각 파일의 원본 콘텐츠를 비동기적으로 읽어서 localStorage에 캐싱
-    for (const fileName of txtFiles) {
-      const fileEntry = state.quickFilesMap.get(fileName);
-      if (!fileEntry) continue;
-      try {
-        const file = await fileEntry.getFile();
-        const content = await file.text();
-        localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, content);
-      } catch (e) {
-        console.warn(`Failed to cache raw content of ${fileName}:`, e);
-      }
-    }
-
-    renderTxtGrid();
-
-    elements.inputMessage.style.color = "var(--color-primary)";
-    elements.inputMessage.textContent = `📁 ${dirHandle.name} 폴더에서 ${txtFiles.length}개의 지문 파일을 성공적으로 연결했습니다.`;
-  } catch (error) {
-    if (error?.name === "AbortError") return;
-    console.error(error);
-    alert(`폴더 파일을 읽는 중 오류가 발생했습니다: ${error.message}`);
-  }
-}
-
-function handleFolderSelected(event) {
-  try {
-    const files = Array.from(event.target.files || []);
-    clearRawFolderCache(); // 이전 폴더 원본 백업 캐시 소거
-    state.quickFilesMap.clear();
-    state.currentFileHandle = null; // 폴더 변경 시 이전 파일 핸들 초기화
-    state.currentFileName = null;
-    updateFileNameDisplay();
-
-    const txtFiles = [];
-    files.forEach((file) => {
-      const pathParts = file.webkitRelativePath.split("/");
-      if (pathParts.length === 2 && file.name.toLowerCase().endsWith(".txt")) {
-        state.quickFilesMap.set(file.name, file);
-        txtFiles.push(file.name);
-      }
-    });
-
-    if (txtFiles.length === 0) {
-      localStorage.removeItem("sentence_board_has_folder_selected");
-      localStorage.removeItem("sentence_board_selected_folder_name");
-      localStorage.removeItem("sentence_board_selected_folder_files");
-      
-      elements.inputMessage.style.color = "var(--color-warning)";
-      elements.inputMessage.textContent = "⚠️ 선택한 폴더 바로 아래에 .txt 파일이 존재하지 않습니다.";
-      return;
-    }
-
-    state.hasFolderSelected = true;
-    
-    // 로컬 스토리지에 폴더 메타데이터 저장
-    const folderName = files[0]?.webkitRelativePath.split("/")[0] || "지정 폴더";
-    try {
-      localStorage.setItem("sentence_board_has_folder_selected", "true");
-      localStorage.setItem("sentence_board_selected_folder_name", folderName);
-      localStorage.setItem("sentence_board_selected_folder_files", JSON.stringify(txtFiles));
-    } catch (e) {
-      console.warn("Storage quota exceeded or storage disallowed for metadata:", e);
-    }
-
-    // 각 파일의 원본 콘텐츠를 비동기적으로 읽어서 localStorage에 캐싱
-    txtFiles.forEach((fileName) => {
-      const file = state.quickFilesMap.get(fileName);
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const content = String(reader.result || "");
-          localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, content);
-        } catch (e) {
-          console.warn(`Failed to cache raw content of ${fileName}:`, e);
-        }
-      };
-      reader.readAsText(file, "utf-8");
-    });
-
-    renderTxtGrid();
-
-    elements.inputMessage.style.color = "var(--color-primary)";
-    elements.inputMessage.textContent = `📁 ${folderName} 폴더에서 ${txtFiles.length}개의 지문 파일을 성공적으로 연결했습니다.`;
-  } catch (error) {
-    console.error(error);
-    alert(`폴더 파일을 읽는 중 오류가 발생했습니다: ${error.message}`);
-  }
-}
 
 function goToInputStart() {
   state.currentSentenceIndex = 0;
@@ -4392,6 +4023,7 @@ function bindEvents() {
   elements.passageInput.addEventListener("input", () => {
     state.hasLoadedAnalysis = false;
     state.currentFileName = null;
+    state.currentFileHandle = null;
     updateFileNameDisplay();
   });
 
@@ -4399,23 +4031,21 @@ function bindEvents() {
     elements.passageInput.value = SAMPLE_TEXT;
     elements.inputMessage.textContent = "";
     state.currentFileName = null;
+    state.currentFileHandle = null;
     updateFileNameDisplay();
   });
 
-  elements.clearButton.addEventListener("click", async () => {
+  elements.clearButton.addEventListener("click", () => {
     elements.passageInput.value = "";
     elements.inputMessage.textContent = "";
     state.sentences = [];
     state.currentSentenceIndex = 0;
     state.minorRevealCount = 0;
     state.currentFileName = null;
-    updateFileNameDisplay();
     state.currentFileHandle = null;
-    await saveHandleToDB("currentFileHandle", null);
+    updateFileNameDisplay();
   });
 
-  elements.inputSaveTxtButton.addEventListener("click", () => saveAnalysisTxt(false));
-  elements.inputSaveAsTxtButton.addEventListener("click", () => saveAnalysisTxt(true));
   elements.inputImportButton.addEventListener("click", triggerAnalysisImport);
   elements.applySentenceTextButton.addEventListener("click", updateSentenceText);
   elements.toggleImportantButton.addEventListener("click", toggleImportantSentence);
@@ -4431,7 +4061,10 @@ function bindEvents() {
     schedulePresentationFit();
   });
 
-  elements.backToInputButton.addEventListener("click", () => setMode("input"));
+  elements.backToInputButton.addEventListener("click", () => {
+    applyPendingEdits();
+    setMode("input");
+  });
   elements.returnInputButton.addEventListener("click", goToInputStart);
   elements.startPresentButton.addEventListener("click", () => setMode("present"));
   elements.presentFitButton.addEventListener("click", togglePresentFullscreen);
@@ -4462,9 +4095,6 @@ function bindEvents() {
 
   elements.minorPresentLane.addEventListener("dragover", handlePresentMinorDragOver);
   elements.minorPresentLane.addEventListener("drop", handlePresentMinorDrop);
-
-  elements.selectFolderButton.addEventListener("click", selectDirectory);
-  elements.folderInput.addEventListener("change", handleFolderSelected);
 
   document.addEventListener("keydown", handleKeyboard);
   window.addEventListener("resize", () => {
@@ -4560,143 +4190,8 @@ function handleKeyboard(event) {
   }
 }
 
-function clearRawFolderCache() {
-  try {
-    const keysToRemove = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith("sentence_board_file_raw_cache_")) {
-        keysToRemove.push(key);
-      }
-    }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-  } catch (e) {
-    console.error("Error clearing raw folder cache:", e);
-  }
-}
-
-// IndexedDB Helpers for persisting File System Access API handles
-const DB_NAME = "SentenceBoardDB";
-const STORE_NAME = "Handles";
-
-function getDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
-    request.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME);
-      }
-    };
-    request.onsuccess = (e) => resolve(e.target.result);
-    request.onerror = (e) => reject(e.target.error);
-  });
-}
-
-async function saveHandleToDB(key, handle) {
-  try {
-    const db = await getDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readwrite");
-      const store = tx.objectStore(STORE_NAME);
-      const request = store.put(handle, key);
-      request.onsuccess = () => resolve();
-      request.onerror = (e) => reject(e.target.error);
-    });
-  } catch (e) {
-    console.warn("IndexedDB save failed:", e);
-  }
-}
-
-async function getHandleFromDB(key) {
-  try {
-    const db = await getDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readonly");
-      const store = tx.objectStore(STORE_NAME);
-      const request = store.get(key);
-      request.onsuccess = (e) => resolve(e.target.result);
-      request.onerror = (e) => reject(e.target.error);
-    });
-  } catch (e) {
-    console.warn("IndexedDB load failed:", e);
-    return null;
-  }
-}
-
-async function restoreSelectedFolder() {
-  try {
-    // 1. IndexedDB로부터 디렉터리 및 파일 핸들 복구 시도
-    const dirHandle = await getHandleFromDB("directoryHandle");
-    if (dirHandle) {
-      state.directoryHandle = dirHandle;
-      state.hasFolderSelected = true;
-      
-      // 권한 확인 및 빠른 지문 맵 재구축 시도
-      try {
-        const permission = await dirHandle.queryPermission({ mode: "readwrite" });
-        if (permission === "granted") {
-          state.quickFilesMap.clear();
-          for await (const entry of dirHandle.values()) {
-            if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".txt")) {
-              state.quickFilesMap.set(entry.name, entry);
-            }
-          }
-        }
-      } catch (e) {
-        console.warn("Failed to reconstruct map from dirHandle:", e);
-      }
-    }
-
-    const fileHandle = await getHandleFromDB("currentFileHandle");
-    if (fileHandle) {
-      state.currentFileHandle = fileHandle;
-      state.currentFileName = fileHandle.name;
-    }
-    updateFileNameDisplay();
-
-    // 2. localStorage 메타데이터를 활용한 화면 구성 복구 (IndexedDB 스캔이 불가능하거나 실패 시 대비 폴백)
-    const hasFolder = localStorage.getItem("sentence_board_has_folder_selected") === "true";
-    if (!hasFolder) {
-      renderTxtGrid();
-      return;
-    }
-    
-    const folderName = localStorage.getItem("sentence_board_selected_folder_name") || "지정 폴더";
-    const filesJson = localStorage.getItem("sentence_board_selected_folder_files");
-    if (!filesJson) {
-      renderTxtGrid();
-      return;
-    }
-    
-    const txtFiles = JSON.parse(filesJson);
-    if (!Array.isArray(txtFiles) || txtFiles.length === 0) {
-      renderTxtGrid();
-      return;
-    }
-    
-    state.hasFolderSelected = true;
-    
-    // quickFilesMap이 완전히 빈 경우에만 mock 데이터로 화면 그리드 채우기
-    if (state.quickFilesMap.size === 0) {
-      txtFiles.forEach((fileName) => {
-        state.quickFilesMap.set(fileName, { name: fileName, isMock: true });
-      });
-    }
-    
-    elements.inputMessage.style.color = "var(--color-primary)";
-    elements.inputMessage.textContent = `📁 [연동됨] ${folderName} 폴더에서 ${txtFiles.length}개의 지문 파일이 연결되어 있습니다.`;
-    
-    renderTxtGrid();
-  } catch (error) {
-    console.error("Failed to restore folder selection:", error);
-    renderTxtGrid();
-  }
-}
-
 bindEvents();
 applySettings();
-restoreSelectedFolder();
 
 function showElementDetail(component) {
   elements.elementDetailOverlay.classList.remove("hidden");

@@ -1,33 +1,33 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-02T06:00:48.601Z
+저장 시각: 2026-06-02T07:34:06.139Z
 총 문장 수: 23
 
 [문장 및 성분 인덱스]
 
 [문장 1] //Developing Critical Thinking in the Digital Age//
   단어 수: 7
-  - 성분 1: id=s1-c1-u74, lane=major, role=title, order=1, wordIndex0=0-3, wordIndex1=1-3, text="Developing Critical Thinking"
-  - 성분 2: id=s1-c1-u75, lane=minor, role=adverb, order=1, wordIndex0=3-7, wordIndex1=4-7, text="in the Digital Age"
+  - 성분 1: id=s1-c1, lane=major, role=title, order=1, wordIndex0=0-3, wordIndex1=1-3, text="Developing Critical Thinking"
+  - 성분 2: id=s1-c2, lane=minor, role=adverb, order=1, wordIndex0=3-7, wordIndex1=4-7, text="in the Digital Age"
 
 [문장 2] Today, because of the Internet and social media, we face the new challenge of separating fact from fiction.
   단어 수: 18
-  - 성분 1: id=s2-c1-u77-s2-c1-u76-u78-u79, lane=minor, role=adverb, order=1, wordIndex0=0-8, wordIndex1=1-8, text="Today, because of the Internet and social media,"
-  - 성분 2: id=s2-c1-u77-s2-c1-u76-u78-u80-u81, lane=major, role=subject, order=1, wordIndex0=8-9, wordIndex1=9-9, text="we"
-  - 성분 3: id=s2-c1-u77-s2-c1-u76-u78-u80-u82-u83, lane=major, role=verb, order=2, wordIndex0=9-10, wordIndex1=10-10, text="face"
-  - 성분 4: id=s2-c1-u77-s2-c1-u76-u78-u80-u82-u84-u85, lane=major, role=object, order=3, wordIndex0=10-13, wordIndex1=11-13, text="the new challenge"
-  - 성분 5: id=s2-c1-u77-s2-c1-u76-u78-u80-u82-u84-u86-s2-c2-u87-s2-c3-u88-s2-c4-u89, lane=minor, role=adjective, order=2, wordIndex0=13-18, wordIndex1=14-18, text="of separating fact from fiction."
+  - 성분 1: id=s2-c1, lane=minor, role=adverb, order=1, wordIndex0=0-8, wordIndex1=1-8, text="Today, because of the Internet and social media,"
+  - 성분 2: id=s2-c2, lane=major, role=subject, order=1, wordIndex0=8-9, wordIndex1=9-9, text="we"
+  - 성분 3: id=s2-c3, lane=major, role=verb, order=2, wordIndex0=9-10, wordIndex1=10-10, text="face"
+  - 성분 4: id=s2-c4, lane=major, role=object, order=3, wordIndex0=10-13, wordIndex1=11-13, text="the new challenge"
+  - 성분 5: id=s2-c5, lane=minor, role=adjective, order=2, wordIndex0=13-18, wordIndex1=14-18, text="of separating fact from fiction."
 
 [문장 3] Stories spread quickly, and it is easy to believe exciting or shocking claims without checking if they are true.
   단어 수: 19
-  - 성분 1: id=s3-c1-u90, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Stories"
-  - 성분 2: id=s3-c1-u91-u92, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="spread"
-  - 성분 3: id=s3-c1-u91-u93-u94, lane=minor, role=adverb, order=1, wordIndex0=2-3, wordIndex1=3-3, text="quickly,"
-  - 성분 4: id=s3-c1-u91-u93-u95, lane=major, role=subject, order=3, wordIndex0=3-5, wordIndex1=4-5, text="and it"
-  - 성분 5: id=s3-c2, lane=major, role=verb, order=4, wordIndex0=5-6, wordIndex1=6-6, text="is"
-  - 성분 6: id=s3-c3, lane=major, role=complement, order=5, wordIndex0=6-7, wordIndex1=7-7, text="easy"
-  - 성분 7: id=s3-c4, lane=major, role=subject, order=6, wordIndex0=7-13, wordIndex1=8-13, text="to believe exciting or shocking claims"
-  - 성분 8: id=s3-c5, lane=minor, role=adverb, order=2, wordIndex0=13-19, wordIndex1=14-19, text="without checking if they are true."
+  - 성분 1: id=s3-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Stories"
+  - 성분 2: id=s3-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="spread"
+  - 성분 3: id=s3-c3, lane=minor, role=adverb, order=1, wordIndex0=2-3, wordIndex1=3-3, text="quickly,"
+  - 성분 4: id=s3-c4, lane=major, role=subject, order=3, wordIndex0=3-5, wordIndex1=4-5, text="and it"
+  - 성분 5: id=s3-c5, lane=major, role=verb, order=4, wordIndex0=5-6, wordIndex1=6-6, text="is"
+  - 성분 6: id=s3-c6, lane=major, role=complement, order=5, wordIndex0=6-7, wordIndex1=7-7, text="easy"
+  - 성분 7: id=s3-c7, lane=major, role=subject, order=6, wordIndex0=7-13, wordIndex1=8-13, text="to believe exciting or shocking claims"
+  - 성분 8: id=s3-c8, lane=minor, role=adverb, order=2, wordIndex0=13-19, wordIndex1=14-19, text="without checking if they are true."
 
 [문장 4] Here are some tips to help you spot misinformation:
   단어 수: 9
@@ -43,21 +43,21 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 [문장 6] Consider the Source.
   단어 수: 3
   - 성분 1: id=s6-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Consider"
-  - 성분 2: id=s6-c3-s6-c2-u96, lane=major, role=object, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Source."
+  - 성분 2: id=s6-c2, lane=major, role=object, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Source."
 
 [문장 7] Verify the website's purpose, credibility, and contact details.
   단어 수: 8
-  - 성분 1: id=s7-c1-u97, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Verify"
-  - 성분 2: id=s7-c1-u98-s7-c2-u99-s7-c3-u100, lane=major, role=object, order=2, wordIndex0=1-8, wordIndex1=2-8, text="the website's purpose, credibility, and contact details."
+  - 성분 1: id=s7-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Verify"
+  - 성분 2: id=s7-c2, lane=major, role=object, order=2, wordIndex0=1-8, wordIndex1=2-8, text="the website's purpose, credibility, and contact details."
 
 [문장 8] Read Beyond Sometimes headlines are written just to grab readers' attention and get clicks.
   단어 수: 14
-  - 성분 1: id=s8-c1-u101, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Read"
-  - 성분 2: id=s8-c1-u102, lane=minor, role=adverb, order=1, wordIndex0=1-2, wordIndex1=2-2, text="Beyond"
-  - 성분 3: id=s8-c2, lane=minor, role=adverb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="Sometimes"
-  - 성분 4: id=s8-c3-u103, lane=major, role=subject, order=2, wordIndex0=3-4, wordIndex1=4-4, text="headlines"
-  - 성분 5: id=s8-c3-u104-u105, lane=major, role=object, order=3, wordIndex0=4-6, wordIndex1=5-6, text="are written"
-  - 성분 6: id=s8-c3-u104-u106-s8-c4-u107, lane=minor, role=adverb, order=3, wordIndex0=6-14, wordIndex1=7-14, text="just to grab readers' attention and get clicks."
+  - 성분 1: id=s8-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Read"
+  - 성분 2: id=s8-c2, lane=minor, role=adverb, order=1, wordIndex0=2-3, wordIndex1=3-3, text="Beyond"
+  - 성분 3: id=s8-c3, lane=minor, role=adverb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="Sometimes"
+  - 성분 4: id=s8-c4, lane=major, role=subject, order=2, wordIndex0=3-4, wordIndex1=4-4, text="headlines"
+  - 성분 5: id=s8-c5, lane=major, role=object, order=3, wordIndex0=4-6, wordIndex1=5-6, text="are written"
+  - 성분 6: id=s8-c6, lane=minor, role=adverb, order=3, wordIndex0=6-14, wordIndex1=7-14, text="just to grab readers' attention and get clicks."
 
 [문장 9] What is the full story?
   단어 수: 5
@@ -67,11 +67,11 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 
 [문장 10] Check the Author Do a quick search on the author.
   단어 수: 10
-  - 성분 1: id=s10-c1-u108, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Check"
-  - 성분 2: id=s10-c1-u109, lane=major, role=object, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Author"
-  - 성분 3: id=s10-c2, lane=major, role=verb, order=3, wordIndex0=3-4, wordIndex1=4-4, text="Do"
-  - 성분 4: id=s10-c3, lane=major, role=object, order=4, wordIndex0=4-7, wordIndex1=5-7, text="a quick search"
-  - 성분 5: id=s10-c4, lane=minor, role=adverb, order=1, wordIndex0=7-10, wordIndex1=8-10, text="on the author."
+  - 성분 1: id=s10-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Check"
+  - 성분 2: id=s10-c2, lane=major, role=object, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Author"
+  - 성분 3: id=s10-c3, lane=major, role=verb, order=3, wordIndex0=3-4, wordIndex1=4-4, text="Do"
+  - 성분 4: id=s10-c4, lane=major, role=object, order=4, wordIndex0=4-7, wordIndex1=5-7, text="a quick search"
+  - 성분 5: id=s10-c5, lane=minor, role=adverb, order=1, wordIndex0=7-10, wordIndex1=8-10, text="on the author."
 
 [문장 11] Are they credible?
   단어 수: 3
@@ -87,25 +87,25 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 
 [문장 13] Check the Links Click on the links.
   단어 수: 7
-  - 성분 1: id=s13-c1-u110, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Check"
-  - 성분 2: id=s13-c1-u111-s13-c2-u112, lane=major, role=verb, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Links"
+  - 성분 1: id=s13-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Check"
+  - 성분 2: id=s13-c2, lane=major, role=object, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Links"
   - 성분 3: id=s13-c3, lane=major, role=verb, order=3, wordIndex0=3-4, wordIndex1=4-4, text="Click"
   - 성분 4: id=s13-c4, lane=minor, role=adverb, order=1, wordIndex0=4-7, wordIndex1=5-7, text="on the links."
 
 [문장 14] Determine if the info given actually supports the story.
   단어 수: 9
-  - 성분 1: id=s14-c1-u113, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Determine"
-  - 성분 2: id=s14-c1-u114-s14-c2-u115-s14-c3-u116, lane=major, role=object, order=2, wordIndex0=1-9, wordIndex1=2-9, text="if the info given actually supports the story."
+  - 성분 1: id=s14-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Determine"
+  - 성분 2: id=s14-c2, lane=major, role=object, order=2, wordIndex0=1-9, wordIndex1=2-9, text="if the info given actually supports the story."
 
 [문장 15] Check the Date Old news stories may not be relevant to what's happening now.
   단어 수: 14
-  - 성분 1: id=s15-c1-u117-u119, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Check"
-  - 성분 2: id=s15-c1-u117-u120, lane=major, role=object, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Date"
-  - 성분 3: id=s15-c1-u118, lane=major, role=subject, order=3, wordIndex0=3-6, wordIndex1=4-6, text="Old news stories"
-  - 성분 4: id=s15-c2-s15-c3-u122-u123-u125, lane=major, role=verb, order=4, wordIndex0=6-9, wordIndex1=7-9, text="may be"
-  - 성분 5: id=s15-c3-u121, lane=minor, role=adverb, order=1, wordIndex0=7-8, wordIndex1=8-8, text="not"
-  - 성분 6: id=s15-c3-u122-u124, lane=major, role=complement, order=5, wordIndex0=9-10, wordIndex1=10-10, text="relevant"
-  - 성분 7: id=s15-c4, lane=minor, role=adverb, order=2, wordIndex0=10-14, wordIndex1=11-14, text="to what's happening now."
+  - 성분 1: id=s15-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Check"
+  - 성분 2: id=s15-c2, lane=major, role=object, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Date"
+  - 성분 3: id=s15-c3, lane=major, role=subject, order=3, wordIndex0=3-6, wordIndex1=4-6, text="Old news stories"
+  - 성분 4: id=s15-c4, lane=major, role=verb, order=4, wordIndex0=6-9, wordIndex1=7-9, text="may be"
+  - 성분 5: id=s15-c5, lane=minor, role=adverb, order=1, wordIndex0=7-8, wordIndex1=8-8, text="not"
+  - 성분 6: id=s15-c6, lane=major, role=complement, order=5, wordIndex0=9-10, wordIndex1=10-10, text="relevant"
+  - 성분 7: id=s15-c7, lane=minor, role=adverb, order=2, wordIndex0=10-14, wordIndex1=11-14, text="to what's happening now."
 
 [문장 16] Is It a Joke?
   단어 수: 4
@@ -115,38 +115,40 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 
 [문장 17] If it sounds too strange to be true, it might be meant as a joke.
   단어 수: 15
-  - 성분 1: id=s17-c1-s17-c2-u126-s17-c3-u127-u129, lane=minor, role=adverb, order=1, wordIndex0=0-8, wordIndex1=1-8, text="If it sounds too strange to be true,"
-  - 성분 2: id=s17-c3-u128-u130, lane=major, role=complement, order=1, wordIndex0=8-9, wordIndex1=9-9, text="it"
-  - 성분 3: id=s17-c3-u128-u131-u132, lane=major, role=verb, order=2, wordIndex0=9-12, wordIndex1=10-12, text="might be meant"
-  - 성분 4: id=s17-c3-u128-u131-u133, lane=minor, role=adverb, order=2, wordIndex0=12-15, wordIndex1=13-15, text="as a joke."
+  - 성분 1: id=s17-c1, lane=minor, role=adverb, order=1, wordIndex0=0-8, wordIndex1=1-8, text="If it sounds too strange to be true,"
+  - 성분 2: id=s17-c2, lane=major, role=complement, order=1, wordIndex0=8-9, wordIndex1=9-9, text="it"
+  - 성분 3: id=s17-c3, lane=major, role=verb, order=2, wordIndex0=9-12, wordIndex1=10-12, text="might be meant"
+  - 성분 4: id=s17-c4, lane=minor, role=adverb, order=2, wordIndex0=12-15, wordIndex1=13-15, text="as a joke."
 
 [문장 18] Check with the site and author to make sure.
   단어 수: 9
-  - 성분 1: id=s18-c1-u134, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Check"
-  - 성분 2: id=s18-c1-u135-u136, lane=minor, role=adverb, order=1, wordIndex0=1-6, wordIndex1=2-6, text="with the site and author"
-  - 성분 3: id=s18-c1-u135-u137-s18-c2-u138-s18-c3-u139, lane=minor, role=adverb, order=2, wordIndex0=6-9, wordIndex1=7-9, text="to make sure."
+  - 성분 1: id=s18-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Check"
+  - 성분 2: id=s18-c2, lane=minor, role=adverb, order=1, wordIndex0=1-6, wordIndex1=2-6, text="with the site and author"
+  - 성분 3: id=s18-c3, lane=minor, role=adverb, order=2, wordIndex0=6-9, wordIndex1=7-9, text="to make sure."
 
 [문장 19] Check Your Biases Consider whether your own beliefs could be affecting your judgment.
   단어 수: 13
-  - 성분 1: id=s19-c1-u140, lane=major, role=verb, order=2, wordIndex0=0-1, wordIndex1=1-1, text="Check"
-  - 성분 2: id=s19-c1-u141-u142, lane=major, role=object, order=3, wordIndex0=1-3, wordIndex1=2-3, text="Your Biases"
-  - 성분 3: id=s19-c1-u141-u143-u144, lane=major, role=verb, order=4, wordIndex0=3-4, wordIndex1=4-4, text="Consider"
-  - 성분 4: id=s19-c1-u141-u143-u145-s19-c3-s19-c2-u146-u148-u149, lane=major, role=object, order=5, wordIndex0=4-13, wordIndex1=5-13, text="whether your own beliefs affecting your judgment."
-  - 성분 5: id=s19-c3-s19-c2-u146-u147, lane=major, role=object, order=1, wordIndex0=8-10, wordIndex1=9-10, text="could be"
+  - 성분 1: id=s19-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Check"
+  - 성분 2: id=s19-c2, lane=major, role=object, order=2, wordIndex0=1-3, wordIndex1=2-3, text="Your Biases"
+  - 성분 3: id=s19-c3, lane=major, role=verb, order=3, wordIndex0=3-4, wordIndex1=4-4, text="Consider"
+  - 성분 4: id=s19-c4, lane=major, role=object, order=4, wordIndex0=4-13, wordIndex1=5-13, text="whether your own beliefs could be affecting your judgment."
 
 [문장 20] Ask the Experts Ask someone knowledgeable about the information, or consult a fact-checking site.
   단어 수: 14
-  - 성분 1: id=s20-c1-u150, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Ask"
-  - 성분 2: id=s20-c3-u153, lane=major, role=object, order=3, wordIndex0=3-4, wordIndex1=4-4, text="Ask"
-  - 성분 3: id=s20-c3-u154-s20-c4-u155-u157-s20-c4-u156-u158, lane=major, role=object, order=4, wordIndex0=4-14, wordIndex1=5-14, text="someone knowledgeable about the information, or consult a fact-checking site."
-  - 성분 4: id=s20-c2-s20-c1-u151-u152, lane=major, role=verb, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Experts"
+  - 성분 1: id=s20-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Ask"
+  - 성분 2: id=s20-c2, lane=major, role=object, order=3, wordIndex0=3-4, wordIndex1=4-4, text="Ask"
+  - 성분 3: id=s20-c3, lane=major, role=object, order=4, wordIndex0=4-5, wordIndex1=5-5, text="someone"
+  - 성분 4: id=s20-c4, lane=major, role=verb, order=5, wordIndex0=9-11, wordIndex1=10-11, text="or consult"
+  - 성분 5: id=s20-c5, lane=major, role=object, order=6, wordIndex0=11-14, wordIndex1=12-14, text="a fact-checking site."
+  - 성분 6: id=s20-c6, lane=minor, role=adjective, order=1, wordIndex0=5-9, wordIndex1=6-9, text="knowledgeable about the information,"
+  - 성분 7: id=s20-c7, lane=major, role=verb, order=2, wordIndex0=1-3, wordIndex1=2-3, text="the Experts"
 
 [문장 21] By following these tips and sharing thoughtfully, you can help create a more informed and reliable online world.
   단어 수: 18
-  - 성분 1: id=s21-c1-u159, lane=minor, role=adverb, order=1, wordIndex0=0-7, wordIndex1=1-7, text="By following these tips and sharing thoughtfully,"
-  - 성분 2: id=s21-c1-u160, lane=major, role=subject, order=1, wordIndex0=7-8, wordIndex1=8-8, text="you"
-  - 성분 3: id=s21-c2-s21-c3-u161-u163, lane=major, role=verb, order=2, wordIndex0=8-10, wordIndex1=9-10, text="can help"
-  - 성분 4: id=s21-c3-u162, lane=major, role=object, order=3, wordIndex0=10-18, wordIndex1=11-18, text="create a more informed and reliable online world."
+  - 성분 1: id=s21-c1, lane=minor, role=adverb, order=1, wordIndex0=0-7, wordIndex1=1-7, text="By following these tips and sharing thoughtfully,"
+  - 성분 2: id=s21-c2, lane=major, role=subject, order=1, wordIndex0=7-8, wordIndex1=8-8, text="you"
+  - 성분 3: id=s21-c3, lane=major, role=verb, order=2, wordIndex0=8-10, wordIndex1=9-10, text="can help"
+  - 성분 4: id=s21-c4, lane=major, role=object, order=3, wordIndex0=10-18, wordIndex1=11-18, text="create a more informed and reliable online world."
 
 [문장 22] “Think critically.
   단어 수: 2
@@ -162,10 +164,10 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-02T06:00:48.601Z",
+  "savedAt": "2026-06-02T07:34:06.139Z",
   "passageText": "//Developing Critical Thinking in the Digital Age// Today, because of the Internet and social media, we face the new challenge of separating fact from fiction. Stories spread quickly, and it is easy to believe exciting or shocking claims without checking if they are true. Here are some tips to help you spot misinformation: /How to Spot Fake News/ Consider the Source. Verify the website's purpose, credibility, and contact details. Read Beyond Sometimes headlines are written just to grab readers' attention and get clicks. What is the full story? Check the Author Do a quick search on the author. Are they credible? Are they real? Check the Links Click on the links. Determine if the info given actually supports the story. Check the Date Old news stories may not be relevant to what's happening now. Is It a Joke? If it sounds too strange to be true, it might be meant as a joke. Check with the site and author to make sure. Check Your Biases Consider whether your own beliefs could be affecting your judgment. Ask the Experts Ask someone knowledgeable about the information, or consult a fact-checking site. By following these tips and sharing thoughtfully, you can help create a more informed and reliable online world. “Think critically. Share wisely.\"",
-  "currentSentenceIndex": 22,
-  "componentSerial": 163,
+  "currentSentenceIndex": 0,
+  "componentSerial": 182,
   "settings": {
     "theme": "light",
     "align": "center"
@@ -179,7 +181,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 7,
       "components": [
         {
-          "id": "s1-c1-u74",
+          "id": "s1-c1",
           "sentenceIndex": 1,
           "componentIndex": 1,
           "text": "Developing Critical Thinking",
@@ -195,7 +197,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s1-c1-u75",
+          "id": "s1-c2",
           "sentenceIndex": 1,
           "componentIndex": 2,
           "text": "in the Digital Age",
@@ -221,7 +223,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 18,
       "components": [
         {
-          "id": "s2-c1-u77-s2-c1-u76-u78-u79",
+          "id": "s2-c1",
           "sentenceIndex": 2,
           "componentIndex": 1,
           "text": "Today, because of the Internet and social media,",
@@ -242,7 +244,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s2-c1-u77-s2-c1-u76-u78-u80-u81",
+          "id": "s2-c2",
           "sentenceIndex": 2,
           "componentIndex": 2,
           "text": "we",
@@ -256,7 +258,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s2-c1-u77-s2-c1-u76-u78-u80-u82-u83",
+          "id": "s2-c3",
           "sentenceIndex": 2,
           "componentIndex": 3,
           "text": "face",
@@ -270,7 +272,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s2-c1-u77-s2-c1-u76-u78-u80-u82-u84-u85",
+          "id": "s2-c4",
           "sentenceIndex": 2,
           "componentIndex": 4,
           "text": "the new challenge",
@@ -286,7 +288,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s2-c1-u77-s2-c1-u76-u78-u80-u82-u84-u86-s2-c2-u87-s2-c3-u88-s2-c4-u89",
+          "id": "s2-c5",
           "sentenceIndex": 2,
           "componentIndex": 5,
           "text": "of separating fact from fiction.",
@@ -295,7 +297,6 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           "order": 2,
           "startIndex": 13,
           "endIndex": 18,
-          "modifierTargetId": "s2-c1-u77-s2-c1-u76-u78-u80-u82-u84-u85",
           "modifierTargetStart": 10,
           "modifierTargetEnd": 13,
           "modifierTargetIndexes": [
@@ -321,7 +322,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 19,
       "components": [
         {
-          "id": "s3-c1-u90",
+          "id": "s3-c1",
           "sentenceIndex": 3,
           "componentIndex": 1,
           "text": "Stories",
@@ -335,7 +336,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s3-c1-u91-u92",
+          "id": "s3-c2",
           "sentenceIndex": 3,
           "componentIndex": 2,
           "text": "spread",
@@ -349,7 +350,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s3-c1-u91-u93-u94",
+          "id": "s3-c3",
           "sentenceIndex": 3,
           "componentIndex": 3,
           "text": "quickly,",
@@ -363,7 +364,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s3-c1-u91-u93-u95",
+          "id": "s3-c4",
           "sentenceIndex": 3,
           "componentIndex": 4,
           "text": "and it",
@@ -378,7 +379,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s3-c2",
+          "id": "s3-c5",
           "sentenceIndex": 3,
           "componentIndex": 5,
           "text": "is",
@@ -392,7 +393,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s3-c3",
+          "id": "s3-c6",
           "sentenceIndex": 3,
           "componentIndex": 6,
           "text": "easy",
@@ -406,7 +407,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s3-c4",
+          "id": "s3-c7",
           "sentenceIndex": 3,
           "componentIndex": 7,
           "text": "to believe exciting or shocking claims",
@@ -425,7 +426,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s3-c5",
+          "id": "s3-c8",
           "sentenceIndex": 3,
           "componentIndex": 8,
           "text": "without checking if they are true.",
@@ -565,7 +566,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s6-c3-s6-c2-u96",
+          "id": "s6-c2",
           "sentenceIndex": 6,
           "componentIndex": 2,
           "text": "the Source.",
@@ -589,7 +590,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 8,
       "components": [
         {
-          "id": "s7-c1-u97",
+          "id": "s7-c1",
           "sentenceIndex": 7,
           "componentIndex": 1,
           "text": "Verify",
@@ -603,7 +604,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s7-c1-u98-s7-c2-u99-s7-c3-u100",
+          "id": "s7-c2",
           "sentenceIndex": 7,
           "componentIndex": 2,
           "text": "the website's purpose, credibility, and contact details.",
@@ -632,7 +633,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 14,
       "components": [
         {
-          "id": "s8-c1-u101",
+          "id": "s8-c1",
           "sentenceIndex": 8,
           "componentIndex": 1,
           "text": "Read",
@@ -646,21 +647,22 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s8-c1-u102",
+          "id": "s8-c2",
           "sentenceIndex": 8,
           "componentIndex": 2,
           "text": "Beyond",
           "role": "adverb",
           "lane": "minor",
           "order": 1,
-          "startIndex": 1,
-          "endIndex": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "pinnedAnchor": true,
           "words": [
             "Beyond"
           ]
         },
         {
-          "id": "s8-c2",
+          "id": "s8-c3",
           "sentenceIndex": 8,
           "componentIndex": 3,
           "text": "Sometimes",
@@ -669,12 +671,13 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           "order": 2,
           "startIndex": 2,
           "endIndex": 3,
+          "pinnedAnchor": true,
           "words": [
             "Sometimes"
           ]
         },
         {
-          "id": "s8-c3-u103",
+          "id": "s8-c4",
           "sentenceIndex": 8,
           "componentIndex": 4,
           "text": "headlines",
@@ -688,7 +691,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s8-c3-u104-u105",
+          "id": "s8-c5",
           "sentenceIndex": 8,
           "componentIndex": 5,
           "text": "are written",
@@ -703,7 +706,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s8-c3-u104-u106-s8-c4-u107",
+          "id": "s8-c6",
           "sentenceIndex": 8,
           "componentIndex": 6,
           "text": "just to grab readers' attention and get clicks.",
@@ -786,7 +789,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 10,
       "components": [
         {
-          "id": "s10-c1-u108",
+          "id": "s10-c1",
           "sentenceIndex": 10,
           "componentIndex": 1,
           "text": "Check",
@@ -800,7 +803,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s10-c1-u109",
+          "id": "s10-c2",
           "sentenceIndex": 10,
           "componentIndex": 2,
           "text": "the Author",
@@ -815,7 +818,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s10-c2",
+          "id": "s10-c3",
           "sentenceIndex": 10,
           "componentIndex": 3,
           "text": "Do",
@@ -829,7 +832,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s10-c3",
+          "id": "s10-c4",
           "sentenceIndex": 10,
           "componentIndex": 4,
           "text": "a quick search",
@@ -845,7 +848,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s10-c4",
+          "id": "s10-c5",
           "sentenceIndex": 10,
           "componentIndex": 5,
           "text": "on the author.",
@@ -972,7 +975,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 7,
       "components": [
         {
-          "id": "s13-c1-u110",
+          "id": "s13-c1",
           "sentenceIndex": 13,
           "componentIndex": 1,
           "text": "Check",
@@ -986,11 +989,11 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s13-c1-u111-s13-c2-u112",
+          "id": "s13-c2",
           "sentenceIndex": 13,
           "componentIndex": 2,
           "text": "the Links",
-          "role": "verb",
+          "role": "object",
           "lane": "major",
           "order": 2,
           "startIndex": 1,
@@ -1040,7 +1043,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 9,
       "components": [
         {
-          "id": "s14-c1-u113",
+          "id": "s14-c1",
           "sentenceIndex": 14,
           "componentIndex": 1,
           "text": "Determine",
@@ -1054,7 +1057,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s14-c1-u114-s14-c2-u115-s14-c3-u116",
+          "id": "s14-c2",
           "sentenceIndex": 14,
           "componentIndex": 2,
           "text": "if the info given actually supports the story.",
@@ -1084,7 +1087,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 14,
       "components": [
         {
-          "id": "s15-c1-u117-u119",
+          "id": "s15-c1",
           "sentenceIndex": 15,
           "componentIndex": 1,
           "text": "Check",
@@ -1098,7 +1101,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s15-c1-u117-u120",
+          "id": "s15-c2",
           "sentenceIndex": 15,
           "componentIndex": 2,
           "text": "the Date",
@@ -1113,7 +1116,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s15-c1-u118",
+          "id": "s15-c3",
           "sentenceIndex": 15,
           "componentIndex": 3,
           "text": "Old news stories",
@@ -1129,7 +1132,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s15-c2-s15-c3-u122-u123-u125",
+          "id": "s15-c4",
           "sentenceIndex": 15,
           "componentIndex": 4,
           "text": "may be",
@@ -1144,7 +1147,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s15-c3-u121",
+          "id": "s15-c5",
           "sentenceIndex": 15,
           "componentIndex": 5,
           "text": "not",
@@ -1159,7 +1162,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s15-c3-u122-u124",
+          "id": "s15-c6",
           "sentenceIndex": 15,
           "componentIndex": 6,
           "text": "relevant",
@@ -1173,7 +1176,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s15-c4",
+          "id": "s15-c7",
           "sentenceIndex": 15,
           "componentIndex": 7,
           "text": "to what's happening now.",
@@ -1251,7 +1254,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 15,
       "components": [
         {
-          "id": "s17-c1-s17-c2-u126-s17-c3-u127-u129",
+          "id": "s17-c1",
           "sentenceIndex": 17,
           "componentIndex": 1,
           "text": "If it sounds too strange to be true,",
@@ -1272,7 +1275,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s17-c3-u128-u130",
+          "id": "s17-c2",
           "sentenceIndex": 17,
           "componentIndex": 2,
           "text": "it",
@@ -1286,7 +1289,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s17-c3-u128-u131-u132",
+          "id": "s17-c3",
           "sentenceIndex": 17,
           "componentIndex": 3,
           "text": "might be meant",
@@ -1302,7 +1305,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s17-c3-u128-u131-u133",
+          "id": "s17-c4",
           "sentenceIndex": 17,
           "componentIndex": 4,
           "text": "as a joke.",
@@ -1311,6 +1314,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           "order": 2,
           "startIndex": 12,
           "endIndex": 15,
+          "pinOrder": 1,
           "words": [
             "as",
             "a",
@@ -1327,7 +1331,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 9,
       "components": [
         {
-          "id": "s18-c1-u134",
+          "id": "s18-c1",
           "sentenceIndex": 18,
           "componentIndex": 1,
           "text": "Check",
@@ -1341,7 +1345,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s18-c1-u135-u136",
+          "id": "s18-c2",
           "sentenceIndex": 18,
           "componentIndex": 2,
           "text": "with the site and author",
@@ -1359,7 +1363,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s18-c1-u135-u137-s18-c2-u138-s18-c3-u139",
+          "id": "s18-c3",
           "sentenceIndex": 18,
           "componentIndex": 3,
           "text": "to make sure.",
@@ -1384,13 +1388,13 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 13,
       "components": [
         {
-          "id": "s19-c1-u140",
+          "id": "s19-c1",
           "sentenceIndex": 19,
           "componentIndex": 1,
           "text": "Check",
           "role": "verb",
           "lane": "major",
-          "order": 2,
+          "order": 1,
           "startIndex": 0,
           "endIndex": 1,
           "words": [
@@ -1398,13 +1402,13 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s19-c1-u141-u142",
+          "id": "s19-c2",
           "sentenceIndex": 19,
           "componentIndex": 2,
           "text": "Your Biases",
           "role": "object",
           "lane": "major",
-          "order": 3,
+          "order": 2,
           "startIndex": 1,
           "endIndex": 3,
           "words": [
@@ -1413,13 +1417,13 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s19-c1-u141-u143-u144",
+          "id": "s19-c3",
           "sentenceIndex": 19,
           "componentIndex": 3,
           "text": "Consider",
           "role": "verb",
           "lane": "major",
-          "order": 4,
+          "order": 3,
           "startIndex": 3,
           "endIndex": 4,
           "words": [
@@ -1427,13 +1431,13 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s19-c1-u141-u143-u145-s19-c3-s19-c2-u146-u148-u149",
+          "id": "s19-c4",
           "sentenceIndex": 19,
           "componentIndex": 4,
-          "text": "whether your own beliefs affecting your judgment.",
+          "text": "whether your own beliefs could be affecting your judgment.",
           "role": "object",
           "lane": "major",
-          "order": 5,
+          "order": 4,
           "startIndex": 4,
           "endIndex": 13,
           "words": [
@@ -1441,24 +1445,11 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
             "your",
             "own",
             "beliefs",
+            "could",
+            "be",
             "affecting",
             "your",
             "judgment."
-          ]
-        },
-        {
-          "id": "s19-c3-s19-c2-u146-u147",
-          "sentenceIndex": 19,
-          "componentIndex": 5,
-          "text": "could be",
-          "role": "object",
-          "lane": "major",
-          "order": 1,
-          "startIndex": 8,
-          "endIndex": 10,
-          "words": [
-            "could",
-            "be"
           ]
         }
       ]
@@ -1471,7 +1462,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 14,
       "components": [
         {
-          "id": "s20-c1-u150",
+          "id": "s20-c1",
           "sentenceIndex": 20,
           "componentIndex": 1,
           "text": "Ask",
@@ -1485,7 +1476,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s20-c3-u153",
+          "id": "s20-c2",
           "sentenceIndex": 20,
           "componentIndex": 2,
           "text": "Ask",
@@ -1499,32 +1490,76 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s20-c3-u154-s20-c4-u155-u157-s20-c4-u156-u158",
+          "id": "s20-c3",
           "sentenceIndex": 20,
           "componentIndex": 3,
-          "text": "someone knowledgeable about the information, or consult a fact-checking site.",
+          "text": "someone",
           "role": "object",
           "lane": "major",
           "order": 4,
           "startIndex": 4,
+          "endIndex": 5,
+          "words": [
+            "someone"
+          ]
+        },
+        {
+          "id": "s20-c4",
+          "sentenceIndex": 20,
+          "componentIndex": 4,
+          "text": "or consult",
+          "role": "verb",
+          "lane": "major",
+          "order": 5,
+          "startIndex": 9,
+          "endIndex": 11,
+          "words": [
+            "or",
+            "consult"
+          ]
+        },
+        {
+          "id": "s20-c5",
+          "sentenceIndex": 20,
+          "componentIndex": 5,
+          "text": "a fact-checking site.",
+          "role": "object",
+          "lane": "major",
+          "order": 6,
+          "startIndex": 11,
           "endIndex": 14,
           "words": [
-            "someone",
-            "knowledgeable",
-            "about",
-            "the",
-            "information,",
-            "or",
-            "consult",
             "a",
             "fact-checking",
             "site."
           ]
         },
         {
-          "id": "s20-c2-s20-c1-u151-u152",
+          "id": "s20-c6",
           "sentenceIndex": 20,
-          "componentIndex": 4,
+          "componentIndex": 6,
+          "text": "knowledgeable about the information,",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 5,
+          "endIndex": 9,
+          "modifierTargetStart": 4,
+          "modifierTargetEnd": 5,
+          "modifierTargetIndexes": [
+            4
+          ],
+          "words": [
+            "knowledgeable",
+            "about",
+            "the",
+            "information,"
+          ]
+        },
+        {
+          "id": "s20-c7",
+          "sentenceIndex": 20,
+          "componentIndex": 7,
           "text": "the Experts",
           "role": "verb",
           "lane": "major",
@@ -1546,7 +1581,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 18,
       "components": [
         {
-          "id": "s21-c1-u159",
+          "id": "s21-c1",
           "sentenceIndex": 21,
           "componentIndex": 1,
           "text": "By following these tips and sharing thoughtfully,",
@@ -1566,7 +1601,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s21-c1-u160",
+          "id": "s21-c2",
           "sentenceIndex": 21,
           "componentIndex": 2,
           "text": "you",
@@ -1580,7 +1615,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s21-c2-s21-c3-u161-u163",
+          "id": "s21-c3",
           "sentenceIndex": 21,
           "componentIndex": 3,
           "text": "can help",
@@ -1595,7 +1630,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s21-c3-u162",
+          "id": "s21-c4",
           "sentenceIndex": 21,
           "componentIndex": 4,
           "text": "create a more informed and reliable online world.",
