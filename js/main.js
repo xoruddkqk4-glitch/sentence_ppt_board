@@ -4115,11 +4115,38 @@ async function loadQuickTxt(fileName) {
   }
 }
 
+async function ensureDirectoryPermissionAndRebuildMap() {
+  if (!state.directoryHandle) {
+    return false;
+  }
+  try {
+    let permission = await state.directoryHandle.queryPermission({ mode: "readwrite" });
+    if (permission !== "granted") {
+      permission = await state.directoryHandle.requestPermission({ mode: "readwrite" });
+    }
+    if (permission === "granted") {
+      state.quickFilesMap.clear();
+      for await (const entry of state.directoryHandle.values()) {
+        if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".txt")) {
+          state.quickFilesMap.set(entry.name, entry);
+        }
+      }
+      return true;
+    }
+  } catch (e) {
+    console.warn("Failed to request directory permission:", e);
+  }
+  return false;
+}
+
 async function loadQuickTxtFromUploadedFile(fileName) {
   try {
     state.currentFileName = fileName;
     updateFileNameDisplay();
     state.currentFileHandle = null; // 새 지문 불러오기 시 이전 파일 핸들 초기화
+    
+    // 디렉터리 권한 재허가 및 최신 파일 목록 확보
+    await ensureDirectoryPermissionAndRebuildMap();
     
     const fileEntry = state.quickFilesMap.get(fileName);
     
