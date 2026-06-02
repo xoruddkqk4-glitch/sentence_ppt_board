@@ -965,7 +965,7 @@ input:focus {
   max-width: 100%;
   overflow: visible;
   white-space: nowrap;
-  padding: 0 var(--space-4);
+  padding: 0 calc(var(--space-4) + 12px);
 }
 
 .major-lane .present-chip {

@@ -2070,41 +2070,7 @@ function getMinorLaneMetrics() {
   return { left, width, right: left + width };
 }
 
-// 같은 슬롯(동일 위치)에 모인 부사어 점만 그 슬롯을 중심으로 좌우 대칭 분산한다.
-// 서로 다른 슬롯(예: 문장 맨앞 vs 맨뒤)에 있는 종요소는 절대 서로 영향받지 않는다(독립 이동).
-function spreadAnchors(list, metrics, edgePercent) {
-  const result = new Map();
-  if (list.length === 0) {
-    return result;
-  }
 
-  const minSep = metrics.width
-    ? clamp(MINOR_ANCHOR_SPREAD, (26 / metrics.width) * 100, 24)
-    : MINOR_ANCHOR_SPREAD;
-  const minP = edgePercent;
-  const maxP = 100 - edgePercent;
-
-  const groups = new Map();
-  list.forEach((item) => {
-    const key = Math.round(item.percent * 10) / 10;
-    if (!groups.has(key)) {
-      groups.set(key, []);
-    }
-    groups.get(key).push(item);
-  });
-
-  groups.forEach((items, slotPercent) => {
-    const ordered = items.slice().sort((a, b) => a.order - b.order);
-    const count = ordered.length;
-    ordered.forEach((item, index) => {
-      const offset = (index - (count - 1) / 2) * minSep;
-      const percent = clamp(minP, slotPercent + offset, maxP);
-      result.set(item.component.id, Math.round(percent * 10) / 10);
-    });
-  });
-
-  return result;
-}
 
 function createPresentChip(component, modifierTargetIndexes = new Set()) {
   const chip = document.createElement("span");
@@ -2304,20 +2270,6 @@ function rebuildMinorSlotsFromWords() {
   const last = wordRects[wordRects.length - 1];
   const edgeGap = getMajorEdgeGap();
 
-  // 문장 맨 앞/맨 뒤 슬롯에 몰리는 종요소 개수만큼 가장자리 점을 더 벌려 둔다.
-  const visibleMinorComponents = getPresentMinorComponents(sentence).slice(0, state.minorRevealCount);
-  const startAnchorCount = visibleMinorComponents.filter((component) => {
-    const start = Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1;
-    return start <= firstIndex;
-  }).length;
-  const endAnchorCount = visibleMinorComponents.filter((component) => {
-    const start = Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1;
-    return start > lastIndex;
-  }).length;
-
-  const startShiftPx = startAnchorCount > 1 ? ((startAnchorCount - 1) * MINOR_ANCHOR_SPREAD / 2 / 100) * slotRect.width : 0;
-  const endShiftPx = endAnchorCount > 1 ? ((endAnchorCount - 1) * MINOR_ANCHOR_SPREAD / 2 / 100) * slotRect.width : 0;
-
   // 가장자리 점이 첫/마지막 단어와 절대 겹치지 않도록, 단어 경계에서 떨어뜨릴 최소 간격(px).
   // 점(::before) 지름 18px의 절반 + 여유. 주요소 글씨가 클수록(짧은 문장) 더 크게 잡아
   // 큰 글자 옆에서도 점이 단어 위로 올라타지 않게 한다.
@@ -2326,8 +2278,8 @@ function rebuildMinorSlotsFromWords() {
   // 문장 맨 앞 슬롯 (첫 단어 앞)
   // 점은 제일 먼저 "첫 단어 왼쪽 경계 - clearance" 위치에 둔다(점 중심 기준).
   // 그보다 더 왼쪽(edgeGap)이 필요하면 더 왼쪽에 두되, 화면(슬롯 영역) 밖으로는 나가지 않는다.
-  const startClearancePx = first.left - dotClearance - startShiftPx;
-  const startTargetPx = Math.min(startClearancePx, first.left - edgeGap - startShiftPx);
+  const startClearancePx = first.left - dotClearance;
+  const startTargetPx = Math.min(startClearancePx, first.left - edgeGap);
   slots.push({
     index: firstIndex - 0.5,
     percent: clampEdgeSlotPercent(startTargetPx, startClearancePx, slotRect, "start")
@@ -2348,8 +2300,8 @@ function rebuildMinorSlotsFromWords() {
   // 문장 맨 뒤 슬롯 (마지막 단어 뒤)
   // 점은 제일 먼저 "마지막 단어 오른쪽 경계 + clearance" 위치에 둔다.
   // 그보다 더 오른쪽(edgeGap)이 필요하면 더 오른쪽에 두되, 화면 밖으로는 나가지 않는다.
-  const endClearancePx = last.right + dotClearance + endShiftPx;
-  const endTargetPx = Math.max(endClearancePx, last.right + edgeGap + endShiftPx);
+  const endClearancePx = last.right + dotClearance;
+  const endTargetPx = Math.max(endClearancePx, last.right + edgeGap);
   slots.push({
     index: lastIndex + 0.5,
     percent: clampEdgeSlotPercent(endTargetPx, endClearancePx, slotRect, "end")
@@ -3251,8 +3203,7 @@ function fitMajorLine() {
   // 가장자리 점이 들어갈 공간을 양쪽에 예약한다. dotClearance(점~단어 최소 간격)도
   // 함께 반영해 주요소가 줄어들어도 점이 첫/마지막 단어와 겹치지 않게 한다.
   const anchorReserve = Math.max(getMajorEdgeGap(), getMinorDotClearance()) * 2;
-  const edgeGroupReserve = getMajorEdgeAnchorReserve(laneRect.width);
-  const edgeReserve = edgeGuard * 2 + anchorReserve + edgeGroupReserve;
+  const edgeReserve = edgeGuard * 2 + anchorReserve;
   const availableWidth = Math.max(220, lane.clientWidth - edgeReserve);
   const bounds = getRenderedBounds(elements.majorPresentLane.querySelectorAll(".present-word"));
   if (!bounds || !availableWidth) {
@@ -3266,26 +3217,6 @@ function fitMajorLine() {
 
   const nextSize = Math.max(24, Math.floor(currentSize * Math.max(0.18, ratio) * 0.98));
   elements.app.style.setProperty("--font-major-current", `${nextSize}px`);
-}
-
-function getMajorEdgeAnchorReserve(laneWidth) {
-  const wordCount = elements.majorPresentLane.querySelectorAll(".present-word").length;
-  if (wordCount === 0) {
-    return 0;
-  }
-
-  // 공개된 종요소 수에 따라 주요소 줄 크기가 달라지면, 종요소를 1~2개만 공개했을 때
-  // 가장자리 점이 첫/마지막 단어와 겹친다. 공개 단계와 무관하게 항상 동일한 여백을 두도록
-  // 현재 문장의 모든 종요소를 기준으로 가장자리 점 개수를 계산한다.
-  const allMinorComponents = getComponentsByLane(getCurrentSentence(), "minor");
-  const startAnchorCount = allMinorComponents.filter((component) => {
-    return Number.isFinite(component.startIndex) && component.startIndex <= 0;
-  }).length;
-  const endAnchorCount = allMinorComponents.filter((component) => {
-    return Number.isFinite(component.startIndex) && component.startIndex >= wordCount;
-  }).length;
-  const maxEdgeAnchorCount = Math.max(startAnchorCount, endAnchorCount);
-  return Math.max(0, maxEdgeAnchorCount - 1) * laneWidth * (MINOR_ANCHOR_SPREAD / 100);
 }
 
 function getRenderedBounds(nodeList) {
@@ -3451,7 +3382,9 @@ function updateMinorPositions() {
     });
   });
 
-  spreadAnchors(autoAdverbs, metrics, edgePercent).forEach((percent, id) => anchorById.set(id, percent));
+  autoAdverbs.forEach((item) => {
+    anchorById.set(item.component.id, item.percent);
+  });
 
   elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
     const id = chip.dataset.componentId;
