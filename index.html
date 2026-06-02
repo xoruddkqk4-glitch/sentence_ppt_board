@@ -77,15 +77,16 @@
             <p class="step-label">2단계-문장분석</p>
             <h2 id="editTitle">분석 결과 수정</h2>
           </div>
-          <div class="toolbar-actions">
-            <button class="button secondary" type="button" id="backToInputButton">1단계-대시보드</button>
-            <button class="button secondary" type="button" id="saveTxtButton">현재 TXT에 저장</button>
-            <button class="button secondary" type="button" id="saveAsTxtButton">다른 이름으로 저장</button>
-            <button class="button primary" type="button" id="startPresentButton">3단계-발표화면 시작</button>
+          <div class="toolbar-actions-wrapper" style="position: relative;">
+            <p id="editMessage" class="message" aria-live="polite" style="position: absolute; bottom: calc(100% + 6px); right: 0; margin: 0; white-space: nowrap; text-align: right; font-size: calc(var(--edit-font-size) * 0.7) !important; min-height: 0;"></p>
+            <div class="toolbar-actions">
+              <button class="button secondary" type="button" id="backToInputButton">1단계-대시보드</button>
+              <button class="button secondary" type="button" id="saveTxtButton">현재 TXT에 저장</button>
+              <button class="button secondary" type="button" id="saveAsTxtButton">다른 이름으로 저장</button>
+              <button class="button primary" type="button" id="startPresentButton">3단계-발표화면 시작</button>
+            </div>
           </div>
         </div>
-
-        <p id="editMessage" class="message" aria-live="polite" style="margin-bottom: var(--space-4);"></p>
 
         <div class="sentence-meta">
           <div class="meta-top-row">

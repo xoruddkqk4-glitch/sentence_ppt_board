@@ -1,6 +1,6 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-02T02:33:54.935Z
+저장 시각: 2026-06-01T12:57:17.088Z
 총 문장 수: 12
 
 [문장 및 성분 인덱스]
@@ -120,9 +120,9 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-02T02:33:54.935Z",
+  "savedAt": "2026-06-01T12:57:17.088Z",
   "passageText": "Real-World Examples of Misinformation Case 1. The Great Moon Hoax(1835) In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon. The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings. These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel. The story claimed that these amazing discoveries were possible due to a powerful new telescope in South Africa, where Herschel was actually doing genuine research at the time. However, the story was completely made up by New York Sun reporter Richard Adams Locke. Locke created the hoax to satirize how fascinated people were with the idea of life on other planets and how easily they believed wild, unproven claims. Even though the story seemed unbelievable, it captured the public's imagination, and many people accepted it as true. The articles became so popular that the New York Sun sold many more copies than usual, and people all over the world, including scientists from places like Yale University, talked about the “discoveries” as if they were real. It was not until later that the New York Sun admitted the whole thing was a joke ― a humorous way of showing how easily people can be fooled. By then, the incident had already shown how quickly fake news can spread, especially when it matches what people want to believe. The Great Moon Hoax is still one of the earliest and most famous examples of how even educated people can be deceived by sensational stories when they don't carefully check the facts.",
-  "currentSentenceIndex": 5,
+  "currentSentenceIndex": 0,
   "componentSerial": 157,
   "settings": {
     "theme": "light",
