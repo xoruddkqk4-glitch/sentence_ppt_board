@@ -1,13 +1,13 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-01T12:57:17.088Z
+저장 시각: 2026-06-02T04:07:38.319Z
 총 문장 수: 12
 
 [문장 및 성분 인덱스]
 
 [문장 1] Real-World Examples of Misinformation Case 1. The Great Moon Hoax(1835)
   단어 수: 11
-  - 성분 1: id=s1-c1, lane=major, role=subject, order=1, wordIndex0=0-4, wordIndex1=1-4, text="Real-World Examples of Misinformation"
+  - 성분 1: id=s1-c1, lane=major, role=title, order=1, wordIndex0=0-4, wordIndex1=1-4, text="Real-World Examples of Misinformation"
   - 성분 2: id=s1-c2, lane=minor, role=adverb, order=1, wordIndex0=4-11, wordIndex1=5-11, text="Case 1. The Great Moon Hoax (1835)"
 
 [문장 2] In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon.
@@ -38,7 +38,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 [문장 5] The story claimed that these amazing discoveries were possible due to a powerful new telescope in South Africa, where Herschel was actually doing genuine research at the time.
   단어 수: 28
   - 성분 1: id=s5-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The story"
-  - 성분 2: id=s5-c2, lane=major, role=subject, order=2, wordIndex0=2-3, wordIndex1=3-3, text="claimed"
+  - 성분 2: id=s5-c2, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="claimed"
   - 성분 3: id=s5-c3, lane=major, role=object, order=3, wordIndex0=3-9, wordIndex1=4-9, text="that these amazing discoveries were possible"
   - 성분 4: id=s5-c4, lane=minor, role=adverb, order=1, wordIndex0=9-18, wordIndex1=10-18, text="due to a powerful new telescope in South Africa,"
   - 성분 5: id=s5-c5, lane=minor, role=adjective, order=2, wordIndex0=18-28, wordIndex1=19-28, text="where Herschel was actually doing genuine research at the time."
@@ -56,13 +56,8 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
   - 성분 1: id=s7-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Locke"
   - 성분 2: id=s7-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="created"
   - 성분 3: id=s7-c3, lane=major, role=object, order=3, wordIndex0=2-4, wordIndex1=3-4, text="the hoax"
-  - 성분 4: id=s7-c4, lane=major, role=subject, order=4, wordIndex0=4-9, wordIndex1=5-9, text="to satirize how fascinated people"
-  - 성분 5: id=s7-c5, lane=major, role=verb, order=5, wordIndex0=9-10, wordIndex1=10-10, text="were"
-  - 성분 6: id=s7-c6, lane=major, role=complement, order=6, wordIndex0=21-26, wordIndex1=22-26, text="they believed wild, unproven claims."
-  - 성분 7: id=s7-c7, lane=minor, role=adverb, order=1, wordIndex0=10-13, wordIndex1=11-13, text="with the idea"
-  - 성분 8: id=s7-c8, lane=minor, role=adverb, order=2, wordIndex0=13-15, wordIndex1=14-15, text="of life"
-  - 성분 9: id=s7-c9, lane=minor, role=adverb, order=3, wordIndex0=15-20, wordIndex1=16-20, text="on other planets and how"
-  - 성분 10: id=s7-c10, lane=minor, role=adverb, order=4, wordIndex0=20-21, wordIndex1=21-21, text="easily"
+  - 성분 4: id=s7-c9-u161-s7-c10-u163-s7-c6-u164, lane=minor, role=adverb, order=2, wordIndex0=18-26, wordIndex1=19-26, text="and how easily they believed wild, unproven claims."
+  - 성분 5: id=s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u166-u170-s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u169-u172-s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u166-u171-u173-s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u167-u174-s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u168-u175, lane=minor, role=adverb, order=1, wordIndex0=4-18, wordIndex1=5-18, text="to satirize how fascinated people were with the idea of life on other planets"
 
 [문장 8] Even though the story seemed unbelievable, it captured the public's imagination, and many people accepted it as true.
   단어 수: 18
@@ -100,11 +95,10 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
   단어 수: 22
   - 성분 1: id=s11-c1, lane=minor, role=adverb, order=1, wordIndex0=0-2, wordIndex1=1-2, text="By then,"
   - 성분 2: id=s11-c2, lane=major, role=subject, order=1, wordIndex0=2-4, wordIndex1=3-4, text="the incident"
-  - 성분 3: id=s11-c3, lane=major, role=verb, order=2, wordIndex0=4-5, wordIndex1=5-5, text="had"
+  - 성분 3: id=s11-c3-s11-c5-u176, lane=major, role=verb, order=2, wordIndex0=4-7, wordIndex1=5-7, text="had shown"
   - 성분 4: id=s11-c4, lane=minor, role=adverb, order=2, wordIndex0=5-6, wordIndex1=6-6, text="already"
-  - 성분 5: id=s11-c5, lane=major, role=verb, order=3, wordIndex0=6-7, wordIndex1=7-7, text="shown"
-  - 성분 6: id=s11-c6, lane=major, role=verb, order=4, wordIndex0=7-13, wordIndex1=8-13, text="how quickly fake news can spread,"
-  - 성분 7: id=s11-c7, lane=minor, role=adverb, order=3, wordIndex0=13-22, wordIndex1=14-22, text="especially when it matches what people want to believe."
+  - 성분 5: id=s11-c6, lane=major, role=object, order=3, wordIndex0=7-13, wordIndex1=8-13, text="how quickly fake news can spread,"
+  - 성분 6: id=s11-c7, lane=minor, role=adverb, order=3, wordIndex0=13-22, wordIndex1=14-22, text="especially when it matches what people want to believe."
 
 [문장 12] The Great Moon Hoax is still one of the earliest and most famous examples of how even educated people can be deceived by sensational stories when they don't carefully check the facts.
   단어 수: 32
@@ -120,10 +114,10 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-01T12:57:17.088Z",
+  "savedAt": "2026-06-02T04:07:38.319Z",
   "passageText": "Real-World Examples of Misinformation Case 1. The Great Moon Hoax(1835) In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon. The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings. These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel. The story claimed that these amazing discoveries were possible due to a powerful new telescope in South Africa, where Herschel was actually doing genuine research at the time. However, the story was completely made up by New York Sun reporter Richard Adams Locke. Locke created the hoax to satirize how fascinated people were with the idea of life on other planets and how easily they believed wild, unproven claims. Even though the story seemed unbelievable, it captured the public's imagination, and many people accepted it as true. The articles became so popular that the New York Sun sold many more copies than usual, and people all over the world, including scientists from places like Yale University, talked about the “discoveries” as if they were real. It was not until later that the New York Sun admitted the whole thing was a joke ― a humorous way of showing how easily people can be fooled. By then, the incident had already shown how quickly fake news can spread, especially when it matches what people want to believe. The Great Moon Hoax is still one of the earliest and most famous examples of how even educated people can be deceived by sensational stories when they don't carefully check the facts.",
   "currentSentenceIndex": 0,
-  "componentSerial": 157,
+  "componentSerial": 176,
   "settings": {
     "theme": "light",
     "align": "center"
@@ -141,7 +135,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           "sentenceIndex": 1,
           "componentIndex": 1,
           "text": "Real-World Examples of Misinformation",
-          "role": "subject",
+          "role": "title",
           "lane": "major",
           "order": 1,
           "startIndex": 0,
@@ -539,7 +533,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           "sentenceIndex": 5,
           "componentIndex": 2,
           "text": "claimed",
-          "role": "subject",
+          "role": "verb",
           "lane": "major",
           "order": 2,
           "startIndex": 2,
@@ -760,48 +754,19 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s7-c4",
+          "id": "s7-c9-u161-s7-c10-u163-s7-c6-u164",
           "sentenceIndex": 7,
           "componentIndex": 4,
-          "text": "to satirize how fascinated people",
-          "role": "subject",
-          "lane": "major",
-          "order": 4,
-          "startIndex": 4,
-          "endIndex": 9,
-          "words": [
-            "to",
-            "satirize",
-            "how",
-            "fascinated",
-            "people"
-          ]
-        },
-        {
-          "id": "s7-c5",
-          "sentenceIndex": 7,
-          "componentIndex": 5,
-          "text": "were",
-          "role": "verb",
-          "lane": "major",
-          "order": 5,
-          "startIndex": 9,
-          "endIndex": 10,
-          "words": [
-            "were"
-          ]
-        },
-        {
-          "id": "s7-c6",
-          "sentenceIndex": 7,
-          "componentIndex": 6,
-          "text": "they believed wild, unproven claims.",
-          "role": "complement",
-          "lane": "major",
-          "order": 6,
-          "startIndex": 21,
+          "text": "and how easily they believed wild, unproven claims.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 18,
           "endIndex": 26,
           "words": [
+            "and",
+            "how",
+            "easily",
             "they",
             "believed",
             "wild,",
@@ -810,66 +775,30 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s7-c7",
+          "id": "s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u166-u170-s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u169-u172-s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u166-u171-u173-s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u167-u174-s7-c7-s7-c4-u158-s7-c8-u159-s7-c9-u160-u162-s7-c5-u165-u168-u175",
           "sentenceIndex": 7,
-          "componentIndex": 7,
-          "text": "with the idea",
+          "componentIndex": 5,
+          "text": "to satirize how fascinated people were with the idea of life on other planets",
           "role": "adverb",
           "lane": "minor",
           "order": 1,
-          "startIndex": 10,
-          "endIndex": 13,
+          "startIndex": 4,
+          "endIndex": 18,
           "words": [
+            "to",
+            "satirize",
+            "how",
+            "fascinated",
+            "people",
+            "were",
             "with",
             "the",
-            "idea"
-          ]
-        },
-        {
-          "id": "s7-c8",
-          "sentenceIndex": 7,
-          "componentIndex": 8,
-          "text": "of life",
-          "role": "adverb",
-          "lane": "minor",
-          "order": 2,
-          "startIndex": 13,
-          "endIndex": 15,
-          "words": [
+            "idea",
             "of",
-            "life"
-          ]
-        },
-        {
-          "id": "s7-c9",
-          "sentenceIndex": 7,
-          "componentIndex": 9,
-          "text": "on other planets and how",
-          "role": "adverb",
-          "lane": "minor",
-          "order": 3,
-          "startIndex": 15,
-          "endIndex": 20,
-          "words": [
+            "life",
             "on",
             "other",
-            "planets",
-            "and",
-            "how"
-          ]
-        },
-        {
-          "id": "s7-c10",
-          "sentenceIndex": 7,
-          "componentIndex": 10,
-          "text": "easily",
-          "role": "adverb",
-          "lane": "minor",
-          "order": 4,
-          "startIndex": 20,
-          "endIndex": 21,
-          "words": [
-            "easily"
+            "planets"
           ]
         }
       ]
@@ -1322,17 +1251,18 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s11-c3",
+          "id": "s11-c3-s11-c5-u176",
           "sentenceIndex": 11,
           "componentIndex": 3,
-          "text": "had",
+          "text": "had shown",
           "role": "verb",
           "lane": "major",
           "order": 2,
           "startIndex": 4,
-          "endIndex": 5,
+          "endIndex": 7,
           "words": [
-            "had"
+            "had",
+            "shown"
           ]
         },
         {
@@ -1350,27 +1280,13 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s11-c5",
-          "sentenceIndex": 11,
-          "componentIndex": 5,
-          "text": "shown",
-          "role": "verb",
-          "lane": "major",
-          "order": 3,
-          "startIndex": 6,
-          "endIndex": 7,
-          "words": [
-            "shown"
-          ]
-        },
-        {
           "id": "s11-c6",
           "sentenceIndex": 11,
-          "componentIndex": 6,
+          "componentIndex": 5,
           "text": "how quickly fake news can spread,",
-          "role": "verb",
+          "role": "object",
           "lane": "major",
-          "order": 4,
+          "order": 3,
           "startIndex": 7,
           "endIndex": 13,
           "words": [
@@ -1385,7 +1301,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
         {
           "id": "s11-c7",
           "sentenceIndex": 11,
-          "componentIndex": 7,
+          "componentIndex": 6,
           "text": "especially when it matches what people want to believe.",
           "role": "adverb",
           "lane": "minor",

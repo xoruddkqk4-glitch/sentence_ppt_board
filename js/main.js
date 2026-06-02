@@ -3513,13 +3513,25 @@ async function saveAnalysisTxt(saveAs = false) {
 
   // 최신 수정본을 로컬 스토리지 캐시 및 빠른 지문 불러오기 맵과 캐시에 즉시 동기화
   localStorage.setItem(`sentence_board_file_cache_${fileName}`, content);
-  const updatedFile = new File([content], fileName, { type: "text/plain" });
-  state.quickFilesMap.set(fileName, updatedFile);
+  
+  const existingEntry = state.quickFilesMap.get(fileName);
+  const isHandle = existingEntry && typeof existingEntry.getFile === "function";
+  if (!isHandle) {
+    const updatedFile = new File([content], fileName, { type: "text/plain" });
+    state.quickFilesMap.set(fileName, updatedFile);
+  }
+  
   QUICK_TXT_DATA[fileName] = content;
 
   if (!QUICK_TXT_FILES.includes(fileName)) {
     QUICK_TXT_FILES.push(fileName);
   }
+  
+  if (state.hasFolderSelected) {
+    const filesList = Array.from(state.quickFilesMap.keys());
+    localStorage.setItem("sentence_board_selected_folder_files", JSON.stringify(filesList));
+  }
+  
   renderTxtGrid();
 
   // "현재 TXT에 저장" (saveAs === false) 이고, 이전에 저장 시점 또는 불러오기 시점에 획득한 파일 핸들이 있는 경우
@@ -3612,6 +3624,12 @@ async function saveAnalysisTxt(saveAs = false) {
       if (!QUICK_TXT_FILES.includes(fileHandle.name)) {
         QUICK_TXT_FILES.push(fileHandle.name);
       }
+      
+      if (state.hasFolderSelected) {
+        const filesList = Array.from(state.quickFilesMap.keys());
+        localStorage.setItem("sentence_board_selected_folder_files", JSON.stringify(filesList));
+      }
+      
       renderTxtGrid();
 
       const saveMsg = `💾 ${fileHandle.name} 파일로 저장했습니다.`;

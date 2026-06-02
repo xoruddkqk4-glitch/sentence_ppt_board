@@ -1,14 +1,14 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-02T03:53:02.996Z
+저장 시각: 2026-06-02T03:54:50.778Z
 총 문장 수: 8
 
 [문장 및 성분 인덱스]
 
 [문장 1] //The Dangers of Misinformation in Today's Digital World//
   단어 수: 8
-  - 성분 1: id=s1-c1-u38, lane=major, role=title, order=1, wordIndex0=0-4, wordIndex1=1-4, text="The Dangers of Misinformation"
-  - 성분 2: id=s1-c1-u39, lane=minor, role=adverb, order=1, wordIndex0=4-8, wordIndex1=5-8, text="in Today's Digital World"
+  - 성분 1: id=s1-c1, lane=major, role=title, order=1, wordIndex0=0-4, wordIndex1=1-4, text="The Dangers of Misinformation"
+  - 성분 2: id=s1-c2, lane=minor, role=adverb, order=1, wordIndex0=4-8, wordIndex1=5-8, text="in Today's Digital World"
 
 [문장 2] In today's fast-paced digital age, misinformation is spreading more than ever.
   단어 수: 11
@@ -68,7 +68,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-02T03:53:02.996Z",
+  "savedAt": "2026-06-02T03:54:50.778Z",
   "passageText": "//The Dangers of Misinformation in Today's Digital World// In today's fast-paced digital age, misinformation is spreading more than ever. Imagine this: Two news articles pop up online. One is well researched and comes from a trusted source, while the other tells an incredible tale that grabs readers' attention. What happens? The first article gets little interest, while the false one spreads rapidly, taking advantage of how we process information and how social media promotes eye-catching content. This is not just an imaginary situation — it is happening all over the world right now. Let's look at some examples of misinformation to help build the skills we need to spot and fight it.",
   "currentSentenceIndex": 0,
   "componentSerial": 39,
@@ -85,7 +85,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
       "wordCount": 8,
       "components": [
         {
-          "id": "s1-c1-u38",
+          "id": "s1-c1",
           "sentenceIndex": 1,
           "componentIndex": 1,
           "text": "The Dangers of Misinformation",
@@ -102,7 +102,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s1-c1-u39",
+          "id": "s1-c2",
           "sentenceIndex": 1,
           "componentIndex": 2,
           "text": "in Today's Digital World",
