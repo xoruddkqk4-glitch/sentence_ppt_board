@@ -306,9 +306,26 @@ select {
   gap: var(--space-4);
 }
 
+.passage-panel .button-row {
+  justify-content: flex-end;
+}
+
+.passage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+
+.passage-header-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
 .passage-panel label {
   font-size: var(--font-ui-lg);
   font-weight: 800;
+  margin: 0;
 }
 
 textarea {
@@ -586,6 +603,59 @@ input:focus {
 .app-shell[data-theme="dark"] .drag-handle {
   background: #0f172a;
   color: var(--color-dark-muted);
+}
+
+.pin-order-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-soft);
+  color: var(--color-muted);
+  padding: 0 var(--space-2);
+  font-size: var(--font-ui-sm);
+  font-weight: 900;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+  margin-left: var(--space-1);
+}
+
+.pin-order-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-drop);
+  color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+.pin-order-btn.pinned {
+  border-color: #d6b35f;
+  background: #fdf6e2;
+  color: #856404;
+}
+
+.app-shell[data-theme="dark"] .pin-order-btn {
+  border-color: #475569;
+  background: #0f172a;
+  color: var(--color-dark-muted);
+}
+
+.app-shell[data-theme="dark"] .pin-order-btn:hover {
+  border-color: var(--color-primary);
+  background: #12365f;
+  color: #60a5fa;
+}
+
+.app-shell[data-theme="dark"] .pin-order-btn.pinned {
+  border-color: #d6b35f;
+  background: #3e3213;
+  color: #fef08a;
+}
+
+.pin-num {
+  font-size: var(--font-ui-sm);
+  font-weight: 900;
 }
 
 .role-select {
@@ -905,10 +975,10 @@ input:focus {
 
 .minor-lane {
   display: grid;
-  gap: clamp(6px, 1.2vh, 14px);
+  gap: var(--minor-gap, clamp(6px, 1.2vh, 14px));
   width: 100%;
   overflow: visible;
-  margin-top: clamp(12px, 2vh, 22px);
+  margin-top: clamp(36px, 5vh, 64px);
   padding: 0 var(--space-4);
 }
 
@@ -1586,4 +1656,323 @@ input:focus {
     filter: brightness(1.05);
     cursor: zoom-in;
   }
+}
+
+.keyboard-helper {
+  margin: var(--space-4) 0 0;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: var(--font-ui-sm);
+  font-weight: 700;
+}
+
+.app-shell[data-theme="dark"] .keyboard-helper {
+  color: var(--color-dark-muted);
+}
+
+/* 2단계 세로 스크롤 방지를 위한 미디어 쿼리 반응형 높이 최적화 */
+@media (max-height: 900px) {
+  .edit-view {
+    padding-bottom: var(--space-2);
+  }
+  .toolbar {
+    margin-bottom: var(--space-3);
+  }
+  .sentence-meta {
+    margin-bottom: var(--space-3);
+  }
+  .edit-board {
+    gap: var(--space-3);
+  }
+  .edit-lane {
+    min-height: 88px;
+    padding: var(--space-2);
+  }
+  .edit-chip {
+    font-size: 16px;
+    padding: var(--space-1) var(--space-2);
+  }
+  .drag-handle {
+    width: 36px;
+    height: 36px;
+  }
+  .role-select, .modifier-select {
+    height: 36px;
+    min-height: 36px;
+    font-size: 14px;
+    padding: 2px 6px;
+  }
+  .nav-row {
+    margin-top: var(--space-3);
+  }
+  .keyboard-helper {
+    margin-top: var(--space-2);
+  }
+}
+
+@media (max-height: 750px) {
+  .edit-view {
+    padding-top: var(--space-2);
+  }
+  .edit-lane {
+    min-height: 72px;
+  }
+  .edit-chip {
+    font-size: 14px;
+  }
+  .drag-handle {
+    width: 32px;
+    height: 32px;
+  }
+  .role-select, .modifier-select {
+    height: 32px;
+    min-height: 32px;
+    font-size: 12px;
+  }
+}
+
+.edit-view {
+  --edit-font-size: 20px;
+  --edit-gap: 16px;
+}
+
+.edit-chip {
+  font-size: var(--edit-font-size) !important;
+  padding: calc(var(--edit-gap) * 0.4) calc(var(--edit-gap) * 0.8) !important;
+}
+
+.edit-lane {
+  min-height: calc(var(--edit-font-size) * 3.4) !important;
+  column-gap: var(--edit-gap) !important;
+  row-gap: calc(var(--edit-gap) * 0.4) !important;
+  padding: var(--edit-gap) !important;
+}
+
+.edit-board {
+  gap: calc(var(--edit-gap) * 0.7) !important;
+}
+
+.sentence-meta, .toolbar, .nav-row {
+  margin-bottom: calc(var(--edit-gap) * 0.5) !important;
+}
+
+.drag-handle {
+  width: calc(var(--edit-font-size) * 2.1) !important;
+  height: calc(var(--edit-font-size) * 2.1) !important;
+}
+
+.role-select, .modifier-select {
+  height: calc(var(--edit-font-size) * 2.1) !important;
+  min-height: calc(var(--edit-font-size) * 2.1) !important;
+  font-size: calc(var(--edit-font-size) * 0.8) !important;
+}
+
+/* 커스텀 셀렉트 드롭다운 스타일 */
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: calc(var(--edit-font-size) * 6.5);
+  font-weight: 800;
+  user-select: none;
+  outline: none;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  height: calc(var(--edit-font-size) * 2.1);
+  min-height: calc(var(--edit-font-size) * 2.1);
+  font-size: calc(var(--edit-font-size) * 0.8) !important;
+  font-weight: 800;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-panel);
+  color: var(--color-ink);
+  padding: 0 var(--space-4) 0 var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  text-align: left;
+  outline: none;
+}
+
+.custom-select-trigger::after {
+  content: "▾";
+  font-size: 0.85em;
+  color: var(--color-muted);
+}
+
+.app-shell[data-theme="dark"] .custom-select-trigger {
+  border-color: #334155;
+  background: var(--color-dark-panel);
+  color: var(--color-dark-ink);
+}
+
+.custom-select-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+  z-index: 1000;
+}
+
+.app-shell[data-theme="dark"] .custom-select-options {
+  background: var(--color-dark-panel);
+  border-color: #334155;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.custom-select-options.hidden {
+  display: none !important;
+}
+
+.custom-option {
+  padding: calc(var(--edit-gap) * 0.3) var(--space-3);
+  font-size: calc(var(--edit-font-size) * 0.75);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background-color 100ms ease, color 100ms ease;
+  display: flex;
+  align-items: center;
+}
+
+.app-shell[data-theme="dark"] .custom-option {
+  color: var(--color-dark-ink);
+}
+
+/* 마우스 호버 또는 키보드로 선택 중인 임시 하이라이트 상태 */
+.custom-option:hover,
+.custom-option.highlighted {
+  background: var(--color-primary);
+  color: #ffffff !important;
+}
+
+.custom-option.selected {
+  background: var(--color-drop);
+  color: var(--color-primary);
+}
+
+.app-shell[data-theme="dark"] .custom-option.selected {
+  background: #122842;
+  color: #60a5fa;
+}
+
+/* 2단계 전용 주변 요소 스케일 및 세로 여백 축소 */
+.edit-view .progress-badge {
+  min-height: calc(var(--edit-font-size) * 1.5) !important;
+  font-size: calc(var(--edit-font-size) * 0.75) !important;
+  padding: 0 calc(var(--edit-font-size) * 0.5) !important;
+}
+
+.edit-view .sentence-manage-buttons .button {
+  min-height: calc(var(--edit-font-size) * 1.4) !important;
+  font-size: calc(var(--edit-font-size) * 0.7) !important;
+  padding: 0 calc(var(--edit-font-size) * 0.5) !important;
+}
+
+.edit-view .sentence-editor-textarea {
+  font-size: calc(var(--edit-font-size) * 0.85) !important;
+  min-height: calc(var(--edit-font-size) * 2.4) !important;
+  padding: calc(var(--edit-gap) * 0.4) calc(var(--edit-gap) * 0.6) !important;
+}
+
+.edit-view .editor-warning {
+  font-size: calc(var(--edit-font-size) * 0.6) !important;
+}
+
+.edit-view .editor-action-row .button {
+  min-height: calc(var(--edit-font-size) * 1.4) !important;
+  font-size: calc(var(--edit-font-size) * 0.7) !important;
+  padding: 0 calc(var(--edit-font-size) * 0.6) !important;
+}
+
+.edit-view .lane-heading {
+  gap: calc(var(--edit-gap) * 0.3) !important;
+  margin-bottom: calc(var(--edit-gap) * 0.15) !important;
+}
+
+.edit-view .lane-heading h3 {
+  font-size: calc(var(--edit-font-size) * 1.0) !important;
+}
+
+.edit-view .lane-heading span {
+  font-size: calc(var(--edit-font-size) * 0.65) !important;
+}
+
+.edit-view .lane-panel {
+  gap: calc(var(--edit-gap) * 0.2) !important;
+}
+
+/* 2단계 상단 툴바(제목 영역) 스케일 축소 */
+.edit-view .toolbar {
+  margin-bottom: calc(var(--edit-gap) * 0.3) !important;
+}
+
+.edit-view .toolbar h2 {
+  font-size: calc(var(--edit-font-size) * 1.25) !important;
+}
+
+.edit-view .toolbar .step-label {
+  font-size: calc(var(--edit-font-size) * 0.55) !important;
+  margin-bottom: 2px !important;
+}
+
+.edit-view .toolbar-actions .button {
+  min-height: calc(var(--edit-font-size) * 1.5) !important;
+  font-size: calc(var(--edit-font-size) * 0.7) !important;
+  padding: 0 calc(var(--edit-font-size) * 0.6) !important;
+}
+
+.edit-view .nav-row {
+  margin-top: calc(var(--edit-gap) * 0.3) !important;
+}
+
+.edit-view .nav-row .button {
+  min-height: calc(var(--edit-font-size) * 1.5) !important;
+  font-size: calc(var(--edit-font-size) * 0.7) !important;
+  padding: 0 calc(var(--edit-font-size) * 0.7) !important;
+}
+
+.edit-view .keyboard-helper {
+  font-size: calc(var(--edit-font-size) * 0.6) !important;
+  margin-top: calc(var(--edit-gap) * 0.15) !important;
+}
+
+/* 형용사어 수식 대상 및 부사어 분리 패널 스케일링 */
+.edit-view .modifier-control,
+.edit-view .split-panel {
+  padding: calc(var(--edit-gap) * 0.4) !important;
+  gap: calc(var(--edit-gap) * 0.3) !important;
+}
+
+.edit-view .modifier-control-title {
+  font-size: calc(var(--edit-font-size) * 0.65) !important;
+}
+
+.edit-view .modifier-word-option,
+.edit-view .split-word-option {
+  font-size: calc(var(--edit-font-size) * 0.6) !important;
+  padding: calc(var(--edit-gap) * 0.18) calc(var(--edit-gap) * 0.4) !important;
+  gap: 4px !important;
+}
+
+.edit-view .modifier-word-option input,
+.edit-view .split-word-option input {
+  width: calc(var(--edit-font-size) * 0.65) !important;
+  height: calc(var(--edit-font-size) * 0.65) !important;
+  margin: 0 !important;
+}
+
+.edit-view .chip-action {
+  min-height: calc(var(--edit-font-size) * 1.3) !important;
+  font-size: calc(var(--edit-font-size) * 0.6) !important;
+  padding: 0 calc(var(--edit-gap) * 0.4) !important;
 }

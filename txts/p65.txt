@@ -1,0 +1,1694 @@
+WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-06-01T13:42:40.737Z
+총 문장 수: 17
+
+[문장 및 성분 인덱스]
+
+[문장 1] /Case 2 - The Venetian Wildlife Hoax (2020)/
+  단어 수: 8
+  - 성분 1: id=s1-c1, lane=major, role=subtitle, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Case 2 - The Venetian Wildlife Hoax (2020)"
+
+[문장 2] During the COVID-19 pandemic in 2020, a heartwarming story spread widely on social media.
+  단어 수: 14
+  - 성분 1: id=s2-c1, lane=minor, role=adverb, order=1, wordIndex0=0-6, wordIndex1=1-6, text="During the COVID-19 pandemic in 2020,"
+  - 성분 2: id=s2-c2, lane=major, role=subject, order=1, wordIndex0=6-9, wordIndex1=7-9, text="a heartwarming story"
+  - 성분 3: id=s2-c3, lane=major, role=verb, order=2, wordIndex0=9-10, wordIndex1=10-10, text="spread"
+  - 성분 4: id=s2-c4, lane=minor, role=adverb, order=2, wordIndex0=10-11, wordIndex1=11-11, text="widely"
+  - 성분 5: id=s2-c5, lane=minor, role=adverb, order=3, wordIndex0=11-14, wordIndex1=12-14, text="on social media."
+
+[문장 3] It claimed that swans and dolphins had returned to the now-empty canals of Venice, showing how nature was returning while people stayed inside.
+  단어 수: 23
+  - 성분 1: id=s3-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="It"
+  - 성분 2: id=s3-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="claimed"
+  - 성분 3: id=s3-c3, lane=major, role=subject, order=3, wordIndex0=2-14, wordIndex1=3-14, text="that swans and dolphins had returned to the now-empty canals of Venice,"
+  - 성분 4: id=s3-c4, lane=minor, role=adjective, order=1, wordIndex0=14-23, wordIndex1=15-23, text="showing how nature was returning while people stayed inside."
+
+[문장 4] The story was shared by many readers, celebrating it as a positive outcome of the pandemic.
+  단어 수: 16
+  - 성분 1: id=s4-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The story"
+  - 성분 2: id=s4-c2, lane=major, role=verb, order=2, wordIndex0=2-4, wordIndex1=3-4, text="was shared"
+  - 성분 3: id=s4-c3, lane=minor, role=adverb, order=1, wordIndex0=4-7, wordIndex1=5-7, text="by many readers,"
+  - 성분 4: id=s4-c4, lane=minor, role=adjective, order=2, wordIndex0=7-16, wordIndex1=8-16, text="celebrating it as a positive outcome of the pandemic."
+
+[문장 5] [Kaveri] Here is an unexpected side effect of the pandemic
+  단어 수: 10
+  - 성분 1: id=s5-c1-0, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="[Kaveri] Here"
+  - 성분 2: id=s5-c2-0, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="is"
+  - 성분 3: id=s5-c3-0, lane=major, role=complement, order=3, wordIndex0=3-7, wordIndex1=4-7, text="an unexpected side effect"
+  - 성분 4: id=s5-c4-0, lane=minor, role=adjective, order=1, wordIndex0=7-10, wordIndex1=8-10, text="of the pandemic"
+
+[문장 6] - the water flowing through the canals of Venice is clear for the first time in ages.
+  단어 수: 17
+  - 성분 1: id=s6-c1-0-u135, lane=major, role=subject, order=1, wordIndex0=0-3, wordIndex1=1-3, text="- the water"
+  - 성분 2: id=s6-c1-0-u136, lane=minor, role=adjective, order=1, wordIndex0=3-9, wordIndex1=4-9, text="flowing through the canals of Venice"
+  - 성분 3: id=s6-c2-0, lane=major, role=verb, order=2, wordIndex0=9-10, wordIndex1=10-10, text="is"
+  - 성분 4: id=s6-c3-0, lane=major, role=complement, order=3, wordIndex0=10-11, wordIndex1=11-11, text="clear"
+  - 성분 5: id=s6-c4-0-s6-c5-1-u137, lane=minor, role=adverb, order=2, wordIndex0=11-17, wordIndex1=12-17, text="for the first time in ages."
+
+[문장 7] The fish are visible; the swans have returned.
+  단어 수: 8
+  - 성분 1: id=s7-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The fish"
+  - 성분 2: id=s7-c2, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="are"
+  - 성분 3: id=s7-c3, lane=major, role=complement, order=3, wordIndex0=3-4, wordIndex1=4-4, text="visible;"
+  - 성분 4: id=s7-c4, lane=major, role=subject, order=4, wordIndex0=4-6, wordIndex1=5-6, text="the swans"
+  - 성분 5: id=s7-c5, lane=major, role=verb, order=5, wordIndex0=6-8, wordIndex1=7-8, text="have returned."
+
+[문장 8] [Luca] Venice has not seen clear canal water in a very long time.
+  단어 수: 13
+  - 성분 1: id=s8-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="[Luca]"
+  - 성분 2: id=s8-c2, lane=major, role=subject, order=2, wordIndex0=1-2, wordIndex1=2-2, text="Venice"
+  - 성분 3: id=s8-c3, lane=major, role=verb, order=3, wordIndex0=2-5, wordIndex1=3-5, text="has seen"
+  - 성분 4: id=s8-c4, lane=minor, role=adverb, order=1, wordIndex0=3-4, wordIndex1=4-4, text="not"
+  - 성분 5: id=s8-c5, lane=major, role=object, order=4, wordIndex0=5-8, wordIndex1=6-8, text="clear canal water"
+  - 성분 6: id=s8-c6, lane=minor, role=adverb, order=2, wordIndex0=8-13, wordIndex1=9-13, text="in a very long time."
+
+[문장 9] Dolphins are showing up too.
+  단어 수: 5
+  - 성분 1: id=s9-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Dolphins"
+  - 성분 2: id=s9-c2, lane=major, role=verb, order=2, wordIndex0=1-4, wordIndex1=2-4, text="are showing up"
+  - 성분 3: id=s9-c3, lane=minor, role=adverb, order=1, wordIndex0=4-5, wordIndex1=5-5, text="too."
+
+[문장 10] Nature just hit the reset button on us.
+  단어 수: 8
+  - 성분 1: id=s10-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Nature"
+  - 성분 2: id=s10-c2, lane=major, role=subject, order=2, wordIndex0=2-3, wordIndex1=3-3, text="hit"
+  - 성분 3: id=s10-c3, lane=major, role=subject, order=3, wordIndex0=3-6, wordIndex1=4-6, text="the reset button"
+  - 성분 4: id=s10-c4, lane=minor, role=adverb, order=1, wordIndex0=1-2, wordIndex1=2-2, text="just"
+  - 성분 5: id=s10-c5, lane=minor, role=adverb, order=2, wordIndex0=6-8, wordIndex1=7-8, text="on us."
+
+[문장 11] However, the story was not completely true.
+  단어 수: 7
+  - 성분 1: id=s11-c1, lane=minor, role=adverb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="However,"
+  - 성분 2: id=s11-c2, lane=major, role=subject, order=1, wordIndex0=1-3, wordIndex1=2-3, text="the story"
+  - 성분 3: id=s11-c3, lane=major, role=verb, order=2, wordIndex0=3-4, wordIndex1=4-4, text="was"
+  - 성분 4: id=s11-c4, lane=minor, role=adverb, order=2, wordIndex0=5-6, wordIndex1=6-6, text="not"
+  - 성분 5: id=s11-c5, lane=minor, role=adverb, order=3, wordIndex0=5-6, wordIndex1=6-6, text="completely"
+  - 성분 6: id=s11-c6, lane=major, role=complement, order=3, wordIndex0=6-7, wordIndex1=7-7, text="true."
+
+[문장 12] The dolphins were actually filmed in Sardinia, an Italian island, not Venice, and the swans had always been present in Burano, near Venice, even before the pandemic.
+  단어 수: 27
+  - 성분 1: id=s12-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The dolphins"
+  - 성분 2: id=s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u154-s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u156-u157-s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u155-u158, lane=major, role=verb, order=2, wordIndex0=2-5, wordIndex1=3-5, text="were actually filmed"
+  - 성분 3: id=s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u148-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u144-u149-u151-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u144-u150-u152, lane=minor, role=adverb, order=1, wordIndex0=8-17, wordIndex1=9-17, text="in Sardinia, an Italian island, not Venice,"
+  - 성분 4: id=s12-c5, lane=major, role=subject, order=3, wordIndex0=12-15, wordIndex1=13-15, text="and the swans"
+  - 성분 5: id=s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u165-s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u167-u168-s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u166-u169-s12-c6-s12-c7-u159-u161-u162-u170, lane=major, role=verb, order=4, wordIndex0=15-18, wordIndex1=16-18, text="had always been present"
+  - 성분 6: id=s12-c8, lane=minor, role=adverb, order=2, wordIndex0=19-23, wordIndex1=20-23, text="even before the pandemic. near Venice, in Burano,"
+
+[문장 13] The story went viral when a woman from New Delhi shared a post that combined these images and stories.
+  단어 수: 19
+  - 성분 1: id=s13-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The story"
+  - 성분 2: id=s13-c2, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="went"
+  - 성분 3: id=s13-c3, lane=major, role=object, order=3, wordIndex0=3-4, wordIndex1=4-4, text="viral"
+  - 성분 4: id=s13-c4, lane=minor, role=adverb, order=1, wordIndex0=4-13, wordIndex1=5-13, text="when a woman from New Delhi shared a post"
+  - 성분 5: id=s13-c5, lane=minor, role=adjective, order=2, wordIndex0=13-19, wordIndex1=14-19, text="that combined these images and stories."
+
+[문장 14] Her post was widely shared and got over a million likes.
+  단어 수: 11
+  - 성분 1: id=s14-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="Her post"
+  - 성분 2: id=s14-c2, lane=major, role=verb, order=2, wordIndex0=2-5, wordIndex1=3-5, text="was shared"
+  - 성분 3: id=s14-c3, lane=major, role=verb, order=3, wordIndex0=5-7, wordIndex1=6-7, text="and got"
+  - 성분 4: id=s14-c4, lane=minor, role=adverb, order=1, wordIndex0=3-4, wordIndex1=4-4, text="widely"
+  - 성분 5: id=s14-c5, lane=major, role=object, order=4, wordIndex0=7-11, wordIndex1=8-11, text="over a million likes."
+
+[문장 15] She explained that she simply wanted to share something joyful during dark times and did not realize the swans had always been there.
+  단어 수: 23
+  - 성분 1: id=s15-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="She"
+  - 성분 2: id=s15-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="explained"
+  - 성분 3: id=s15-c3, lane=major, role=object, order=3, wordIndex0=2-10, wordIndex1=3-10, text="that she simply wanted to share something joyful"
+  - 성분 4: id=s15-c4, lane=minor, role=adverb, order=1, wordIndex0=10-13, wordIndex1=11-13, text="during dark times"
+  - 성분 5: id=s15-c5, lane=major, role=verb, order=4, wordIndex0=13-23, wordIndex1=14-23, text="and did"
+  - 성분 6: id=s15-c6, lane=minor, role=adverb, order=2, wordIndex0=15-16, wordIndex1=16-16, text="not"
+  - 성분 7: id=s15-c7, lane=major, role=verb, order=5, wordIndex0=15-16, wordIndex1=16-16, text="realize"
+  - 성분 8: id=s15-c8, lane=major, role=object, order=6, wordIndex0=16-22, wordIndex1=17-22, text="the swans had always been there."
+
+[문장 16] Despite the mix-up, she decided not to delete the post, believing the message about clearer waters in Venice still held some truth.
+  단어 수: 22
+  - 성분 1: id=s16-c1, lane=minor, role=adverb, order=1, wordIndex0=0-3, wordIndex1=1-3, text="Despite the mix-up,"
+  - 성분 2: id=s16-c2, lane=major, role=subject, order=1, wordIndex0=3-4, wordIndex1=4-4, text="she"
+  - 성분 3: id=s16-c3, lane=major, role=verb, order=2, wordIndex0=4-5, wordIndex1=5-5, text="decided"
+  - 성분 4: id=s16-c4, lane=minor, role=adverb, order=2, wordIndex0=5-6, wordIndex1=6-6, text="not"
+  - 성분 5: id=s16-c5, lane=major, role=object, order=3, wordIndex0=6-10, wordIndex1=7-10, text="to delete the post,"
+  - 성분 6: id=s16-c6, lane=minor, role=adjective, order=4, wordIndex0=10-22, wordIndex1=11-22, text="believing the message in Venice still held some truth."
+  - 성분 7: id=s16-c7, lane=minor, role=adjective, order=3, wordIndex0=10-13, wordIndex1=11-13, text="about clearer waters"
+
+[문장 17] This incident highlights how easily misinformation can spread, even when shared with good intentions.
+  단어 수: 14
+  - 성분 1: id=s17-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="This incident"
+  - 성분 2: id=s17-c2, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="highlights"
+  - 성분 3: id=s17-c3, lane=major, role=subject, order=3, wordIndex0=3-8, wordIndex1=4-8, text="how easily misinformation can spread,"
+  - 성분 4: id=s17-c4, lane=minor, role=adverb, order=1, wordIndex0=8-14, wordIndex1=9-14, text="even when shared with good intentions."
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 1,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-06-01T13:42:40.737Z",
+  "passageText": "/Case 2 - The Venetian Wildlife Hoax (2020)/ During the COVID-19 pandemic in 2020, a heartwarming story spread widely on social media. It claimed that swans and dolphins had returned to the now-empty canals of Venice, showing how nature was returning while people stayed inside. The story was shared by many readers, celebrating it as a positive outcome of the pandemic. [Kaveri] Here is an unexpected side effect of the pandemic - the water flowing through the canals of Venice is clear for the first time in ages. The fish are visible; the swans have returned. [Luca] Venice has not seen clear canal water in a very long time. Dolphins are showing up too. Nature just hit the reset button on us. However, the story was not completely true. The dolphins were actually filmed in Sardinia, an Italian island, not Venice, and the swans had always been present in Burano, near Venice, even before the pandemic. The story went viral when a woman from New Delhi shared a post that combined these images and stories. Her post was widely shared and got over a million likes. She explained that she simply wanted to share something joyful during dark times and did not realize the swans had always been there. Despite the mix-up, she decided not to delete the post, believing the message about clearer waters in Venice still held some truth. This incident highlights how easily misinformation can spread, even when shared with good intentions.",
+  "currentSentenceIndex": 16,
+  "componentSerial": 170,
+  "settings": {
+    "theme": "light",
+    "align": "center"
+  },
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "/Case 2 - The Venetian Wildlife Hoax (2020)/",
+      "isImportant": false,
+      "wordCount": 8,
+      "components": [
+        {
+          "id": "s1-c1",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "Case 2 - The Venetian Wildlife Hoax (2020)",
+          "role": "subtitle",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Case",
+            "2",
+            "-",
+            "The",
+            "Venetian",
+            "Wildlife",
+            "Hoax",
+            "(2020)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "During the COVID-19 pandemic in 2020, a heartwarming story spread widely on social media.",
+      "isImportant": false,
+      "wordCount": 14,
+      "components": [
+        {
+          "id": "s2-c1",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "During the COVID-19 pandemic in 2020,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 6,
+          "words": [
+            "During",
+            "the",
+            "COVID-19",
+            "pandemic",
+            "in",
+            "2020,"
+          ]
+        },
+        {
+          "id": "s2-c2",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "a heartwarming story",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 6,
+          "endIndex": 9,
+          "words": [
+            "a",
+            "heartwarming",
+            "story"
+          ]
+        },
+        {
+          "id": "s2-c3",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "spread",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 9,
+          "endIndex": 10,
+          "words": [
+            "spread"
+          ]
+        },
+        {
+          "id": "s2-c4",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "widely",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 10,
+          "endIndex": 11,
+          "words": [
+            "widely"
+          ]
+        },
+        {
+          "id": "s2-c5",
+          "sentenceIndex": 2,
+          "componentIndex": 5,
+          "text": "on social media.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 11,
+          "endIndex": 14,
+          "words": [
+            "on",
+            "social",
+            "media."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "It claimed that swans and dolphins had returned to the now-empty canals of Venice, showing how nature was returning while people stayed inside.",
+      "isImportant": false,
+      "wordCount": 23,
+      "components": [
+        {
+          "id": "s3-c1",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "It",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "It"
+          ]
+        },
+        {
+          "id": "s3-c2",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "claimed",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "claimed"
+          ]
+        },
+        {
+          "id": "s3-c3",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "that swans and dolphins had returned to the now-empty canals of Venice,",
+          "role": "subject",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 14,
+          "words": [
+            "that",
+            "swans",
+            "and",
+            "dolphins",
+            "had",
+            "returned",
+            "to",
+            "the",
+            "now-empty",
+            "canals",
+            "of",
+            "Venice,"
+          ]
+        },
+        {
+          "id": "s3-c4",
+          "sentenceIndex": 3,
+          "componentIndex": 4,
+          "text": "showing how nature was returning while people stayed inside.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 14,
+          "endIndex": 23,
+          "modifierTargetStart": 2,
+          "modifierTargetEnd": 14,
+          "modifierTargetIndexes": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "words": [
+            "showing",
+            "how",
+            "nature",
+            "was",
+            "returning",
+            "while",
+            "people",
+            "stayed",
+            "inside."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-4",
+      "sentenceIndex": 4,
+      "text": "The story was shared by many readers, celebrating it as a positive outcome of the pandemic.",
+      "isImportant": false,
+      "wordCount": 16,
+      "components": [
+        {
+          "id": "s4-c1",
+          "sentenceIndex": 4,
+          "componentIndex": 1,
+          "text": "The story",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "story"
+          ]
+        },
+        {
+          "id": "s4-c2",
+          "sentenceIndex": 4,
+          "componentIndex": 2,
+          "text": "was shared",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 4,
+          "words": [
+            "was",
+            "shared"
+          ]
+        },
+        {
+          "id": "s4-c3",
+          "sentenceIndex": 4,
+          "componentIndex": 3,
+          "text": "by many readers,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 4,
+          "endIndex": 7,
+          "words": [
+            "by",
+            "many",
+            "readers,"
+          ]
+        },
+        {
+          "id": "s4-c4",
+          "sentenceIndex": 4,
+          "componentIndex": 4,
+          "text": "celebrating it as a positive outcome of the pandemic.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 7,
+          "endIndex": 16,
+          "modifierTargetStart": 5,
+          "modifierTargetEnd": 7,
+          "modifierTargetIndexes": [
+            5,
+            6
+          ],
+          "words": [
+            "celebrating",
+            "it",
+            "as",
+            "a",
+            "positive",
+            "outcome",
+            "of",
+            "the",
+            "pandemic."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-5",
+      "sentenceIndex": 5,
+      "text": "[Kaveri] Here is an unexpected side effect of the pandemic",
+      "isImportant": false,
+      "wordCount": 10,
+      "components": [
+        {
+          "id": "s5-c1-0",
+          "sentenceIndex": 5,
+          "componentIndex": 1,
+          "text": "[Kaveri] Here",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "[Kaveri]",
+            "Here"
+          ]
+        },
+        {
+          "id": "s5-c2-0",
+          "sentenceIndex": 5,
+          "componentIndex": 2,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s5-c3-0",
+          "sentenceIndex": 5,
+          "componentIndex": 3,
+          "text": "an unexpected side effect",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 7,
+          "words": [
+            "an",
+            "unexpected",
+            "side",
+            "effect"
+          ]
+        },
+        {
+          "id": "s5-c4-0",
+          "sentenceIndex": 5,
+          "componentIndex": 4,
+          "text": "of the pandemic",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 7,
+          "endIndex": 10,
+          "modifierTargetId": "s5-c3-0",
+          "modifierTargetStart": 3,
+          "modifierTargetEnd": 7,
+          "modifierTargetIndexes": [
+            3,
+            4,
+            5,
+            6
+          ],
+          "words": [
+            "of",
+            "the",
+            "pandemic"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-6",
+      "sentenceIndex": 6,
+      "text": "- the water flowing through the canals of Venice is clear for the first time in ages.",
+      "isImportant": false,
+      "wordCount": 17,
+      "components": [
+        {
+          "id": "s6-c1-0-u135",
+          "sentenceIndex": 6,
+          "componentIndex": 1,
+          "text": "- the water",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 3,
+          "words": [
+            "-",
+            "the",
+            "water"
+          ]
+        },
+        {
+          "id": "s6-c1-0-u136",
+          "sentenceIndex": 6,
+          "componentIndex": 2,
+          "text": "flowing through the canals of Venice",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 9,
+          "modifierTargetStart": 1,
+          "modifierTargetEnd": 3,
+          "modifierTargetIndexes": [
+            1,
+            2
+          ],
+          "words": [
+            "flowing",
+            "through",
+            "the",
+            "canals",
+            "of",
+            "Venice"
+          ]
+        },
+        {
+          "id": "s6-c2-0",
+          "sentenceIndex": 6,
+          "componentIndex": 3,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 9,
+          "endIndex": 10,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s6-c3-0",
+          "sentenceIndex": 6,
+          "componentIndex": 4,
+          "text": "clear",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 10,
+          "endIndex": 11,
+          "words": [
+            "clear"
+          ]
+        },
+        {
+          "id": "s6-c4-0-s6-c5-1-u137",
+          "sentenceIndex": 6,
+          "componentIndex": 5,
+          "text": "for the first time in ages.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 11,
+          "endIndex": 17,
+          "words": [
+            "for",
+            "the",
+            "first",
+            "time",
+            "in",
+            "ages."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-7",
+      "sentenceIndex": 7,
+      "text": "The fish are visible; the swans have returned.",
+      "isImportant": false,
+      "wordCount": 8,
+      "components": [
+        {
+          "id": "s7-c1",
+          "sentenceIndex": 7,
+          "componentIndex": 1,
+          "text": "The fish",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "fish"
+          ]
+        },
+        {
+          "id": "s7-c2",
+          "sentenceIndex": 7,
+          "componentIndex": 2,
+          "text": "are",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "are"
+          ]
+        },
+        {
+          "id": "s7-c3",
+          "sentenceIndex": 7,
+          "componentIndex": 3,
+          "text": "visible;",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "visible;"
+          ]
+        },
+        {
+          "id": "s7-c4",
+          "sentenceIndex": 7,
+          "componentIndex": 4,
+          "text": "the swans",
+          "role": "subject",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 4,
+          "endIndex": 6,
+          "words": [
+            "the",
+            "swans"
+          ]
+        },
+        {
+          "id": "s7-c5",
+          "sentenceIndex": 7,
+          "componentIndex": 5,
+          "text": "have returned.",
+          "role": "verb",
+          "lane": "major",
+          "order": 5,
+          "startIndex": 6,
+          "endIndex": 8,
+          "words": [
+            "have",
+            "returned."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-8",
+      "sentenceIndex": 8,
+      "text": "[Luca] Venice has not seen clear canal water in a very long time.",
+      "isImportant": false,
+      "wordCount": 13,
+      "components": [
+        {
+          "id": "s8-c1",
+          "sentenceIndex": 8,
+          "componentIndex": 1,
+          "text": "[Luca]",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "[Luca]"
+          ]
+        },
+        {
+          "id": "s8-c2",
+          "sentenceIndex": 8,
+          "componentIndex": 2,
+          "text": "Venice",
+          "role": "subject",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "Venice"
+          ]
+        },
+        {
+          "id": "s8-c3",
+          "sentenceIndex": 8,
+          "componentIndex": 3,
+          "text": "has seen",
+          "role": "verb",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 5,
+          "words": [
+            "has",
+            "seen"
+          ]
+        },
+        {
+          "id": "s8-c4",
+          "sentenceIndex": 8,
+          "componentIndex": 4,
+          "text": "not",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "not"
+          ]
+        },
+        {
+          "id": "s8-c5",
+          "sentenceIndex": 8,
+          "componentIndex": 5,
+          "text": "clear canal water",
+          "role": "object",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 5,
+          "endIndex": 8,
+          "words": [
+            "clear",
+            "canal",
+            "water"
+          ]
+        },
+        {
+          "id": "s8-c6",
+          "sentenceIndex": 8,
+          "componentIndex": 6,
+          "text": "in a very long time.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 8,
+          "endIndex": 13,
+          "words": [
+            "in",
+            "a",
+            "very",
+            "long",
+            "time."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-9",
+      "sentenceIndex": 9,
+      "text": "Dolphins are showing up too.",
+      "isImportant": false,
+      "wordCount": 5,
+      "components": [
+        {
+          "id": "s9-c1",
+          "sentenceIndex": 9,
+          "componentIndex": 1,
+          "text": "Dolphins",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Dolphins"
+          ]
+        },
+        {
+          "id": "s9-c2",
+          "sentenceIndex": 9,
+          "componentIndex": 2,
+          "text": "are showing up",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 4,
+          "words": [
+            "are",
+            "showing",
+            "up"
+          ]
+        },
+        {
+          "id": "s9-c3",
+          "sentenceIndex": 9,
+          "componentIndex": 3,
+          "text": "too.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 4,
+          "endIndex": 5,
+          "words": [
+            "too."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-10",
+      "sentenceIndex": 10,
+      "text": "Nature just hit the reset button on us.",
+      "isImportant": false,
+      "wordCount": 8,
+      "components": [
+        {
+          "id": "s10-c1",
+          "sentenceIndex": 10,
+          "componentIndex": 1,
+          "text": "Nature",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Nature"
+          ]
+        },
+        {
+          "id": "s10-c2",
+          "sentenceIndex": 10,
+          "componentIndex": 2,
+          "text": "hit",
+          "role": "subject",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "hit"
+          ]
+        },
+        {
+          "id": "s10-c3",
+          "sentenceIndex": 10,
+          "componentIndex": 3,
+          "text": "the reset button",
+          "role": "subject",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 6,
+          "words": [
+            "the",
+            "reset",
+            "button"
+          ]
+        },
+        {
+          "id": "s10-c4",
+          "sentenceIndex": 10,
+          "componentIndex": 4,
+          "text": "just",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "just"
+          ]
+        },
+        {
+          "id": "s10-c5",
+          "sentenceIndex": 10,
+          "componentIndex": 5,
+          "text": "on us.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 6,
+          "endIndex": 8,
+          "pinnedAnchor": true,
+          "words": [
+            "on",
+            "us."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-11",
+      "sentenceIndex": 11,
+      "text": "However, the story was not completely true.",
+      "isImportant": false,
+      "wordCount": 7,
+      "components": [
+        {
+          "id": "s11-c1",
+          "sentenceIndex": 11,
+          "componentIndex": 1,
+          "text": "However,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "However,"
+          ]
+        },
+        {
+          "id": "s11-c2",
+          "sentenceIndex": 11,
+          "componentIndex": 2,
+          "text": "the story",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 1,
+          "endIndex": 3,
+          "words": [
+            "the",
+            "story"
+          ]
+        },
+        {
+          "id": "s11-c3",
+          "sentenceIndex": 11,
+          "componentIndex": 3,
+          "text": "was",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "was"
+          ]
+        },
+        {
+          "id": "s11-c4",
+          "sentenceIndex": 11,
+          "componentIndex": 4,
+          "text": "not",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 6,
+          "pinnedAnchor": true,
+          "words": [
+            "not"
+          ]
+        },
+        {
+          "id": "s11-c5",
+          "sentenceIndex": 11,
+          "componentIndex": 5,
+          "text": "completely",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 5,
+          "endIndex": 6,
+          "pinnedAnchor": true,
+          "words": [
+            "completely"
+          ]
+        },
+        {
+          "id": "s11-c6",
+          "sentenceIndex": 11,
+          "componentIndex": 6,
+          "text": "true.",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "true."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-12",
+      "sentenceIndex": 12,
+      "text": "The dolphins were actually filmed in Sardinia, an Italian island, not Venice, and the swans had always been present in Burano, near Venice, even before the pandemic.",
+      "isImportant": false,
+      "wordCount": 27,
+      "components": [
+        {
+          "id": "s12-c1",
+          "sentenceIndex": 12,
+          "componentIndex": 1,
+          "text": "The dolphins",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "dolphins"
+          ]
+        },
+        {
+          "id": "s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u154-s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u156-u157-s12-c2-s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u147-u153-u155-u158",
+          "sentenceIndex": 12,
+          "componentIndex": 2,
+          "text": "were actually filmed",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 5,
+          "words": [
+            "were",
+            "actually",
+            "filmed"
+          ]
+        },
+        {
+          "id": "s12-c3-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u145-u146-u148-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u144-u149-u151-s12-c4-u139-s12-c4-u138-u140-u141-s12-c4-u139-s12-c4-u138-u140-u142-u143-u144-u150-u152",
+          "sentenceIndex": 12,
+          "componentIndex": 3,
+          "text": "in Sardinia, an Italian island, not Venice,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 8,
+          "endIndex": 17,
+          "pinnedAnchor": true,
+          "words": [
+            "in",
+            "Sardinia,",
+            "an",
+            "Italian",
+            "island,",
+            "not",
+            "Venice,"
+          ]
+        },
+        {
+          "id": "s12-c5",
+          "sentenceIndex": 12,
+          "componentIndex": 4,
+          "text": "and the swans",
+          "role": "subject",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 12,
+          "endIndex": 15,
+          "words": [
+            "and",
+            "the",
+            "swans"
+          ]
+        },
+        {
+          "id": "s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u165-s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u167-u168-s12-c6-s12-c7-u159-u160-s12-c6-s12-c7-u159-u161-u163-u164-u166-u169-s12-c6-s12-c7-u159-u161-u162-u170",
+          "sentenceIndex": 12,
+          "componentIndex": 5,
+          "text": "had always been present",
+          "role": "verb",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 15,
+          "endIndex": 18,
+          "words": [
+            "had",
+            "always",
+            "been",
+            "present"
+          ]
+        },
+        {
+          "id": "s12-c8",
+          "sentenceIndex": 12,
+          "componentIndex": 6,
+          "text": "even before the pandemic. near Venice, in Burano,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 19,
+          "endIndex": 23,
+          "pinnedAnchor": true,
+          "words": [
+            "even",
+            "before",
+            "the",
+            "pandemic.",
+            "near",
+            "Venice,",
+            "in",
+            "Burano,"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-13",
+      "sentenceIndex": 13,
+      "text": "The story went viral when a woman from New Delhi shared a post that combined these images and stories.",
+      "isImportant": false,
+      "wordCount": 19,
+      "components": [
+        {
+          "id": "s13-c1",
+          "sentenceIndex": 13,
+          "componentIndex": 1,
+          "text": "The story",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "story"
+          ]
+        },
+        {
+          "id": "s13-c2",
+          "sentenceIndex": 13,
+          "componentIndex": 2,
+          "text": "went",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "went"
+          ]
+        },
+        {
+          "id": "s13-c3",
+          "sentenceIndex": 13,
+          "componentIndex": 3,
+          "text": "viral",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "viral"
+          ]
+        },
+        {
+          "id": "s13-c4",
+          "sentenceIndex": 13,
+          "componentIndex": 4,
+          "text": "when a woman from New Delhi shared a post",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 4,
+          "endIndex": 13,
+          "words": [
+            "when",
+            "a",
+            "woman",
+            "from",
+            "New",
+            "Delhi",
+            "shared",
+            "a",
+            "post"
+          ]
+        },
+        {
+          "id": "s13-c5",
+          "sentenceIndex": 13,
+          "componentIndex": 5,
+          "text": "that combined these images and stories.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 13,
+          "endIndex": 19,
+          "modifierTargetStart": 11,
+          "modifierTargetEnd": 13,
+          "modifierTargetIndexes": [
+            11,
+            12
+          ],
+          "words": [
+            "that",
+            "combined",
+            "these",
+            "images",
+            "and",
+            "stories."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-14",
+      "sentenceIndex": 14,
+      "text": "Her post was widely shared and got over a million likes.",
+      "isImportant": false,
+      "wordCount": 11,
+      "components": [
+        {
+          "id": "s14-c1",
+          "sentenceIndex": 14,
+          "componentIndex": 1,
+          "text": "Her post",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "Her",
+            "post"
+          ]
+        },
+        {
+          "id": "s14-c2",
+          "sentenceIndex": 14,
+          "componentIndex": 2,
+          "text": "was shared",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 5,
+          "words": [
+            "was",
+            "shared"
+          ]
+        },
+        {
+          "id": "s14-c3",
+          "sentenceIndex": 14,
+          "componentIndex": 3,
+          "text": "and got",
+          "role": "verb",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 5,
+          "endIndex": 7,
+          "words": [
+            "and",
+            "got"
+          ]
+        },
+        {
+          "id": "s14-c4",
+          "sentenceIndex": 14,
+          "componentIndex": 4,
+          "text": "widely",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "widely"
+          ]
+        },
+        {
+          "id": "s14-c5",
+          "sentenceIndex": 14,
+          "componentIndex": 5,
+          "text": "over a million likes.",
+          "role": "object",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 7,
+          "endIndex": 11,
+          "words": [
+            "over",
+            "a",
+            "million",
+            "likes."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-15",
+      "sentenceIndex": 15,
+      "text": "She explained that she simply wanted to share something joyful during dark times and did not realize the swans had always been there.",
+      "isImportant": false,
+      "wordCount": 23,
+      "components": [
+        {
+          "id": "s15-c1",
+          "sentenceIndex": 15,
+          "componentIndex": 1,
+          "text": "She",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "She"
+          ]
+        },
+        {
+          "id": "s15-c2",
+          "sentenceIndex": 15,
+          "componentIndex": 2,
+          "text": "explained",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "explained"
+          ]
+        },
+        {
+          "id": "s15-c3",
+          "sentenceIndex": 15,
+          "componentIndex": 3,
+          "text": "that she simply wanted to share something joyful",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 10,
+          "words": [
+            "that",
+            "she",
+            "simply",
+            "wanted",
+            "to",
+            "share",
+            "something",
+            "joyful"
+          ]
+        },
+        {
+          "id": "s15-c4",
+          "sentenceIndex": 15,
+          "componentIndex": 4,
+          "text": "during dark times",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 10,
+          "endIndex": 13,
+          "words": [
+            "during",
+            "dark",
+            "times"
+          ]
+        },
+        {
+          "id": "s15-c5",
+          "sentenceIndex": 15,
+          "componentIndex": 5,
+          "text": "and did",
+          "role": "verb",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 13,
+          "endIndex": 23,
+          "words": [
+            "and",
+            "did"
+          ]
+        },
+        {
+          "id": "s15-c6",
+          "sentenceIndex": 15,
+          "componentIndex": 6,
+          "text": "not",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 15,
+          "endIndex": 16,
+          "pinnedAnchor": true,
+          "words": [
+            "not"
+          ]
+        },
+        {
+          "id": "s15-c7",
+          "sentenceIndex": 15,
+          "componentIndex": 7,
+          "text": "realize",
+          "role": "verb",
+          "lane": "major",
+          "order": 5,
+          "startIndex": 15,
+          "endIndex": 16,
+          "words": [
+            "realize"
+          ]
+        },
+        {
+          "id": "s15-c8",
+          "sentenceIndex": 15,
+          "componentIndex": 8,
+          "text": "the swans had always been there.",
+          "role": "object",
+          "lane": "major",
+          "order": 6,
+          "startIndex": 16,
+          "endIndex": 22,
+          "words": [
+            "the",
+            "swans",
+            "had",
+            "always",
+            "been",
+            "there."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-16",
+      "sentenceIndex": 16,
+      "text": "Despite the mix-up, she decided not to delete the post, believing the message about clearer waters in Venice still held some truth.",
+      "isImportant": false,
+      "wordCount": 22,
+      "components": [
+        {
+          "id": "s16-c1",
+          "sentenceIndex": 16,
+          "componentIndex": 1,
+          "text": "Despite the mix-up,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 3,
+          "words": [
+            "Despite",
+            "the",
+            "mix-up,"
+          ]
+        },
+        {
+          "id": "s16-c2",
+          "sentenceIndex": 16,
+          "componentIndex": 2,
+          "text": "she",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "she"
+          ]
+        },
+        {
+          "id": "s16-c3",
+          "sentenceIndex": 16,
+          "componentIndex": 3,
+          "text": "decided",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 4,
+          "endIndex": 5,
+          "words": [
+            "decided"
+          ]
+        },
+        {
+          "id": "s16-c4",
+          "sentenceIndex": 16,
+          "componentIndex": 4,
+          "text": "not",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 6,
+          "words": [
+            "not"
+          ]
+        },
+        {
+          "id": "s16-c5",
+          "sentenceIndex": 16,
+          "componentIndex": 5,
+          "text": "to delete the post,",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 10,
+          "words": [
+            "to",
+            "delete",
+            "the",
+            "post,"
+          ]
+        },
+        {
+          "id": "s16-c6",
+          "sentenceIndex": 16,
+          "componentIndex": 6,
+          "text": "believing the message in Venice still held some truth.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 10,
+          "endIndex": 22,
+          "modifierTargetStart": 3,
+          "modifierTargetEnd": 4,
+          "modifierTargetIndexes": [
+            3
+          ],
+          "words": [
+            "believing",
+            "the",
+            "message",
+            "in",
+            "Venice",
+            "still",
+            "held",
+            "some",
+            "truth."
+          ]
+        },
+        {
+          "id": "s16-c7",
+          "sentenceIndex": 16,
+          "componentIndex": 7,
+          "text": "about clearer waters",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 10,
+          "endIndex": 13,
+          "modifierTargetStart": 8,
+          "modifierTargetEnd": 10,
+          "modifierTargetIndexes": [
+            8,
+            9
+          ],
+          "words": [
+            "about",
+            "clearer",
+            "waters"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-17",
+      "sentenceIndex": 17,
+      "text": "This incident highlights how easily misinformation can spread, even when shared with good intentions.",
+      "isImportant": false,
+      "wordCount": 14,
+      "components": [
+        {
+          "id": "s17-c1",
+          "sentenceIndex": 17,
+          "componentIndex": 1,
+          "text": "This incident",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "This",
+            "incident"
+          ]
+        },
+        {
+          "id": "s17-c2",
+          "sentenceIndex": 17,
+          "componentIndex": 2,
+          "text": "highlights",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "highlights"
+          ]
+        },
+        {
+          "id": "s17-c3",
+          "sentenceIndex": 17,
+          "componentIndex": 3,
+          "text": "how easily misinformation can spread,",
+          "role": "subject",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 8,
+          "words": [
+            "how",
+            "easily",
+            "misinformation",
+            "can",
+            "spread,"
+          ]
+        },
+        {
+          "id": "s17-c4",
+          "sentenceIndex": 17,
+          "componentIndex": 4,
+          "text": "even when shared with good intentions.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 8,
+          "endIndex": 14,
+          "words": [
+            "even",
+            "when",
+            "shared",
+            "with",
+            "good",
+            "intentions."
+          ]
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----

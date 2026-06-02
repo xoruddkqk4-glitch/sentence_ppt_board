@@ -49,14 +49,19 @@
           </div>
 
           <form id="passageForm" class="passage-panel">
-            <label for="passageInput">수업 지문</label>
+            <div class="passage-header">
+              <label for="passageInput">수업 지문</label>
+              <div class="passage-header-actions">
+                <button class="button secondary compact" type="button" id="clearButton">초기화</button>
+                <button class="button secondary compact" type="button" id="inputImportButton">TXT 불러오기</button>
+              </div>
+            </div>
             <textarea id="passageInput" rows="12" placeholder="예: The young students read the story carefully. They were extremely excited about the new lesson."></textarea>
             <p id="inputMessage" class="message" aria-live="polite"></p>
             <div class="button-row">
               <button class="button secondary" type="button" id="sampleButton">샘플 넣기</button>
-              <button class="button secondary" type="button" id="clearButton">초기화</button>
-              <button class="button secondary" type="button" id="inputExportTxtButton">TXT 저장</button>
-              <button class="button secondary" type="button" id="inputImportButton">TXT 불러오기</button>
+              <button class="button secondary" type="button" id="inputSaveTxtButton">현재 TXT에 저장</button>
+              <button class="button secondary" type="button" id="inputSaveAsTxtButton">다른 이름으로 저장</button>
               <button class="button primary" type="submit">2단계-문장분석 시작</button>
             </div>
           </form>
@@ -71,8 +76,8 @@
           </div>
           <div class="toolbar-actions">
             <button class="button secondary" type="button" id="backToInputButton">1단계-대시보드</button>
-            <button class="button secondary" type="button" id="exportTxtButton">TXT 저장</button>
-            <button class="button secondary" type="button" id="editImportButton">TXT 불러오기</button>
+            <button class="button secondary" type="button" id="saveTxtButton">현재 TXT에 저장</button>
+            <button class="button secondary" type="button" id="saveAsTxtButton">다른 이름으로 저장</button>
             <button class="button primary" type="button" id="startPresentButton">3단계-발표화면 시작</button>
           </div>
         </div>
@@ -120,6 +125,7 @@
           <button class="button secondary" type="button" id="editNextButton">다음</button>
           <button class="button secondary" type="button" id="editLastButton">마지막</button>
         </div>
+        <p class="keyboard-helper">💡 키보드 좌우 방향키(←, →)로도 이전/다음 문장으로 이동할 수 있습니다. (문장 입력창 포커스 시 제외)</p>
       </section>
 
       <section id="presentView" class="view present-view hidden" aria-labelledby="presentTitle">
@@ -163,6 +169,7 @@
           <button class="button primary large" type="button" id="presentNextButton">다음</button>
           <button class="button secondary large" type="button" id="presentLastSentenceButton">마지막 문장</button>
         </div>
+        <p class="keyboard-helper">💡 키보드 좌우 방향키(←, →)로 상세 단계를 공개하고, 상하 방향키(↑, ↓)로 문장 간 이동을 할 수 있습니다.</p>
       </section>
     </main>
 

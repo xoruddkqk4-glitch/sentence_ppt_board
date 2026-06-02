@@ -1,0 +1,1122 @@
+WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-06-01T13:57:48.338Z
+총 문장 수: 10
+
+[문장 및 성분 인덱스]
+
+[문장 1] /Case 3 - Hawaii Wildfires: Viral False Stories (2023)/
+  단어 수: 9
+  - 성분 1: id=s1-c1-0, lane=major, role=subtitle, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Case 3 - Hawaii Wildfires: Viral False Stories (2023)"
+
+[문장 2] The 2023 wildfires on the Hawaiian island of Maui caused major damage and led to the spread of false stories online.
+  단어 수: 21
+  - 성분 1: id=s2-c1-0-s2-c2-0-u2, lane=major, role=subject, order=1, wordIndex0=0-3, wordIndex1=1-3, text="The 2023 wildfires"
+  - 성분 2: id=s2-c3-0-s2-c4-1-u3-u4, lane=minor, role=adjective, order=1, wordIndex0=3-9, wordIndex1=4-9, text="on the Hawaiian island of Maui"
+  - 성분 3: id=s2-c3-0-s2-c4-1-u3-u5-u6, lane=major, role=verb, order=2, wordIndex0=9-10, wordIndex1=10-10, text="caused"
+  - 성분 4: id=s2-c3-0-s2-c4-1-u3-u5-u7-u8, lane=major, role=object, order=3, wordIndex0=10-12, wordIndex1=11-12, text="major damage"
+  - 성분 5: id=s2-c3-0-s2-c4-1-u3-u5-u7-u9, lane=major, role=verb, order=4, wordIndex0=12-14, wordIndex1=13-14, text="and led"
+  - 성분 6: id=s2-c5-2-s2-c6-3-u10, lane=minor, role=adverb, order=2, wordIndex0=14-21, wordIndex1=15-21, text="to the spread of false stories online."
+
+[문장 3] These rumors, shared by millions, show that false information can spread rapidly during disasters.
+  단어 수: 14
+  - 성분 1: id=s3-c1-0-u11, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="These rumors,"
+  - 성분 2: id=s3-c1-0-u12-u13, lane=minor, role=adverb, order=1, wordIndex0=2-5, wordIndex1=3-5, text="shared by millions,"
+  - 성분 3: id=s3-c1-0-u12-u14-u15, lane=major, role=verb, order=2, wordIndex0=5-6, wordIndex1=6-6, text="show"
+  - 성분 4: id=s3-c1-0-u12-u14-u16-s3-c2-0-u17-s3-c3-0-u18-s3-c4-0-u19-s3-c5-1-u20, lane=major, role=verb, order=3, wordIndex0=6-14, wordIndex1=7-14, text="that false information can spread rapidly during disasters."
+
+[문장 4] One popular claim suggested the fires were started by “energy weapons,” such as laser beams or explosions.
+  단어 수: 17
+  - 성분 1: id=s4-c1-0-u21, lane=major, role=subject, order=1, wordIndex0=0-3, wordIndex1=1-3, text="One popular claim"
+  - 성분 2: id=s4-c1-0-u22-u23, lane=major, role=verb, order=2, wordIndex0=3-4, wordIndex1=4-4, text="suggested"
+  - 성분 3: id=s4-c1-0-u22-u24-s4-c2-0-u25, lane=major, role=object, order=3, wordIndex0=4-8, wordIndex1=5-8, text="the fires were started"
+  - 성분 4: id=s4-c3-0-u26, lane=minor, role=adverb, order=1, wordIndex0=8-11, wordIndex1=9-11, text="by “energy weapons,”"
+  - 성분 5: id=s4-c3-0-u27, lane=minor, role=adjective, order=2, wordIndex0=11-17, wordIndex1=12-17, text="such as laser beams or explosions."
+
+[문장 5] However, the videos and photos used to support these claims did not show the real situation.
+  단어 수: 16
+  - 성분 1: id=s5-c1-0-u28, lane=minor, role=adverb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="However,"
+  - 성분 2: id=s5-c1-0-u29-u30, lane=major, role=subject, order=1, wordIndex0=1-5, wordIndex1=2-5, text="the videos and photos"
+  - 성분 3: id=s5-c1-0-u29-u31, lane=minor, role=adjective, order=2, wordIndex0=5-10, wordIndex1=6-10, text="used to support these claims"
+  - 성분 4: id=s5-c2-0-s5-c3-0-u33-u35, lane=major, role=verb, order=2, wordIndex0=10-13, wordIndex1=11-13, text="did show"
+  - 성분 5: id=s5-c3-0-u32, lane=minor, role=adverb, order=3, wordIndex0=11-12, wordIndex1=12-12, text="not"
+  - 성분 6: id=s5-c3-0-u34, lane=major, role=object, order=3, wordIndex0=13-16, wordIndex1=14-16, text="the real situation."
+
+[문장 6] For example - A video claiming to show an explosion in Maui was actually footage of a transformer exploding in another country.
+  단어 수: 22
+  - 성분 1: id=s6-c1-0-u36, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="For example"
+  - 성분 2: id=s6-c1-0-u37-u38, lane=major, role=subject, order=2, wordIndex0=2-5, wordIndex1=3-5, text="- A video"
+  - 성분 3: id=s6-c1-0-u37-u39, lane=minor, role=adjective, order=1, wordIndex0=5-12, wordIndex1=6-12, text="claiming to show an explosion in Maui"
+  - 성분 4: id=s6-c2-0, lane=major, role=verb, order=3, wordIndex0=12-13, wordIndex1=13-13, text="was"
+  - 성분 5: id=s6-c3-0, lane=major, role=complement, order=4, wordIndex0=14-15, wordIndex1=15-15, text="footage"
+  - 성분 6: id=s6-c4-0, lane=minor, role=adverb, order=2, wordIndex0=13-14, wordIndex1=14-14, text="actually"
+  - 성분 7: id=s6-c5-1-s6-c6-2-u40-u41, lane=minor, role=adverb, order=3, wordIndex0=15-18, wordIndex1=16-18, text="of a transformer"
+  - 성분 8: id=s6-c5-1-s6-c6-2-u40-u42, lane=minor, role=adjective, order=4, wordIndex0=18-22, wordIndex1=19-22, text="exploding in another country."
+
+[문장 7] - A photo seeming to show a laser beam striking a burning church was widely shared, but the original photo showed the burning church without the beam.
+  단어 수: 27
+  - 성분 1: id=s7-c1-0-u43, lane=major, role=subject, order=1, wordIndex0=0-3, wordIndex1=1-3, text="- A photo"
+  - 성분 2: id=s7-c1-0-u44, lane=minor, role=adjective, order=1, wordIndex0=3-13, wordIndex1=4-13, text="seeming to show a laser beam striking a burning church"
+  - 성분 3: id=s7-c2-0-s7-c3-0-u45-u47, lane=major, role=verb, order=2, wordIndex0=13-16, wordIndex1=14-16, text="was shared,"
+  - 성분 4: id=s7-c3-0-u46-u48, lane=major, role=subject, order=3, wordIndex0=16-20, wordIndex1=17-20, text="but the original photo"
+  - 성분 5: id=s7-c3-0-u46-u49-u50, lane=major, role=verb, order=4, wordIndex0=20-21, wordIndex1=21-21, text="showed"
+  - 성분 6: id=s7-c3-0-u46-u49-u51, lane=major, role=object, order=5, wordIndex0=21-24, wordIndex1=22-24, text="the burning church"
+  - 성분 7: id=s7-c4-0, lane=minor, role=adverb, order=2, wordIndex0=14-15, wordIndex1=15-15, text="widely"
+  - 성분 8: id=s7-c5-1, lane=minor, role=adjective, order=3, wordIndex0=24-27, wordIndex1=25-27, text="without the beam."
+
+[문장 8] - Other images, such as bright lights in the sky or flames rising high into the air, came from different events, including a rocket launch and an industrial fire from years ago.
+  단어 수: 32
+  - 성분 1: id=s8-c1-0-u52, lane=major, role=subject, order=1, wordIndex0=0-3, wordIndex1=1-3, text="- Other images,"
+  - 성분 2: id=s8-c1-0-u53-u54-u56-s8-c1-0-u53-u55-u58-u60-u64-s8-c3-0-s8-c1-0-u53-u54-u57-u61-u62-u66-s8-c1-0-u53-u54-u56-s8-c1-0-u53-u55-u58-u60-u65-s8-c1-0-u53-u55-u59-u67-u68, lane=minor, role=adjective, order=1, wordIndex0=3-17, wordIndex1=4-17, text="such as bright lights in the sky or flames rising high into the air,"
+  - 성분 3: id=s8-c2-0, lane=major, role=verb, order=2, wordIndex0=17-18, wordIndex1=18-18, text="came"
+  - 성분 4: id=s8-c3-0-s8-c1-0-u53-u54-u57-u61-u63-u69, lane=minor, role=adverb, order=2, wordIndex0=10-13, wordIndex1=11-13, text="from different events,"
+  - 성분 5: id=s8-c3-0-s8-c1-0-u53-u54-u57-u61-u63-u70-s8-c4-1-u71, lane=minor, role=adverb, order=3, wordIndex0=13-32, wordIndex1=14-32, text="including a rocket launch and an industrial fire from years ago."
+
+[문장 9] Another rumor claimed that rich people or corporations started the fires to take land from local Hawaiians.
+  단어 수: 17
+  - 성분 1: id=s9-c1-0-u72, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="Another rumor"
+  - 성분 2: id=s9-c1-0-u73-u74, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="claimed"
+  - 성분 3: id=s9-c1-0-u73-u75-u76, lane=major, role=object, order=3, wordIndex0=3-11, wordIndex1=4-11, text="that rich people or corporations started the fires"
+  - 성분 4: id=s9-c1-0-u73-u75-u77-s9-c2-0-u78-s9-c3-0-u79-s9-c4-0-u80, lane=minor, role=adverb, order=1, wordIndex0=11-17, wordIndex1=12-17, text="to take land from local Hawaiians."
+
+[문장 10] While this idea has been discussed online, there is no evidence to support it.
+  단어 수: 14
+  - 성분 1: id=s10-c1-0-s10-c2-0-u85-s10-c3-0-u86-u87, lane=minor, role=adverb, order=1, wordIndex0=0-7, wordIndex1=1-7, text="While this idea has been discussed online,"
+  - 성분 2: id=s10-c1-0-s10-c2-0-u85-s10-c3-0-u86-u88-u89, lane=minor, role=adverb, order=2, wordIndex0=7-8, wordIndex1=8-8, text="there"
+  - 성분 3: id=s10-c1-0-s10-c2-0-u85-s10-c3-0-u86-u88-u90-u91, lane=major, role=verb, order=1, wordIndex0=8-9, wordIndex1=9-9, text="is"
+  - 성분 4: id=s10-c1-0-s10-c2-0-u85-s10-c3-0-u86-u88-u90-u92, lane=major, role=subject, order=2, wordIndex0=9-11, wordIndex1=10-11, text="no evidence"
+  - 성분 5: id=s10-c4-0, lane=minor, role=adjective, order=3, wordIndex0=11-14, wordIndex1=12-14, text="to support it."
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 1,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-06-01T13:57:48.338Z",
+  "passageText": "/Case 3 - Hawaii Wildfires: Viral False Stories (2023)/ The 2023 wildfires on the Hawaiian island of Maui caused major damage and led to the spread of false stories online. These rumors, shared by millions, show that false information can spread rapidly during disasters. One popular claim suggested the fires were started by “energy weapons,” such as laser beams or explosions. However, the videos and photos used to support these claims did not show the real situation. For example - A video claiming to show an explosion in Maui was actually footage of a transformer exploding in another country. - A photo seeming to show a laser beam striking a burning church was widely shared, but the original photo showed the burning church without the beam. - Other images, such as bright lights in the sky or flames rising high into the air, came from different events, including a rocket launch and an industrial fire from years ago. Another rumor claimed that rich people or corporations started the fires to take land from local Hawaiians. While this idea has been discussed online, there is no evidence to support it.",
+  "currentSentenceIndex": 0,
+  "componentSerial": 92,
+  "settings": {
+    "theme": "light",
+    "align": "center"
+  },
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "/Case 3 - Hawaii Wildfires: Viral False Stories (2023)/",
+      "isImportant": false,
+      "wordCount": 9,
+      "components": [
+        {
+          "id": "s1-c1-0",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "Case 3 - Hawaii Wildfires: Viral False Stories (2023)",
+          "role": "subtitle",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Case",
+            "3",
+            "-",
+            "Hawaii",
+            "Wildfires:",
+            "Viral",
+            "False",
+            "Stories",
+            "(2023)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "The 2023 wildfires on the Hawaiian island of Maui caused major damage and led to the spread of false stories online.",
+      "isImportant": false,
+      "wordCount": 21,
+      "components": [
+        {
+          "id": "s2-c1-0-s2-c2-0-u2",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "The 2023 wildfires",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 3,
+          "words": [
+            "The",
+            "2023",
+            "wildfires"
+          ]
+        },
+        {
+          "id": "s2-c3-0-s2-c4-1-u3-u4",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "on the Hawaiian island of Maui",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 9,
+          "modifierTargetId": "s2-c1-0-s2-c2-0-u2",
+          "modifierTargetStart": 0,
+          "modifierTargetEnd": 3,
+          "modifierTargetIndexes": [
+            0,
+            1,
+            2
+          ],
+          "words": [
+            "on",
+            "the",
+            "Hawaiian",
+            "island",
+            "of",
+            "Maui"
+          ]
+        },
+        {
+          "id": "s2-c3-0-s2-c4-1-u3-u5-u6",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "caused",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 9,
+          "endIndex": 10,
+          "words": [
+            "caused"
+          ]
+        },
+        {
+          "id": "s2-c3-0-s2-c4-1-u3-u5-u7-u8",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "major damage",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 10,
+          "endIndex": 12,
+          "words": [
+            "major",
+            "damage"
+          ]
+        },
+        {
+          "id": "s2-c3-0-s2-c4-1-u3-u5-u7-u9",
+          "sentenceIndex": 2,
+          "componentIndex": 5,
+          "text": "and led",
+          "role": "verb",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 12,
+          "endIndex": 14,
+          "words": [
+            "and",
+            "led"
+          ]
+        },
+        {
+          "id": "s2-c5-2-s2-c6-3-u10",
+          "sentenceIndex": 2,
+          "componentIndex": 6,
+          "text": "to the spread of false stories online.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 14,
+          "endIndex": 21,
+          "words": [
+            "to",
+            "the",
+            "spread",
+            "of",
+            "false",
+            "stories",
+            "online."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "These rumors, shared by millions, show that false information can spread rapidly during disasters.",
+      "isImportant": false,
+      "wordCount": 14,
+      "components": [
+        {
+          "id": "s3-c1-0-u11",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "These rumors,",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "These",
+            "rumors,"
+          ]
+        },
+        {
+          "id": "s3-c1-0-u12-u13",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "shared by millions,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 5,
+          "words": [
+            "shared",
+            "by",
+            "millions,"
+          ]
+        },
+        {
+          "id": "s3-c1-0-u12-u14-u15",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "show",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 6,
+          "words": [
+            "show"
+          ]
+        },
+        {
+          "id": "s3-c1-0-u12-u14-u16-s3-c2-0-u17-s3-c3-0-u18-s3-c4-0-u19-s3-c5-1-u20",
+          "sentenceIndex": 3,
+          "componentIndex": 4,
+          "text": "that false information can spread rapidly during disasters.",
+          "role": "verb",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 14,
+          "words": [
+            "that",
+            "false",
+            "information",
+            "can",
+            "spread",
+            "rapidly",
+            "during",
+            "disasters."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-4",
+      "sentenceIndex": 4,
+      "text": "One popular claim suggested the fires were started by “energy weapons,” such as laser beams or explosions.",
+      "isImportant": false,
+      "wordCount": 17,
+      "components": [
+        {
+          "id": "s4-c1-0-u21",
+          "sentenceIndex": 4,
+          "componentIndex": 1,
+          "text": "One popular claim",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 3,
+          "words": [
+            "One",
+            "popular",
+            "claim"
+          ]
+        },
+        {
+          "id": "s4-c1-0-u22-u23",
+          "sentenceIndex": 4,
+          "componentIndex": 2,
+          "text": "suggested",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "suggested"
+          ]
+        },
+        {
+          "id": "s4-c1-0-u22-u24-s4-c2-0-u25",
+          "sentenceIndex": 4,
+          "componentIndex": 3,
+          "text": "the fires were started",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 4,
+          "endIndex": 8,
+          "words": [
+            "the",
+            "fires",
+            "were",
+            "started"
+          ]
+        },
+        {
+          "id": "s4-c3-0-u26",
+          "sentenceIndex": 4,
+          "componentIndex": 4,
+          "text": "by “energy weapons,”",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 8,
+          "endIndex": 11,
+          "words": [
+            "by",
+            "“energy",
+            "weapons,”"
+          ]
+        },
+        {
+          "id": "s4-c3-0-u27",
+          "sentenceIndex": 4,
+          "componentIndex": 5,
+          "text": "such as laser beams or explosions.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 11,
+          "endIndex": 17,
+          "modifierTargetStart": 9,
+          "modifierTargetEnd": 11,
+          "modifierTargetIndexes": [
+            9,
+            10
+          ],
+          "words": [
+            "such",
+            "as",
+            "laser",
+            "beams",
+            "or",
+            "explosions."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-5",
+      "sentenceIndex": 5,
+      "text": "However, the videos and photos used to support these claims did not show the real situation.",
+      "isImportant": false,
+      "wordCount": 16,
+      "components": [
+        {
+          "id": "s5-c1-0-u28",
+          "sentenceIndex": 5,
+          "componentIndex": 1,
+          "text": "However,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "However,"
+          ]
+        },
+        {
+          "id": "s5-c1-0-u29-u30",
+          "sentenceIndex": 5,
+          "componentIndex": 2,
+          "text": "the videos and photos",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 1,
+          "endIndex": 5,
+          "words": [
+            "the",
+            "videos",
+            "and",
+            "photos"
+          ]
+        },
+        {
+          "id": "s5-c1-0-u29-u31",
+          "sentenceIndex": 5,
+          "componentIndex": 3,
+          "text": "used to support these claims",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 10,
+          "modifierTargetStart": 1,
+          "modifierTargetEnd": 5,
+          "modifierTargetIndexes": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "words": [
+            "used",
+            "to",
+            "support",
+            "these",
+            "claims"
+          ]
+        },
+        {
+          "id": "s5-c2-0-s5-c3-0-u33-u35",
+          "sentenceIndex": 5,
+          "componentIndex": 4,
+          "text": "did show",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 10,
+          "endIndex": 13,
+          "words": [
+            "did",
+            "show"
+          ]
+        },
+        {
+          "id": "s5-c3-0-u32",
+          "sentenceIndex": 5,
+          "componentIndex": 5,
+          "text": "not",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 11,
+          "endIndex": 12,
+          "words": [
+            "not"
+          ]
+        },
+        {
+          "id": "s5-c3-0-u34",
+          "sentenceIndex": 5,
+          "componentIndex": 6,
+          "text": "the real situation.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 13,
+          "endIndex": 16,
+          "words": [
+            "the",
+            "real",
+            "situation."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-6",
+      "sentenceIndex": 6,
+      "text": "For example - A video claiming to show an explosion in Maui was actually footage of a transformer exploding in another country.",
+      "isImportant": false,
+      "wordCount": 22,
+      "components": [
+        {
+          "id": "s6-c1-0-u36",
+          "sentenceIndex": 6,
+          "componentIndex": 1,
+          "text": "For example",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "For",
+            "example"
+          ]
+        },
+        {
+          "id": "s6-c1-0-u37-u38",
+          "sentenceIndex": 6,
+          "componentIndex": 2,
+          "text": "- A video",
+          "role": "subject",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 5,
+          "words": [
+            "-",
+            "A",
+            "video"
+          ]
+        },
+        {
+          "id": "s6-c1-0-u37-u39",
+          "sentenceIndex": 6,
+          "componentIndex": 3,
+          "text": "claiming to show an explosion in Maui",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 5,
+          "endIndex": 12,
+          "modifierTargetStart": 3,
+          "modifierTargetEnd": 5,
+          "modifierTargetIndexes": [
+            3,
+            4
+          ],
+          "words": [
+            "claiming",
+            "to",
+            "show",
+            "an",
+            "explosion",
+            "in",
+            "Maui"
+          ]
+        },
+        {
+          "id": "s6-c2-0",
+          "sentenceIndex": 6,
+          "componentIndex": 4,
+          "text": "was",
+          "role": "verb",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 12,
+          "endIndex": 13,
+          "words": [
+            "was"
+          ]
+        },
+        {
+          "id": "s6-c3-0",
+          "sentenceIndex": 6,
+          "componentIndex": 5,
+          "text": "footage",
+          "role": "complement",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 14,
+          "endIndex": 15,
+          "words": [
+            "footage"
+          ]
+        },
+        {
+          "id": "s6-c4-0",
+          "sentenceIndex": 6,
+          "componentIndex": 6,
+          "text": "actually",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 13,
+          "endIndex": 14,
+          "words": [
+            "actually"
+          ]
+        },
+        {
+          "id": "s6-c5-1-s6-c6-2-u40-u41",
+          "sentenceIndex": 6,
+          "componentIndex": 7,
+          "text": "of a transformer",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 15,
+          "endIndex": 18,
+          "words": [
+            "of",
+            "a",
+            "transformer"
+          ]
+        },
+        {
+          "id": "s6-c5-1-s6-c6-2-u40-u42",
+          "sentenceIndex": 6,
+          "componentIndex": 8,
+          "text": "exploding in another country.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 18,
+          "endIndex": 22,
+          "modifierTargetStart": 17,
+          "modifierTargetEnd": 18,
+          "modifierTargetIndexes": [
+            17
+          ],
+          "words": [
+            "exploding",
+            "in",
+            "another",
+            "country."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-7",
+      "sentenceIndex": 7,
+      "text": "- A photo seeming to show a laser beam striking a burning church was widely shared, but the original photo showed the burning church without the beam.",
+      "isImportant": false,
+      "wordCount": 27,
+      "components": [
+        {
+          "id": "s7-c1-0-u43",
+          "sentenceIndex": 7,
+          "componentIndex": 1,
+          "text": "- A photo",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 3,
+          "words": [
+            "-",
+            "A",
+            "photo"
+          ]
+        },
+        {
+          "id": "s7-c1-0-u44",
+          "sentenceIndex": 7,
+          "componentIndex": 2,
+          "text": "seeming to show a laser beam striking a burning church",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 13,
+          "modifierTargetStart": 1,
+          "modifierTargetEnd": 3,
+          "modifierTargetIndexes": [
+            1,
+            2
+          ],
+          "words": [
+            "seeming",
+            "to",
+            "show",
+            "a",
+            "laser",
+            "beam",
+            "striking",
+            "a",
+            "burning",
+            "church"
+          ]
+        },
+        {
+          "id": "s7-c2-0-s7-c3-0-u45-u47",
+          "sentenceIndex": 7,
+          "componentIndex": 3,
+          "text": "was shared,",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 13,
+          "endIndex": 16,
+          "words": [
+            "was",
+            "shared,"
+          ]
+        },
+        {
+          "id": "s7-c3-0-u46-u48",
+          "sentenceIndex": 7,
+          "componentIndex": 4,
+          "text": "but the original photo",
+          "role": "subject",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 16,
+          "endIndex": 20,
+          "words": [
+            "but",
+            "the",
+            "original",
+            "photo"
+          ]
+        },
+        {
+          "id": "s7-c3-0-u46-u49-u50",
+          "sentenceIndex": 7,
+          "componentIndex": 5,
+          "text": "showed",
+          "role": "verb",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 20,
+          "endIndex": 21,
+          "words": [
+            "showed"
+          ]
+        },
+        {
+          "id": "s7-c3-0-u46-u49-u51",
+          "sentenceIndex": 7,
+          "componentIndex": 6,
+          "text": "the burning church",
+          "role": "object",
+          "lane": "major",
+          "order": 5,
+          "startIndex": 21,
+          "endIndex": 24,
+          "words": [
+            "the",
+            "burning",
+            "church"
+          ]
+        },
+        {
+          "id": "s7-c4-0",
+          "sentenceIndex": 7,
+          "componentIndex": 7,
+          "text": "widely",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 14,
+          "endIndex": 15,
+          "words": [
+            "widely"
+          ]
+        },
+        {
+          "id": "s7-c5-1",
+          "sentenceIndex": 7,
+          "componentIndex": 8,
+          "text": "without the beam.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 24,
+          "endIndex": 27,
+          "modifierTargetId": "s7-c3-0-u46-u49-u51",
+          "modifierTargetStart": 21,
+          "modifierTargetEnd": 24,
+          "modifierTargetIndexes": [
+            21,
+            22,
+            23
+          ],
+          "words": [
+            "without",
+            "the",
+            "beam."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-8",
+      "sentenceIndex": 8,
+      "text": "- Other images, such as bright lights in the sky or flames rising high into the air, came from different events, including a rocket launch and an industrial fire from years ago.",
+      "isImportant": false,
+      "wordCount": 32,
+      "components": [
+        {
+          "id": "s8-c1-0-u52",
+          "sentenceIndex": 8,
+          "componentIndex": 1,
+          "text": "- Other images,",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 3,
+          "words": [
+            "-",
+            "Other",
+            "images,"
+          ]
+        },
+        {
+          "id": "s8-c1-0-u53-u54-u56-s8-c1-0-u53-u55-u58-u60-u64-s8-c3-0-s8-c1-0-u53-u54-u57-u61-u62-u66-s8-c1-0-u53-u54-u56-s8-c1-0-u53-u55-u58-u60-u65-s8-c1-0-u53-u55-u59-u67-u68",
+          "sentenceIndex": 8,
+          "componentIndex": 2,
+          "text": "such as bright lights in the sky or flames rising high into the air,",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 17,
+          "modifierTargetId": "s8-c1-0-u52",
+          "modifierTargetStart": 0,
+          "modifierTargetEnd": 3,
+          "modifierTargetIndexes": [
+            0,
+            1,
+            2
+          ],
+          "words": [
+            "such",
+            "as",
+            "bright",
+            "lights",
+            "in",
+            "the",
+            "sky",
+            "or",
+            "flames",
+            "rising",
+            "high",
+            "into",
+            "the",
+            "air,"
+          ]
+        },
+        {
+          "id": "s8-c2-0",
+          "sentenceIndex": 8,
+          "componentIndex": 3,
+          "text": "came",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 17,
+          "endIndex": 18,
+          "words": [
+            "came"
+          ]
+        },
+        {
+          "id": "s8-c3-0-s8-c1-0-u53-u54-u57-u61-u63-u69",
+          "sentenceIndex": 8,
+          "componentIndex": 4,
+          "text": "from different events,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 10,
+          "endIndex": 13,
+          "words": [
+            "from",
+            "different",
+            "events,"
+          ]
+        },
+        {
+          "id": "s8-c3-0-s8-c1-0-u53-u54-u57-u61-u63-u70-s8-c4-1-u71",
+          "sentenceIndex": 8,
+          "componentIndex": 5,
+          "text": "including a rocket launch and an industrial fire from years ago.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 13,
+          "endIndex": 32,
+          "words": [
+            "including",
+            "a",
+            "rocket",
+            "launch",
+            "and",
+            "an",
+            "industrial",
+            "fire",
+            "from",
+            "years",
+            "ago."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-9",
+      "sentenceIndex": 9,
+      "text": "Another rumor claimed that rich people or corporations started the fires to take land from local Hawaiians.",
+      "isImportant": false,
+      "wordCount": 17,
+      "components": [
+        {
+          "id": "s9-c1-0-u72",
+          "sentenceIndex": 9,
+          "componentIndex": 1,
+          "text": "Another rumor",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "Another",
+            "rumor"
+          ]
+        },
+        {
+          "id": "s9-c1-0-u73-u74",
+          "sentenceIndex": 9,
+          "componentIndex": 2,
+          "text": "claimed",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "claimed"
+          ]
+        },
+        {
+          "id": "s9-c1-0-u73-u75-u76",
+          "sentenceIndex": 9,
+          "componentIndex": 3,
+          "text": "that rich people or corporations started the fires",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 11,
+          "words": [
+            "that",
+            "rich",
+            "people",
+            "or",
+            "corporations",
+            "started",
+            "the",
+            "fires"
+          ]
+        },
+        {
+          "id": "s9-c1-0-u73-u75-u77-s9-c2-0-u78-s9-c3-0-u79-s9-c4-0-u80",
+          "sentenceIndex": 9,
+          "componentIndex": 4,
+          "text": "to take land from local Hawaiians.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 11,
+          "endIndex": 17,
+          "words": [
+            "to",
+            "take",
+            "land",
+            "from",
+            "local",
+            "Hawaiians."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-10",
+      "sentenceIndex": 10,
+      "text": "While this idea has been discussed online, there is no evidence to support it.",
+      "isImportant": false,
+      "wordCount": 14,
+      "components": [
+        {
+          "id": "s10-c1-0-s10-c2-0-u85-s10-c3-0-u86-u87",
+          "sentenceIndex": 10,
+          "componentIndex": 1,
+          "text": "While this idea has been discussed online,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 7,
+          "words": [
+            "While",
+            "this",
+            "idea",
+            "has",
+            "been",
+            "discussed",
+            "online,"
+          ]
+        },
+        {
+          "id": "s10-c1-0-s10-c2-0-u85-s10-c3-0-u86-u88-u89",
+          "sentenceIndex": 10,
+          "componentIndex": 2,
+          "text": "there",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 7,
+          "endIndex": 8,
+          "words": [
+            "there"
+          ]
+        },
+        {
+          "id": "s10-c1-0-s10-c2-0-u85-s10-c3-0-u86-u88-u90-u91",
+          "sentenceIndex": 10,
+          "componentIndex": 3,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 8,
+          "endIndex": 9,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s10-c1-0-s10-c2-0-u85-s10-c3-0-u86-u88-u90-u92",
+          "sentenceIndex": 10,
+          "componentIndex": 4,
+          "text": "no evidence",
+          "role": "subject",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 9,
+          "endIndex": 11,
+          "words": [
+            "no",
+            "evidence"
+          ]
+        },
+        {
+          "id": "s10-c4-0",
+          "sentenceIndex": 10,
+          "componentIndex": 5,
+          "text": "to support it.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 11,
+          "endIndex": 14,
+          "modifierTargetId": "s10-c1-0-s10-c2-0-u85-s10-c3-0-u86-u88-u90-u92",
+          "modifierTargetStart": 9,
+          "modifierTargetEnd": 11,
+          "modifierTargetIndexes": [
+            9,
+            10
+          ],
+          "words": [
+            "to",
+            "support",
+            "it."
+          ]
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----

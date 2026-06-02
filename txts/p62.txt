@@ -1,0 +1,735 @@
+WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-06-01T14:36:31.099Z
+총 문장 수: 8
+
+[문장 및 성분 인덱스]
+
+[문장 1] //The Dangers of Misinformation in Today's Digital World//
+  단어 수: 8
+  - 성분 1: id=s1-c1, lane=major, role=title, order=1, wordIndex0=0-1, wordIndex1=1-1, text="The Dangers of Misinformation in Today's Digital World"
+
+[문장 2] In today's fast-paced digital age, misinformation is spreading more than ever.
+  단어 수: 11
+  - 성분 1: id=s2-c1, lane=minor, role=adverb, order=1, wordIndex0=0-5, wordIndex1=1-5, text="In today's fast-paced digital age,"
+  - 성분 2: id=s2-c2, lane=major, role=subject, order=1, wordIndex0=5-6, wordIndex1=6-6, text="misinformation"
+  - 성분 3: id=s2-c3, lane=major, role=verb, order=2, wordIndex0=6-8, wordIndex1=7-8, text="is spreading"
+  - 성분 4: id=s2-c4, lane=minor, role=adverb, order=2, wordIndex0=8-11, wordIndex1=9-11, text="more than ever."
+
+[문장 3] Imagine this: Two news articles pop up online.
+  단어 수: 8
+  - 성분 1: id=s3-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Imagine"
+  - 성분 2: id=s3-c2, lane=major, role=object, order=2, wordIndex0=1-2, wordIndex1=2-2, text="this:"
+  - 성분 3: id=s3-c3, lane=minor, role=adjective, order=1, wordIndex0=2-8, wordIndex1=3-8, text="Two news articles pop up online."
+
+[문장 4] One is well researched and comes from a trusted source, while the other tells an incredible tale that grabs readers' attention.
+  단어 수: 21
+  - 성분 1: id=s4-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="One"
+  - 성분 2: id=s4-c2-s4-c4-u37, lane=major, role=verb, order=2, wordIndex0=1-4, wordIndex1=2-4, text="is researched"
+  - 성분 3: id=s4-c3, lane=minor, role=adverb, order=1, wordIndex0=2-3, wordIndex1=3-3, text="well"
+  - 성분 4: id=s4-c5, lane=major, role=verb, order=3, wordIndex0=4-6, wordIndex1=5-6, text="and comes"
+  - 성분 5: id=s4-c6, lane=minor, role=adverb, order=2, wordIndex0=6-10, wordIndex1=7-10, text="from a trusted source,"
+  - 성분 6: id=s4-c7, lane=minor, role=adverb, order=3, wordIndex0=10-17, wordIndex1=11-17, text="while the other tells an incredible tale"
+  - 성분 7: id=s4-c8, lane=minor, role=adjective, order=4, wordIndex0=17-21, wordIndex1=18-21, text="that grabs readers' attention."
+
+[문장 5] What happens?
+  단어 수: 2
+  - 성분 1: id=s5-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="What"
+  - 성분 2: id=s5-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="happens?"
+
+[문장 6] The first article gets little interest, while the false one spreads rapidly, taking advantage of how we process information and how social media promotes eye-catching content.
+  단어 수: 26
+  - 성분 1: id=s6-c1, lane=major, role=subject, order=1, wordIndex0=0-3, wordIndex1=1-3, text="The first article"
+  - 성분 2: id=s6-c2, lane=major, role=verb, order=2, wordIndex0=3-4, wordIndex1=4-4, text="gets"
+  - 성분 3: id=s6-c3, lane=major, role=object, order=3, wordIndex0=4-6, wordIndex1=5-6, text="little interest,"
+  - 성분 4: id=s6-c4, lane=minor, role=adverb, order=1, wordIndex0=6-12, wordIndex1=7-12, text="while the false one spreads rapidly,"
+  - 성분 5: id=s6-c5, lane=minor, role=adjective, order=2, wordIndex0=12-26, wordIndex1=13-26, text="taking advantage of how we process information and how social media promotes eye-catching content."
+
+[문장 7] This is not just an imaginary situation — it is happening all over the world right now.
+  단어 수: 17
+  - 성분 1: id=s7-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="This"
+  - 성분 2: id=s7-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="is"
+  - 성분 3: id=s7-c3, lane=minor, role=adverb, order=1, wordIndex0=3-4, wordIndex1=4-4, text="not"
+  - 성분 4: id=s7-c4, lane=minor, role=adverb, order=2, wordIndex0=3-4, wordIndex1=4-4, text="just"
+  - 성분 5: id=s7-c5, lane=major, role=complement, order=3, wordIndex0=4-7, wordIndex1=5-7, text="an imaginary situation"
+  - 성분 6: id=s7-c6, lane=major, role=subject, order=4, wordIndex0=7-9, wordIndex1=8-9, text="— it"
+  - 성분 7: id=s7-c7, lane=major, role=verb, order=5, wordIndex0=9-11, wordIndex1=10-11, text="is happening"
+  - 성분 8: id=s7-c8, lane=minor, role=adverb, order=3, wordIndex0=11-17, wordIndex1=12-17, text="all over the world right now."
+
+[문장 8] Let's look at some examples of misinformation to help build the skills we need to spot and fight it.
+  단어 수: 19
+  - 성분 1: id=s8-c1, lane=major, role=verb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Let's"
+  - 성분 2: id=s8-c2, lane=major, role=complement, order=2, wordIndex0=1-7, wordIndex1=2-7, text="look at some examples of misinformation"
+  - 성분 3: id=s8-c3, lane=minor, role=adverb, order=1, wordIndex0=7-12, wordIndex1=8-12, text="to help build the skills"
+  - 성분 4: id=s8-c4, lane=minor, role=adjective, order=2, wordIndex0=12-19, wordIndex1=13-19, text="we need to spot and fight it."
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 1,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-06-01T14:36:31.099Z",
+  "passageText": "//The Dangers of Misinformation in Today's Digital World// In today's fast-paced digital age, misinformation is spreading more than ever. Imagine this: Two news articles pop up online. One is well researched and comes from a trusted source, while the other tells an incredible tale that grabs readers' attention. What happens? The first article gets little interest, while the false one spreads rapidly, taking advantage of how we process information and how social media promotes eye-catching content. This is not just an imaginary situation — it is happening all over the world right now. Let's look at some examples of misinformation to help build the skills we need to spot and fight it.",
+  "currentSentenceIndex": 0,
+  "componentSerial": 37,
+  "settings": {
+    "theme": "light",
+    "align": "center"
+  },
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "//The Dangers of Misinformation in Today's Digital World//",
+      "isImportant": false,
+      "wordCount": 8,
+      "components": [
+        {
+          "id": "s1-c1",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "The Dangers of Misinformation in Today's Digital World",
+          "role": "title",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "The",
+            "Dangers",
+            "of",
+            "Misinformation",
+            "in",
+            "Today's",
+            "Digital",
+            "World"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "In today's fast-paced digital age, misinformation is spreading more than ever.",
+      "isImportant": false,
+      "wordCount": 11,
+      "components": [
+        {
+          "id": "s2-c1",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "In today's fast-paced digital age,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 5,
+          "words": [
+            "In",
+            "today's",
+            "fast-paced",
+            "digital",
+            "age,"
+          ]
+        },
+        {
+          "id": "s2-c2",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "misinformation",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 5,
+          "endIndex": 6,
+          "words": [
+            "misinformation"
+          ]
+        },
+        {
+          "id": "s2-c3",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "is spreading",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 6,
+          "endIndex": 8,
+          "words": [
+            "is",
+            "spreading"
+          ]
+        },
+        {
+          "id": "s2-c4",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "more than ever.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 8,
+          "endIndex": 11,
+          "words": [
+            "more",
+            "than",
+            "ever."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "Imagine this: Two news articles pop up online.",
+      "isImportant": false,
+      "wordCount": 8,
+      "components": [
+        {
+          "id": "s3-c1",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "Imagine",
+          "role": "verb",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Imagine"
+          ]
+        },
+        {
+          "id": "s3-c2",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "this:",
+          "role": "object",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "this:"
+          ]
+        },
+        {
+          "id": "s3-c3",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "Two news articles pop up online.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 8,
+          "modifierTargetStart": 1,
+          "modifierTargetEnd": 2,
+          "modifierTargetIndexes": [
+            1
+          ],
+          "words": [
+            "Two",
+            "news",
+            "articles",
+            "pop",
+            "up",
+            "online."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-4",
+      "sentenceIndex": 4,
+      "text": "One is well researched and comes from a trusted source, while the other tells an incredible tale that grabs readers' attention.",
+      "isImportant": false,
+      "wordCount": 21,
+      "components": [
+        {
+          "id": "s4-c1",
+          "sentenceIndex": 4,
+          "componentIndex": 1,
+          "text": "One",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "One"
+          ]
+        },
+        {
+          "id": "s4-c2-s4-c4-u37",
+          "sentenceIndex": 4,
+          "componentIndex": 2,
+          "text": "is researched",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 4,
+          "words": [
+            "is",
+            "researched"
+          ]
+        },
+        {
+          "id": "s4-c3",
+          "sentenceIndex": 4,
+          "componentIndex": 3,
+          "text": "well",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "well"
+          ]
+        },
+        {
+          "id": "s4-c5",
+          "sentenceIndex": 4,
+          "componentIndex": 4,
+          "text": "and comes",
+          "role": "verb",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 4,
+          "endIndex": 6,
+          "words": [
+            "and",
+            "comes"
+          ]
+        },
+        {
+          "id": "s4-c6",
+          "sentenceIndex": 4,
+          "componentIndex": 5,
+          "text": "from a trusted source,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 6,
+          "endIndex": 10,
+          "words": [
+            "from",
+            "a",
+            "trusted",
+            "source,"
+          ]
+        },
+        {
+          "id": "s4-c7",
+          "sentenceIndex": 4,
+          "componentIndex": 6,
+          "text": "while the other tells an incredible tale",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 10,
+          "endIndex": 17,
+          "words": [
+            "while",
+            "the",
+            "other",
+            "tells",
+            "an",
+            "incredible",
+            "tale"
+          ]
+        },
+        {
+          "id": "s4-c8",
+          "sentenceIndex": 4,
+          "componentIndex": 7,
+          "text": "that grabs readers' attention.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 17,
+          "endIndex": 21,
+          "modifierTargetStart": 14,
+          "modifierTargetEnd": 17,
+          "modifierTargetIndexes": [
+            14,
+            15,
+            16
+          ],
+          "words": [
+            "that",
+            "grabs",
+            "readers'",
+            "attention."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-5",
+      "sentenceIndex": 5,
+      "text": "What happens?",
+      "isImportant": false,
+      "wordCount": 2,
+      "components": [
+        {
+          "id": "s5-c1",
+          "sentenceIndex": 5,
+          "componentIndex": 1,
+          "text": "What",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "What"
+          ]
+        },
+        {
+          "id": "s5-c2",
+          "sentenceIndex": 5,
+          "componentIndex": 2,
+          "text": "happens?",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "happens?"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-6",
+      "sentenceIndex": 6,
+      "text": "The first article gets little interest, while the false one spreads rapidly, taking advantage of how we process information and how social media promotes eye-catching content.",
+      "isImportant": false,
+      "wordCount": 26,
+      "components": [
+        {
+          "id": "s6-c1",
+          "sentenceIndex": 6,
+          "componentIndex": 1,
+          "text": "The first article",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 3,
+          "words": [
+            "The",
+            "first",
+            "article"
+          ]
+        },
+        {
+          "id": "s6-c2",
+          "sentenceIndex": 6,
+          "componentIndex": 2,
+          "text": "gets",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "gets"
+          ]
+        },
+        {
+          "id": "s6-c3",
+          "sentenceIndex": 6,
+          "componentIndex": 3,
+          "text": "little interest,",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 4,
+          "endIndex": 6,
+          "words": [
+            "little",
+            "interest,"
+          ]
+        },
+        {
+          "id": "s6-c4",
+          "sentenceIndex": 6,
+          "componentIndex": 4,
+          "text": "while the false one spreads rapidly,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 6,
+          "endIndex": 12,
+          "words": [
+            "while",
+            "the",
+            "false",
+            "one",
+            "spreads",
+            "rapidly,"
+          ]
+        },
+        {
+          "id": "s6-c5",
+          "sentenceIndex": 6,
+          "componentIndex": 5,
+          "text": "taking advantage of how we process information and how social media promotes eye-catching content.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 12,
+          "endIndex": 26,
+          "modifierTargetStart": 7,
+          "modifierTargetEnd": 10,
+          "modifierTargetIndexes": [
+            7,
+            8,
+            9
+          ],
+          "words": [
+            "taking",
+            "advantage",
+            "of",
+            "how",
+            "we",
+            "process",
+            "information",
+            "and",
+            "how",
+            "social",
+            "media",
+            "promotes",
+            "eye-catching",
+            "content."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-7",
+      "sentenceIndex": 7,
+      "text": "This is not just an imaginary situation — it is happening all over the world right now.",
+      "isImportant": false,
+      "wordCount": 17,
+      "components": [
+        {
+          "id": "s7-c1",
+          "sentenceIndex": 7,
+          "componentIndex": 1,
+          "text": "This",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "This"
+          ]
+        },
+        {
+          "id": "s7-c2",
+          "sentenceIndex": 7,
+          "componentIndex": 2,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s7-c3",
+          "sentenceIndex": 7,
+          "componentIndex": 3,
+          "text": "not",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 4,
+          "pinnedAnchor": true,
+          "words": [
+            "not"
+          ]
+        },
+        {
+          "id": "s7-c4",
+          "sentenceIndex": 7,
+          "componentIndex": 4,
+          "text": "just",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 3,
+          "endIndex": 4,
+          "pinnedAnchor": true,
+          "words": [
+            "just"
+          ]
+        },
+        {
+          "id": "s7-c5",
+          "sentenceIndex": 7,
+          "componentIndex": 5,
+          "text": "an imaginary situation",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 4,
+          "endIndex": 7,
+          "words": [
+            "an",
+            "imaginary",
+            "situation"
+          ]
+        },
+        {
+          "id": "s7-c6",
+          "sentenceIndex": 7,
+          "componentIndex": 6,
+          "text": "— it",
+          "role": "subject",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 7,
+          "endIndex": 9,
+          "words": [
+            "—",
+            "it"
+          ]
+        },
+        {
+          "id": "s7-c7",
+          "sentenceIndex": 7,
+          "componentIndex": 7,
+          "text": "is happening",
+          "role": "verb",
+          "lane": "major",
+          "order": 5,
+          "startIndex": 9,
+          "endIndex": 11,
+          "words": [
+            "is",
+            "happening"
+          ]
+        },
+        {
+          "id": "s7-c8",
+          "sentenceIndex": 7,
+          "componentIndex": 8,
+          "text": "all over the world right now.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 11,
+          "endIndex": 17,
+          "words": [
+            "all",
+            "over",
+            "the",
+            "world",
+            "right",
+            "now."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-8",
+      "sentenceIndex": 8,
+      "text": "Let's look at some examples of misinformation to help build the skills we need to spot and fight it.",
+      "isImportant": false,
+      "wordCount": 19,
+      "components": [
+        {
+          "id": "s8-c1",
+          "sentenceIndex": 8,
+          "componentIndex": 1,
+          "text": "Let's",
+          "role": "verb",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Let's"
+          ]
+        },
+        {
+          "id": "s8-c2",
+          "sentenceIndex": 8,
+          "componentIndex": 2,
+          "text": "look at some examples of misinformation",
+          "role": "complement",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 7,
+          "words": [
+            "look",
+            "at",
+            "some",
+            "examples",
+            "of",
+            "misinformation"
+          ]
+        },
+        {
+          "id": "s8-c3",
+          "sentenceIndex": 8,
+          "componentIndex": 3,
+          "text": "to help build the skills",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 7,
+          "endIndex": 12,
+          "words": [
+            "to",
+            "help",
+            "build",
+            "the",
+            "skills"
+          ]
+        },
+        {
+          "id": "s8-c4",
+          "sentenceIndex": 8,
+          "componentIndex": 4,
+          "text": "we need to spot and fight it.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 12,
+          "endIndex": 19,
+          "modifierTargetStart": 10,
+          "modifierTargetEnd": 12,
+          "modifierTargetIndexes": [
+            10,
+            11
+          ],
+          "boxPercent": 92,
+          "words": [
+            "we",
+            "need",
+            "to",
+            "spot",
+            "and",
+            "fight",
+            "it."
+          ]
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----

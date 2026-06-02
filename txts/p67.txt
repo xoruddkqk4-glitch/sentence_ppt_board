@@ -1,0 +1,1518 @@
+WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-06-01T23:52:02.632Z
+총 문장 수: 23
+
+[문장 및 성분 인덱스]
+
+[문장 1] //Developing Critical Thinking in the Digital Age//
+  단어 수: 7
+  - 성분 1: id=s1-c1-0, lane=major, role=title, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Developing Critical Thinking in the Digital Age"
+
+[문장 2] Today, because of the Internet and social media, we face the new challenge of separating fact from fiction.
+  단어 수: 18
+  - 성분 1: id=s2-c1-0, lane=major, role=subject, order=1, wordIndex0=0-14, wordIndex1=1-14, text="Today, because of the Internet and social media, we face the new challenge of"
+  - 성분 2: id=s2-c2-0, lane=major, role=verb, order=2, wordIndex0=14-15, wordIndex1=15-15, text="separating"
+  - 성분 3: id=s2-c3-0, lane=major, role=object, order=3, wordIndex0=15-16, wordIndex1=16-16, text="fact"
+  - 성분 4: id=s2-c4-0, lane=minor, role=adverb, order=4, wordIndex0=16-18, wordIndex1=17-18, text="from fiction."
+
+[문장 3] Stories spread quickly, and it is easy to believe exciting or shocking claims without checking if they are true.
+  단어 수: 19
+  - 성분 1: id=s3-c1-0, lane=major, role=subject, order=1, wordIndex0=0-5, wordIndex1=1-5, text="Stories spread quickly, and it"
+  - 성분 2: id=s3-c2-0, lane=major, role=verb, order=2, wordIndex0=5-6, wordIndex1=6-6, text="is"
+  - 성분 3: id=s3-c3-0, lane=major, role=complement, order=3, wordIndex0=6-7, wordIndex1=7-7, text="easy"
+  - 성분 4: id=s3-c4-0, lane=minor, role=adverb, order=4, wordIndex0=7-13, wordIndex1=8-13, text="to believe exciting or shocking claims"
+  - 성분 5: id=s3-c5-1, lane=minor, role=adverb, order=5, wordIndex0=13-19, wordIndex1=14-19, text="without checking if they are true."
+
+[문장 4] Here are some tips to help you spot misinformation:
+  단어 수: 9
+  - 성분 1: id=s4-c1-0, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Here"
+  - 성분 2: id=s4-c2-0, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="are"
+  - 성분 3: id=s4-c3-0, lane=major, role=complement, order=3, wordIndex0=2-4, wordIndex1=3-4, text="some tips"
+  - 성분 4: id=s4-c4-0, lane=minor, role=adverb, order=4, wordIndex0=4-9, wordIndex1=5-9, text="to help you spot misinformation:"
+
+[문장 5] /How to Spot Fake News/
+  단어 수: 5
+  - 성분 1: id=s5-c1-0, lane=major, role=subtitle, order=1, wordIndex0=0-1, wordIndex1=1-1, text="How to Spot Fake News"
+
+[문장 6] Consider the Source.
+  단어 수: 3
+  - 성분 1: id=s6-c1-0, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Consider"
+  - 성분 2: id=s6-c2-0, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="the"
+  - 성분 3: id=s6-c3-0, lane=major, role=object, order=3, wordIndex0=2-3, wordIndex1=3-3, text="Source."
+
+[문장 7] Verify the website's purpose, credibility, and contact details.
+  단어 수: 8
+  - 성분 1: id=s7-c1-0, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="Verify the"
+  - 성분 2: id=s7-c2-0, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="website's"
+  - 성분 3: id=s7-c3-0, lane=major, role=object, order=3, wordIndex0=3-8, wordIndex1=4-8, text="purpose, credibility, and contact details."
+
+[문장 8] Read Beyond Sometimes headlines are written just to grab readers' attention and get clicks.
+  단어 수: 14
+  - 성분 1: id=s8-c1-0, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="Read Beyond"
+  - 성분 2: id=s8-c2-0, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="Sometimes"
+  - 성분 3: id=s8-c3-0, lane=major, role=object, order=3, wordIndex0=3-7, wordIndex1=4-7, text="headlines are written just"
+  - 성분 4: id=s8-c4-0, lane=minor, role=adverb, order=4, wordIndex0=7-14, wordIndex1=8-14, text="to grab readers' attention and get clicks."
+
+[문장 9] What is the full story?
+  단어 수: 5
+  - 성분 1: id=s9-c1-0, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="What"
+  - 성분 2: id=s9-c2-0, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="is"
+  - 성분 3: id=s9-c3-0, lane=major, role=complement, order=3, wordIndex0=2-5, wordIndex1=3-5, text="the full story?"
+
+[문장 10] Check the Author Do a quick search on the author.
+  단어 수: 10
+  - 성분 1: id=s10-c1-0, lane=major, role=subject, order=1, wordIndex0=0-3, wordIndex1=1-3, text="Check the Author"
+  - 성분 2: id=s10-c2-0, lane=major, role=verb, order=2, wordIndex0=3-4, wordIndex1=4-4, text="Do"
+  - 성분 3: id=s10-c3-0, lane=major, role=object, order=3, wordIndex0=4-7, wordIndex1=5-7, text="a quick search"
+  - 성분 4: id=s10-c4-0, lane=minor, role=adverb, order=4, wordIndex0=7-10, wordIndex1=8-10, text="on the author."
+
+[문장 11] Are they credible?
+  단어 수: 3
+  - 성분 1: id=s11-c1-0, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Are"
+  - 성분 2: id=s11-c2-0, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="they"
+  - 성분 3: id=s11-c3-0, lane=major, role=object, order=3, wordIndex0=2-3, wordIndex1=3-3, text="credible?"
+
+[문장 12] Are they real?
+  단어 수: 3
+  - 성분 1: id=s12-c1-0, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Are"
+  - 성분 2: id=s12-c2-0, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="they"
+  - 성분 3: id=s12-c3-0, lane=major, role=object, order=3, wordIndex0=2-3, wordIndex1=3-3, text="real?"
+
+[문장 13] Check the Links Click on the links.
+  단어 수: 7
+  - 성분 1: id=s13-c1-0, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="Check the"
+  - 성분 2: id=s13-c2-0, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="Links"
+  - 성분 3: id=s13-c3-0, lane=major, role=object, order=3, wordIndex0=3-4, wordIndex1=4-4, text="Click"
+  - 성분 4: id=s13-c4-0, lane=minor, role=adverb, order=4, wordIndex0=4-7, wordIndex1=5-7, text="on the links."
+
+[문장 14] Determine if the info given actually supports the story.
+  단어 수: 9
+  - 성분 1: id=s14-c1-0, lane=major, role=subject, order=1, wordIndex0=0-6, wordIndex1=1-6, text="Determine if the info given actually"
+  - 성분 2: id=s14-c2-0, lane=major, role=verb, order=2, wordIndex0=6-7, wordIndex1=7-7, text="supports"
+  - 성분 3: id=s14-c3-0, lane=major, role=object, order=3, wordIndex0=7-9, wordIndex1=8-9, text="the story."
+
+[문장 15] Check the Date Old news stories may not be relevant to what's happening now.
+  단어 수: 14
+  - 성분 1: id=s15-c1-0, lane=major, role=subject, order=1, wordIndex0=0-6, wordIndex1=1-6, text="Check the Date Old news stories"
+  - 성분 2: id=s15-c2-0, lane=major, role=verb, order=2, wordIndex0=6-7, wordIndex1=7-7, text="may"
+  - 성분 3: id=s15-c3-0, lane=major, role=object, order=3, wordIndex0=7-10, wordIndex1=8-10, text="not be relevant"
+  - 성분 4: id=s15-c4-0, lane=minor, role=adverb, order=4, wordIndex0=10-14, wordIndex1=11-14, text="to what's happening now."
+
+[문장 16] Is It a Joke?
+  단어 수: 4
+  - 성분 1: id=s16-c1-0, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Is"
+  - 성분 2: id=s16-c2-0, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="It"
+  - 성분 3: id=s16-c3-0, lane=major, role=object, order=3, wordIndex0=2-4, wordIndex1=3-4, text="a Joke?"
+
+[문장 17] If it sounds too strange to be true, it might be meant as a joke.
+  단어 수: 15
+  - 성분 1: id=s17-c1-0, lane=major, role=subject, order=1, wordIndex0=0-6, wordIndex1=1-6, text="If it sounds too strange to"
+  - 성분 2: id=s17-c2-0, lane=major, role=verb, order=2, wordIndex0=6-7, wordIndex1=7-7, text="be"
+  - 성분 3: id=s17-c3-0, lane=major, role=complement, order=3, wordIndex0=7-15, wordIndex1=8-15, text="true, it might be meant as a joke."
+
+[문장 18] Check with the site and author to make sure.
+  단어 수: 9
+  - 성분 1: id=s18-c1-0, lane=major, role=subject, order=1, wordIndex0=0-7, wordIndex1=1-7, text="Check with the site and author to"
+  - 성분 2: id=s18-c2-0, lane=major, role=verb, order=2, wordIndex0=7-8, wordIndex1=8-8, text="make"
+  - 성분 3: id=s18-c3-0, lane=major, role=object, order=3, wordIndex0=8-9, wordIndex1=9-9, text="sure."
+
+[문장 19] Check Your Biases Consider whether your own beliefs could be affecting your judgment.
+  단어 수: 13
+  - 성분 1: id=s19-c1-0, lane=major, role=subject, order=1, wordIndex0=0-8, wordIndex1=1-8, text="Check Your Biases Consider whether your own beliefs"
+  - 성분 2: id=s19-c2-0, lane=major, role=verb, order=2, wordIndex0=8-9, wordIndex1=9-9, text="could"
+  - 성분 3: id=s19-c3-0, lane=major, role=object, order=3, wordIndex0=9-13, wordIndex1=10-13, text="be affecting your judgment."
+
+[문장 20] Ask the Experts Ask someone knowledgeable about the information, or consult a fact-checking site.
+  단어 수: 14
+  - 성분 1: id=s20-c1-0, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="Ask the"
+  - 성분 2: id=s20-c2-0, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="Experts"
+  - 성분 3: id=s20-c3-0, lane=major, role=object, order=3, wordIndex0=3-6, wordIndex1=4-6, text="Ask someone knowledgeable"
+  - 성분 4: id=s20-c4-0, lane=minor, role=adverb, order=4, wordIndex0=6-14, wordIndex1=7-14, text="about the information, or consult a fact-checking site."
+
+[문장 21] By following these tips and sharing thoughtfully, you can help create a more informed and reliable online world.
+  단어 수: 18
+  - 성분 1: id=s21-c1-0, lane=major, role=subject, order=1, wordIndex0=0-8, wordIndex1=1-8, text="By following these tips and sharing thoughtfully, you"
+  - 성분 2: id=s21-c2-0, lane=major, role=verb, order=2, wordIndex0=8-9, wordIndex1=9-9, text="can"
+  - 성분 3: id=s21-c3-0, lane=major, role=object, order=3, wordIndex0=9-18, wordIndex1=10-18, text="help create a more informed and reliable online world."
+
+[문장 22] “Think critically.
+  단어 수: 2
+  - 성분 1: id=s22-c1-0, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="“Think"
+  - 성분 2: id=s22-c2-0, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="critically."
+
+[문장 23] Share wisely."
+  단어 수: 2
+  - 성분 1: id=s23-c1-0, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Share"
+  - 성분 2: id=s23-c2-0, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="wisely.""
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 1,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-06-01T23:52:02.632Z",
+  "passageText": "//Developing Critical Thinking in the Digital Age// Today, because of the Internet and social media, we face the new challenge of separating fact from fiction. Stories spread quickly, and it is easy to believe exciting or shocking claims without checking if they are true. Here are some tips to help you spot misinformation: /How to Spot Fake News/ Consider the Source. Verify the website's purpose, credibility, and contact details. Read Beyond Sometimes headlines are written just to grab readers' attention and get clicks. What is the full story? Check the Author Do a quick search on the author. Are they credible? Are they real? Check the Links Click on the links. Determine if the info given actually supports the story. Check the Date Old news stories may not be relevant to what's happening now. Is It a Joke? If it sounds too strange to be true, it might be meant as a joke. Check with the site and author to make sure. Check Your Biases Consider whether your own beliefs could be affecting your judgment. Ask the Experts Ask someone knowledgeable about the information, or consult a fact-checking site. By following these tips and sharing thoughtfully, you can help create a more informed and reliable online world. “Think critically. Share wisely.\"",
+  "currentSentenceIndex": 0,
+  "componentSerial": 1,
+  "settings": {
+    "theme": "light",
+    "align": "center"
+  },
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "//Developing Critical Thinking in the Digital Age//",
+      "isImportant": false,
+      "wordCount": 7,
+      "components": [
+        {
+          "id": "s1-c1-0",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "Developing Critical Thinking in the Digital Age",
+          "role": "title",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Developing",
+            "Critical",
+            "Thinking",
+            "in",
+            "the",
+            "Digital",
+            "Age"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "Today, because of the Internet and social media, we face the new challenge of separating fact from fiction.",
+      "isImportant": false,
+      "wordCount": 18,
+      "components": [
+        {
+          "id": "s2-c1-0",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "Today, because of the Internet and social media, we face the new challenge of",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 14,
+          "words": [
+            "Today,",
+            "because",
+            "of",
+            "the",
+            "Internet",
+            "and",
+            "social",
+            "media,",
+            "we",
+            "face",
+            "the",
+            "new",
+            "challenge",
+            "of"
+          ]
+        },
+        {
+          "id": "s2-c2-0",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "separating",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 14,
+          "endIndex": 15,
+          "words": [
+            "separating"
+          ]
+        },
+        {
+          "id": "s2-c3-0",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "fact",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 15,
+          "endIndex": 16,
+          "words": [
+            "fact"
+          ]
+        },
+        {
+          "id": "s2-c4-0",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "from fiction.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 16,
+          "endIndex": 18,
+          "words": [
+            "from",
+            "fiction."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "Stories spread quickly, and it is easy to believe exciting or shocking claims without checking if they are true.",
+      "isImportant": false,
+      "wordCount": 19,
+      "components": [
+        {
+          "id": "s3-c1-0",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "Stories spread quickly, and it",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 5,
+          "words": [
+            "Stories",
+            "spread",
+            "quickly,",
+            "and",
+            "it"
+          ]
+        },
+        {
+          "id": "s3-c2-0",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 6,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s3-c3-0",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "easy",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "easy"
+          ]
+        },
+        {
+          "id": "s3-c4-0",
+          "sentenceIndex": 3,
+          "componentIndex": 4,
+          "text": "to believe exciting or shocking claims",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 7,
+          "endIndex": 13,
+          "words": [
+            "to",
+            "believe",
+            "exciting",
+            "or",
+            "shocking",
+            "claims"
+          ]
+        },
+        {
+          "id": "s3-c5-1",
+          "sentenceIndex": 3,
+          "componentIndex": 5,
+          "text": "without checking if they are true.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 5,
+          "startIndex": 13,
+          "endIndex": 19,
+          "words": [
+            "without",
+            "checking",
+            "if",
+            "they",
+            "are",
+            "true."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-4",
+      "sentenceIndex": 4,
+      "text": "Here are some tips to help you spot misinformation:",
+      "isImportant": false,
+      "wordCount": 9,
+      "components": [
+        {
+          "id": "s4-c1-0",
+          "sentenceIndex": 4,
+          "componentIndex": 1,
+          "text": "Here",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Here"
+          ]
+        },
+        {
+          "id": "s4-c2-0",
+          "sentenceIndex": 4,
+          "componentIndex": 2,
+          "text": "are",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "are"
+          ]
+        },
+        {
+          "id": "s4-c3-0",
+          "sentenceIndex": 4,
+          "componentIndex": 3,
+          "text": "some tips",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 4,
+          "words": [
+            "some",
+            "tips"
+          ]
+        },
+        {
+          "id": "s4-c4-0",
+          "sentenceIndex": 4,
+          "componentIndex": 4,
+          "text": "to help you spot misinformation:",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 4,
+          "endIndex": 9,
+          "words": [
+            "to",
+            "help",
+            "you",
+            "spot",
+            "misinformation:"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-5",
+      "sentenceIndex": 5,
+      "text": "/How to Spot Fake News/",
+      "isImportant": false,
+      "wordCount": 5,
+      "components": [
+        {
+          "id": "s5-c1-0",
+          "sentenceIndex": 5,
+          "componentIndex": 1,
+          "text": "How to Spot Fake News",
+          "role": "subtitle",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "How",
+            "to",
+            "Spot",
+            "Fake",
+            "News"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-6",
+      "sentenceIndex": 6,
+      "text": "Consider the Source.",
+      "isImportant": false,
+      "wordCount": 3,
+      "components": [
+        {
+          "id": "s6-c1-0",
+          "sentenceIndex": 6,
+          "componentIndex": 1,
+          "text": "Consider",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Consider"
+          ]
+        },
+        {
+          "id": "s6-c2-0",
+          "sentenceIndex": 6,
+          "componentIndex": 2,
+          "text": "the",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "the"
+          ]
+        },
+        {
+          "id": "s6-c3-0",
+          "sentenceIndex": 6,
+          "componentIndex": 3,
+          "text": "Source.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "Source."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-7",
+      "sentenceIndex": 7,
+      "text": "Verify the website's purpose, credibility, and contact details.",
+      "isImportant": false,
+      "wordCount": 8,
+      "components": [
+        {
+          "id": "s7-c1-0",
+          "sentenceIndex": 7,
+          "componentIndex": 1,
+          "text": "Verify the",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "Verify",
+            "the"
+          ]
+        },
+        {
+          "id": "s7-c2-0",
+          "sentenceIndex": 7,
+          "componentIndex": 2,
+          "text": "website's",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "website's"
+          ]
+        },
+        {
+          "id": "s7-c3-0",
+          "sentenceIndex": 7,
+          "componentIndex": 3,
+          "text": "purpose, credibility, and contact details.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 8,
+          "words": [
+            "purpose,",
+            "credibility,",
+            "and",
+            "contact",
+            "details."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-8",
+      "sentenceIndex": 8,
+      "text": "Read Beyond Sometimes headlines are written just to grab readers' attention and get clicks.",
+      "isImportant": false,
+      "wordCount": 14,
+      "components": [
+        {
+          "id": "s8-c1-0",
+          "sentenceIndex": 8,
+          "componentIndex": 1,
+          "text": "Read Beyond",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "Read",
+            "Beyond"
+          ]
+        },
+        {
+          "id": "s8-c2-0",
+          "sentenceIndex": 8,
+          "componentIndex": 2,
+          "text": "Sometimes",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "Sometimes"
+          ]
+        },
+        {
+          "id": "s8-c3-0",
+          "sentenceIndex": 8,
+          "componentIndex": 3,
+          "text": "headlines are written just",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 7,
+          "words": [
+            "headlines",
+            "are",
+            "written",
+            "just"
+          ]
+        },
+        {
+          "id": "s8-c4-0",
+          "sentenceIndex": 8,
+          "componentIndex": 4,
+          "text": "to grab readers' attention and get clicks.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 7,
+          "endIndex": 14,
+          "words": [
+            "to",
+            "grab",
+            "readers'",
+            "attention",
+            "and",
+            "get",
+            "clicks."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-9",
+      "sentenceIndex": 9,
+      "text": "What is the full story?",
+      "isImportant": false,
+      "wordCount": 5,
+      "components": [
+        {
+          "id": "s9-c1-0",
+          "sentenceIndex": 9,
+          "componentIndex": 1,
+          "text": "What",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "What"
+          ]
+        },
+        {
+          "id": "s9-c2-0",
+          "sentenceIndex": 9,
+          "componentIndex": 2,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s9-c3-0",
+          "sentenceIndex": 9,
+          "componentIndex": 3,
+          "text": "the full story?",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 5,
+          "words": [
+            "the",
+            "full",
+            "story?"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-10",
+      "sentenceIndex": 10,
+      "text": "Check the Author Do a quick search on the author.",
+      "isImportant": false,
+      "wordCount": 10,
+      "components": [
+        {
+          "id": "s10-c1-0",
+          "sentenceIndex": 10,
+          "componentIndex": 1,
+          "text": "Check the Author",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 3,
+          "words": [
+            "Check",
+            "the",
+            "Author"
+          ]
+        },
+        {
+          "id": "s10-c2-0",
+          "sentenceIndex": 10,
+          "componentIndex": 2,
+          "text": "Do",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "Do"
+          ]
+        },
+        {
+          "id": "s10-c3-0",
+          "sentenceIndex": 10,
+          "componentIndex": 3,
+          "text": "a quick search",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 4,
+          "endIndex": 7,
+          "words": [
+            "a",
+            "quick",
+            "search"
+          ]
+        },
+        {
+          "id": "s10-c4-0",
+          "sentenceIndex": 10,
+          "componentIndex": 4,
+          "text": "on the author.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 7,
+          "endIndex": 10,
+          "words": [
+            "on",
+            "the",
+            "author."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-11",
+      "sentenceIndex": 11,
+      "text": "Are they credible?",
+      "isImportant": false,
+      "wordCount": 3,
+      "components": [
+        {
+          "id": "s11-c1-0",
+          "sentenceIndex": 11,
+          "componentIndex": 1,
+          "text": "Are",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Are"
+          ]
+        },
+        {
+          "id": "s11-c2-0",
+          "sentenceIndex": 11,
+          "componentIndex": 2,
+          "text": "they",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "they"
+          ]
+        },
+        {
+          "id": "s11-c3-0",
+          "sentenceIndex": 11,
+          "componentIndex": 3,
+          "text": "credible?",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "credible?"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-12",
+      "sentenceIndex": 12,
+      "text": "Are they real?",
+      "isImportant": false,
+      "wordCount": 3,
+      "components": [
+        {
+          "id": "s12-c1-0",
+          "sentenceIndex": 12,
+          "componentIndex": 1,
+          "text": "Are",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Are"
+          ]
+        },
+        {
+          "id": "s12-c2-0",
+          "sentenceIndex": 12,
+          "componentIndex": 2,
+          "text": "they",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "they"
+          ]
+        },
+        {
+          "id": "s12-c3-0",
+          "sentenceIndex": 12,
+          "componentIndex": 3,
+          "text": "real?",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "real?"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-13",
+      "sentenceIndex": 13,
+      "text": "Check the Links Click on the links.",
+      "isImportant": false,
+      "wordCount": 7,
+      "components": [
+        {
+          "id": "s13-c1-0",
+          "sentenceIndex": 13,
+          "componentIndex": 1,
+          "text": "Check the",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "Check",
+            "the"
+          ]
+        },
+        {
+          "id": "s13-c2-0",
+          "sentenceIndex": 13,
+          "componentIndex": 2,
+          "text": "Links",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "Links"
+          ]
+        },
+        {
+          "id": "s13-c3-0",
+          "sentenceIndex": 13,
+          "componentIndex": 3,
+          "text": "Click",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "Click"
+          ]
+        },
+        {
+          "id": "s13-c4-0",
+          "sentenceIndex": 13,
+          "componentIndex": 4,
+          "text": "on the links.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 4,
+          "endIndex": 7,
+          "words": [
+            "on",
+            "the",
+            "links."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-14",
+      "sentenceIndex": 14,
+      "text": "Determine if the info given actually supports the story.",
+      "isImportant": false,
+      "wordCount": 9,
+      "components": [
+        {
+          "id": "s14-c1-0",
+          "sentenceIndex": 14,
+          "componentIndex": 1,
+          "text": "Determine if the info given actually",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 6,
+          "words": [
+            "Determine",
+            "if",
+            "the",
+            "info",
+            "given",
+            "actually"
+          ]
+        },
+        {
+          "id": "s14-c2-0",
+          "sentenceIndex": 14,
+          "componentIndex": 2,
+          "text": "supports",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "supports"
+          ]
+        },
+        {
+          "id": "s14-c3-0",
+          "sentenceIndex": 14,
+          "componentIndex": 3,
+          "text": "the story.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 7,
+          "endIndex": 9,
+          "words": [
+            "the",
+            "story."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-15",
+      "sentenceIndex": 15,
+      "text": "Check the Date Old news stories may not be relevant to what's happening now.",
+      "isImportant": false,
+      "wordCount": 14,
+      "components": [
+        {
+          "id": "s15-c1-0",
+          "sentenceIndex": 15,
+          "componentIndex": 1,
+          "text": "Check the Date Old news stories",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 6,
+          "words": [
+            "Check",
+            "the",
+            "Date",
+            "Old",
+            "news",
+            "stories"
+          ]
+        },
+        {
+          "id": "s15-c2-0",
+          "sentenceIndex": 15,
+          "componentIndex": 2,
+          "text": "may",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "may"
+          ]
+        },
+        {
+          "id": "s15-c3-0",
+          "sentenceIndex": 15,
+          "componentIndex": 3,
+          "text": "not be relevant",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 7,
+          "endIndex": 10,
+          "words": [
+            "not",
+            "be",
+            "relevant"
+          ]
+        },
+        {
+          "id": "s15-c4-0",
+          "sentenceIndex": 15,
+          "componentIndex": 4,
+          "text": "to what's happening now.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 10,
+          "endIndex": 14,
+          "words": [
+            "to",
+            "what's",
+            "happening",
+            "now."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-16",
+      "sentenceIndex": 16,
+      "text": "Is It a Joke?",
+      "isImportant": false,
+      "wordCount": 4,
+      "components": [
+        {
+          "id": "s16-c1-0",
+          "sentenceIndex": 16,
+          "componentIndex": 1,
+          "text": "Is",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Is"
+          ]
+        },
+        {
+          "id": "s16-c2-0",
+          "sentenceIndex": 16,
+          "componentIndex": 2,
+          "text": "It",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "It"
+          ]
+        },
+        {
+          "id": "s16-c3-0",
+          "sentenceIndex": 16,
+          "componentIndex": 3,
+          "text": "a Joke?",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 4,
+          "words": [
+            "a",
+            "Joke?"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-17",
+      "sentenceIndex": 17,
+      "text": "If it sounds too strange to be true, it might be meant as a joke.",
+      "isImportant": false,
+      "wordCount": 15,
+      "components": [
+        {
+          "id": "s17-c1-0",
+          "sentenceIndex": 17,
+          "componentIndex": 1,
+          "text": "If it sounds too strange to",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 6,
+          "words": [
+            "If",
+            "it",
+            "sounds",
+            "too",
+            "strange",
+            "to"
+          ]
+        },
+        {
+          "id": "s17-c2-0",
+          "sentenceIndex": 17,
+          "componentIndex": 2,
+          "text": "be",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "be"
+          ]
+        },
+        {
+          "id": "s17-c3-0",
+          "sentenceIndex": 17,
+          "componentIndex": 3,
+          "text": "true, it might be meant as a joke.",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 7,
+          "endIndex": 15,
+          "words": [
+            "true,",
+            "it",
+            "might",
+            "be",
+            "meant",
+            "as",
+            "a",
+            "joke."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-18",
+      "sentenceIndex": 18,
+      "text": "Check with the site and author to make sure.",
+      "isImportant": false,
+      "wordCount": 9,
+      "components": [
+        {
+          "id": "s18-c1-0",
+          "sentenceIndex": 18,
+          "componentIndex": 1,
+          "text": "Check with the site and author to",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 7,
+          "words": [
+            "Check",
+            "with",
+            "the",
+            "site",
+            "and",
+            "author",
+            "to"
+          ]
+        },
+        {
+          "id": "s18-c2-0",
+          "sentenceIndex": 18,
+          "componentIndex": 2,
+          "text": "make",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 7,
+          "endIndex": 8,
+          "words": [
+            "make"
+          ]
+        },
+        {
+          "id": "s18-c3-0",
+          "sentenceIndex": 18,
+          "componentIndex": 3,
+          "text": "sure.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 8,
+          "endIndex": 9,
+          "words": [
+            "sure."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-19",
+      "sentenceIndex": 19,
+      "text": "Check Your Biases Consider whether your own beliefs could be affecting your judgment.",
+      "isImportant": false,
+      "wordCount": 13,
+      "components": [
+        {
+          "id": "s19-c1-0",
+          "sentenceIndex": 19,
+          "componentIndex": 1,
+          "text": "Check Your Biases Consider whether your own beliefs",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 8,
+          "words": [
+            "Check",
+            "Your",
+            "Biases",
+            "Consider",
+            "whether",
+            "your",
+            "own",
+            "beliefs"
+          ]
+        },
+        {
+          "id": "s19-c2-0",
+          "sentenceIndex": 19,
+          "componentIndex": 2,
+          "text": "could",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 8,
+          "endIndex": 9,
+          "words": [
+            "could"
+          ]
+        },
+        {
+          "id": "s19-c3-0",
+          "sentenceIndex": 19,
+          "componentIndex": 3,
+          "text": "be affecting your judgment.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 9,
+          "endIndex": 13,
+          "words": [
+            "be",
+            "affecting",
+            "your",
+            "judgment."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-20",
+      "sentenceIndex": 20,
+      "text": "Ask the Experts Ask someone knowledgeable about the information, or consult a fact-checking site.",
+      "isImportant": false,
+      "wordCount": 14,
+      "components": [
+        {
+          "id": "s20-c1-0",
+          "sentenceIndex": 20,
+          "componentIndex": 1,
+          "text": "Ask the",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "Ask",
+            "the"
+          ]
+        },
+        {
+          "id": "s20-c2-0",
+          "sentenceIndex": 20,
+          "componentIndex": 2,
+          "text": "Experts",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "Experts"
+          ]
+        },
+        {
+          "id": "s20-c3-0",
+          "sentenceIndex": 20,
+          "componentIndex": 3,
+          "text": "Ask someone knowledgeable",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 6,
+          "words": [
+            "Ask",
+            "someone",
+            "knowledgeable"
+          ]
+        },
+        {
+          "id": "s20-c4-0",
+          "sentenceIndex": 20,
+          "componentIndex": 4,
+          "text": "about the information, or consult a fact-checking site.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 6,
+          "endIndex": 14,
+          "words": [
+            "about",
+            "the",
+            "information,",
+            "or",
+            "consult",
+            "a",
+            "fact-checking",
+            "site."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-21",
+      "sentenceIndex": 21,
+      "text": "By following these tips and sharing thoughtfully, you can help create a more informed and reliable online world.",
+      "isImportant": false,
+      "wordCount": 18,
+      "components": [
+        {
+          "id": "s21-c1-0",
+          "sentenceIndex": 21,
+          "componentIndex": 1,
+          "text": "By following these tips and sharing thoughtfully, you",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 8,
+          "words": [
+            "By",
+            "following",
+            "these",
+            "tips",
+            "and",
+            "sharing",
+            "thoughtfully,",
+            "you"
+          ]
+        },
+        {
+          "id": "s21-c2-0",
+          "sentenceIndex": 21,
+          "componentIndex": 2,
+          "text": "can",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 8,
+          "endIndex": 9,
+          "words": [
+            "can"
+          ]
+        },
+        {
+          "id": "s21-c3-0",
+          "sentenceIndex": 21,
+          "componentIndex": 3,
+          "text": "help create a more informed and reliable online world.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 9,
+          "endIndex": 18,
+          "words": [
+            "help",
+            "create",
+            "a",
+            "more",
+            "informed",
+            "and",
+            "reliable",
+            "online",
+            "world."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-22",
+      "sentenceIndex": 22,
+      "text": "“Think critically.",
+      "isImportant": false,
+      "wordCount": 2,
+      "components": [
+        {
+          "id": "s22-c1-0",
+          "sentenceIndex": 22,
+          "componentIndex": 1,
+          "text": "“Think",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "“Think"
+          ]
+        },
+        {
+          "id": "s22-c2-0",
+          "sentenceIndex": 22,
+          "componentIndex": 2,
+          "text": "critically.",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "critically."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-23",
+      "sentenceIndex": 23,
+      "text": "Share wisely.\"",
+      "isImportant": false,
+      "wordCount": 2,
+      "components": [
+        {
+          "id": "s23-c1-0",
+          "sentenceIndex": 23,
+          "componentIndex": 1,
+          "text": "Share",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Share"
+          ]
+        },
+        {
+          "id": "s23-c2-0",
+          "sentenceIndex": 23,
+          "componentIndex": 2,
+          "text": "wisely.\"",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "wisely.\""
+          ]
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----

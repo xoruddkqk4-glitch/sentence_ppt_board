@@ -1158,7 +1158,11 @@ const state = {
   lastModifierComponentId: null,
   quickFilesMap: new Map(),
   hasFolderSelected: false,
-  currentFileName: null
+  currentFileName: null,
+  currentFileHandle: null,
+  directoryHandle: null,
+  hasLoadedAnalysis: false,
+  focusedComponentId: null
 };
 
 const elements = {
@@ -1171,10 +1175,11 @@ const elements = {
   inputMessage: document.getElementById("inputMessage"),
   sampleButton: document.getElementById("sampleButton"),
   clearButton: document.getElementById("clearButton"),
-  inputExportTxtButton: document.getElementById("inputExportTxtButton"),
+  inputSaveTxtButton: document.getElementById("inputSaveTxtButton"),
+  inputSaveAsTxtButton: document.getElementById("inputSaveAsTxtButton"),
   inputImportButton: document.getElementById("inputImportButton"),
-  exportTxtButton: document.getElementById("exportTxtButton"),
-  editImportButton: document.getElementById("editImportButton"),
+  saveTxtButton: document.getElementById("saveTxtButton"),
+  saveAsTxtButton: document.getElementById("saveAsTxtButton"),
   analysisFileInput: document.getElementById("analysisFileInput"),
   txtGrid: document.getElementById("txtGrid"),
   selectFolderButton: document.getElementById("selectFolderButton"),
@@ -1475,6 +1480,46 @@ function renderEditView() {
   renderEditLane(elements.majorEditLane, getComponentsByLane(sentence, "major"));
   renderEditLane(elements.minorEditLane, getComponentsByLane(sentence, "minor"));
   updateNavButtons();
+
+  // 동적 크기 조절 (세로 스크롤 방지)
+  adjustEditViewScale();
+
+  // 포커스 복원 처리
+  if (state.focusedComponentId) {
+    const chip = elements.majorEditLane.querySelector(`[data-component-id="${state.focusedComponentId}"]`) ||
+                 elements.minorEditLane.querySelector(`[data-component-id="${state.focusedComponentId}"]`);
+    const select = chip?.querySelector(".role-select") || chip?.querySelector(".custom-select");
+    if (select) {
+      select.focus();
+    }
+    state.focusedComponentId = null; // 초기화
+  }
+}
+
+function adjustEditViewScale() {
+  if (state.mode !== "edit") {
+    return;
+  }
+  const editView = elements.editView;
+  if (!editView) return;
+
+  // 기본 인라인 스타일 초기화
+  editView.style.removeProperty("--edit-font-size");
+  editView.style.removeProperty("--edit-gap");
+
+  let fontSize = 20; 
+  let gap = 16;      
+  let loopCount = 0;
+
+  // 세로 스크롤바가 완전히 사라질 때까지 글자 크기와 줄간격을 점진적으로 축소
+  while (document.documentElement.scrollHeight > window.innerHeight && fontSize > 8 && loopCount < 50) {
+    fontSize -= 0.25;
+    gap = Math.max(0, gap - 0.25);
+
+    editView.style.setProperty("--edit-font-size", `${fontSize}px`);
+    editView.style.setProperty("--edit-gap", `${gap}px`);
+    loopCount++;
+  }
 }
 
 function toggleImportantSentence() {
@@ -1524,22 +1569,197 @@ function createEditChip(component) {
     badge.textContent = component.role === "title" ? "제목" : "소제목";
     chip.appendChild(badge);
   } else {
-    const select = document.createElement("select");
-    select.className = "role-select";
-    select.setAttribute("aria-label", `${component.text} 성분 역할`);
+    const customSelect = document.createElement("div");
+    customSelect.className = "custom-select";
+    customSelect.setAttribute("tabindex", "0");
+    customSelect.dataset.componentId = component.id;
+
+    const currentRole = ROLE_OPTIONS.find((r) => r.value === component.role);
+    const prefixMap = {
+      subject: "1. ",
+      verb: "2. ",
+      complement: "3. ",
+      object: "4. ",
+      adjective: "5. ",
+      adverb: "6. "
+    };
+
+    const trigger = document.createElement("button");
+    trigger.className = "custom-select-trigger";
+    trigger.type = "button";
+    trigger.setAttribute("aria-label", `${component.text} 성분 역할 선택`);
+    trigger.textContent = (prefixMap[component.role] || "") + (currentRole?.label || "");
+    customSelect.appendChild(trigger);
+
+    const optionsList = document.createElement("ul");
+    optionsList.className = "custom-select-options hidden";
+    customSelect.appendChild(optionsList);
+
+    const items = [];
     ROLE_OPTIONS.forEach((role) => {
       if (role.value === "title" || role.value === "subtitle") return;
-      const option = document.createElement("option");
-      option.value = role.value;
-      option.textContent = role.label;
-      option.selected = role.value === component.role;
-      select.appendChild(option);
+      const li = document.createElement("li");
+      li.className = "custom-option";
+      if (role.value === component.role) {
+        li.classList.add("selected");
+      }
+      li.dataset.value = role.value;
+      
+      const numPrefix = prefixMap[role.value] || "";
+      li.textContent = numPrefix + role.label;
+      optionsList.appendChild(li);
+      items.push(li);
+
+      li.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        updateComponentRole(component.id, role.value);
+      });
+      li.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        updateComponentRole(component.id, role.value);
+      });
     });
-    select.addEventListener("change", () => updateComponentRole(component.id, select.value));
-    chip.appendChild(select);
+
+    let isOpen = false;
+    let tempValue = component.role;
+
+    const documentClickHandler = (e) => {
+      if (!customSelect.contains(e.target)) {
+        closeDropdown(false);
+      }
+    };
+
+    const openDropdown = () => {
+      document.querySelectorAll(".custom-select-options").forEach((ul) => {
+        if (ul !== optionsList) ul.classList.add("hidden");
+      });
+      optionsList.classList.remove("hidden");
+      isOpen = true;
+      tempValue = component.role;
+      updateHighlights();
+      setTimeout(() => {
+        document.addEventListener("click", documentClickHandler);
+      }, 0);
+    };
+
+    const closeDropdown = (apply = false) => {
+      optionsList.classList.add("hidden");
+      isOpen = false;
+      document.removeEventListener("click", documentClickHandler);
+      if (apply && tempValue !== component.role) {
+        updateComponentRole(component.id, tempValue);
+      } else {
+        const tempRole = ROLE_OPTIONS.find((r) => r.value === component.role);
+        trigger.textContent = (prefixMap[component.role] || "") + (tempRole?.label || "");
+      }
+    };
+
+    const updateHighlights = () => {
+      items.forEach((item) => {
+        const isTemp = item.dataset.value === tempValue;
+        item.classList.toggle("highlighted", isTemp);
+      });
+      const tempRole = ROLE_OPTIONS.find((r) => r.value === tempValue);
+      trigger.textContent = (prefixMap[tempValue] || "") + (tempRole?.label || "");
+    };
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (isOpen) {
+        closeDropdown(false);
+      } else {
+        openDropdown();
+      }
+    });
+
+    customSelect.addEventListener("keydown", (e) => {
+      const keyMap = {
+        "1": "subject",
+        "2": "verb",
+        "3": "complement",
+        "4": "object",
+        "5": "adjective",
+        "6": "adverb"
+      };
+
+      const targetRole = keyMap[e.key];
+      if (targetRole) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isOpen) {
+          if (tempValue === targetRole) {
+            closeDropdown(true);
+          } else {
+            tempValue = targetRole;
+            updateHighlights();
+          }
+        } else {
+          updateComponentRole(component.id, targetRole);
+        }
+      } else if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isOpen) {
+          closeDropdown(true);
+        } else {
+          openDropdown();
+        }
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isOpen) {
+          closeDropdown(false);
+        }
+      } else if (e.key === "ArrowDown" && isOpen) {
+        e.preventDefault();
+        e.stopPropagation();
+        const currentIndex = items.findIndex((item) => item.dataset.value === tempValue);
+        const nextIndex = (currentIndex + 1) % items.length;
+        tempValue = items[nextIndex].dataset.value;
+        updateHighlights();
+      } else if (e.key === "ArrowUp" && isOpen) {
+        e.preventDefault();
+        e.stopPropagation();
+        const currentIndex = items.findIndex((item) => item.dataset.value === tempValue);
+        const prevIndex = (currentIndex - 1 + items.length) % items.length;
+        tempValue = items[prevIndex].dataset.value;
+        updateHighlights();
+      }
+    });
+
+    customSelect.addEventListener("focusout", (e) => {
+      if (!customSelect.contains(e.relatedTarget)) {
+        if (isOpen) {
+          closeDropdown(false);
+        }
+      }
+    });
+
+    chip.appendChild(customSelect);
   }
 
   chip.appendChild(text);
+
+  if (component.lane === "minor") {
+    const pinBtn = document.createElement("button");
+    pinBtn.type = "button";
+    pinBtn.className = "pin-order-btn";
+    if (Number.isInteger(component.pinOrder) && component.pinOrder >= 1) {
+      pinBtn.classList.add("pinned");
+      pinBtn.innerHTML = `💡 <span class="pin-num">${component.pinOrder}</span>`;
+      pinBtn.setAttribute("aria-label", `우선순위 ${component.pinOrder}번 해제`);
+    } else {
+      pinBtn.innerHTML = `💡`;
+      pinBtn.setAttribute("aria-label", "우선순위 지정");
+    }
+    pinBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleComponentPin(component.id);
+    });
+    chip.appendChild(pinBtn);
+  }
 
   if (component.role === "adjective") {
     chip.appendChild(createModifierTargetControl(component));
@@ -1550,6 +1770,33 @@ function createEditChip(component) {
   chip.addEventListener("dragstart", handleDragStart);
   chip.addEventListener("dragend", handleDragEnd);
   return chip;
+}
+
+function toggleComponentPin(componentId) {
+  const sentence = getCurrentSentence();
+  if (!sentence) return;
+
+  const minorComponents = getComponentsByLane(sentence, "minor");
+  const component = minorComponents.find((item) => item.id === componentId);
+  if (!component) return;
+
+  if (Number.isInteger(component.pinOrder) && component.pinOrder >= 1) {
+    const removedOrder = component.pinOrder;
+    delete component.pinOrder;
+
+    minorComponents.forEach((item) => {
+      if (Number.isInteger(item.pinOrder) && item.pinOrder > removedOrder) {
+        item.pinOrder -= 1;
+      }
+    });
+  } else {
+    const maxPin = minorComponents.reduce((max, item) => {
+      return Number.isInteger(item.pinOrder) ? Math.max(max, item.pinOrder) : max;
+    }, 0);
+    component.pinOrder = maxPin + 1;
+  }
+
+  render();
 }
 
 function createSplitControls(component) {
@@ -1601,7 +1848,10 @@ function createSplitControls(component) {
   });
   panel.appendChild(applyButton);
 
-  toggle.addEventListener("click", () => panel.classList.toggle("hidden"));
+  toggle.addEventListener("click", () => {
+    panel.classList.toggle("hidden");
+    adjustEditViewScale();
+  });
   wrapper.append(toggle, panel);
   return wrapper;
 }
@@ -1712,7 +1962,7 @@ function renderPresentView() {
   }
 
   const majorComponents = getComponentsByLane(sentence, "major");
-  const minorComponents = getComponentsByLane(sentence, "minor");
+  const minorComponents = getPresentMinorComponents(sentence);
   state.minorRevealCount = clamp(0, state.minorRevealCount, minorComponents.length);
   const visibleMinorComponents = minorComponents.slice(0, state.minorRevealCount);
 
@@ -1797,10 +2047,17 @@ function renderMajorPresentLane(container, components, visibleMinorComponents = 
 
 function renderMinorPresentRows(container, components) {
   container.innerHTML = "";
+  const sentence = getCurrentSentence();
+  const totalRows = sentence ? getComponentsByLane(sentence, "minor").length : components.length;
+
+  const gap = Math.max(4, 12 - totalRows * 1.5);
+  container.style.setProperty("--minor-gap", `${gap}px`);
+
   components.forEach((component, index) => {
     const row = document.createElement("div");
     row.className = "minor-row";
-    placeMinorRow(row, index);
+    const hasBracket = isVisibleModifierTarget(component, components);
+    placeMinorRow(row, index, totalRows, hasBracket);
     const chip = createPresentChip(component);
     placeMinorComponentOnGrid(chip, component, index, getMinorAnchorPercent(component));
     chip.draggable = true;
@@ -1812,10 +2069,12 @@ function renderMinorPresentRows(container, components) {
   });
 }
 
-function placeMinorRow(row, rowIndex) {
-  const top = getMinorBoxTop(rowIndex);
-  const rowHeight = top + 96;
-  row.style.setProperty("--minor-box-top", `${top}px`);
+function placeMinorRow(row, rowIndex, totalRows, hasBracket = false) {
+  const spacing = Math.max(50, 96 - totalRows * 8);
+  const boxTop = getMinorBoxTop(rowIndex, totalRows);
+  const extraHeight = hasBracket ? Math.max(16, Math.round(spacing * 0.35)) : 0;
+  const rowHeight = spacing + extraHeight;
+  row.style.setProperty("--minor-box-top", `${boxTop}px`);
   row.style.setProperty("--minor-row-height", `${rowHeight}px`);
   row.style.zIndex = String(100 - rowIndex);
 }
@@ -1916,13 +2175,19 @@ function placeMinorComponentOnGrid(element, component, rowIndex, anchorPercent =
   element.style.setProperty("--anchor-percent", `${anchorPercent}%`);
   element.style.setProperty("--box-percent", `${anchorPercent}%`);
   element.style.setProperty("--connector-x", "50%");
-  const connectorLength = 54 + rowIndex * 64;
+  
+  const sentence = getCurrentSentence();
+  const totalRows = sentence ? getComponentsByLane(sentence, "minor").length : 1;
+  const spacing = Math.max(50, 96 - totalRows * 8);
+  const boxTop = Math.max(8, Math.round(spacing * 0.2));
+  const approxGap = Math.max(4, 12 - totalRows * 1.5);
+  const connectorLength = rowIndex * (spacing + approxGap) + boxTop + 10;
   element.style.setProperty("--connector-length", `${connectorLength}px`);
 }
 
-function getMinorBoxTop(rowIndex) {
-  // 종요소 행 사이 세로 간격(rowIndex 증가분)을 기존 44px의 2/3로 줄인다.
-  return 44 + rowIndex * 29;
+function getMinorBoxTop(rowIndex, totalRows) {
+  const spacing = Math.max(50, 96 - totalRows * 8);
+  return Math.max(8, Math.round(spacing * 0.2));
 }
 
 function getMinorAnchorPercent(component) {
@@ -1987,13 +2252,13 @@ function getComponentWords(component) {
 
 function getDisplayWords(text) {
   const normalizedText = normalizeApostrophes(text);
-  const words = normalizedText.match(/["'“‘(\[]*[A-Za-z0-9\-\u2013\u2014]+(?:'[A-Za-z0-9\-\u2013\u2014]+)?["'”’)\].,!?;:]*/g) || [];
+  const words = normalizedText.match(/["'“‘(\[]*[A-Za-z0-9\-\u2011\u2012\u2013\u2014\u2015\u2212]+(?:'[A-Za-z0-9\-\u2011\u2012\u2013\u2014\u2015\u2212]+)?["'”’)\].,!?;:]*/g) || [];
   const mergedWords = mergeContractionFragments(words);
   return mergedWords.length > 0 ? mergedWords : [normalizedText].filter(Boolean);
 }
 
 function getWordCore(word) {
-  return normalizeApostrophes(word).match(/[A-Za-z0-9\-\u2013\u2014]+(?:'[A-Za-z0-9\-\u2013\u2014]+)?/)?.[0] || "";
+  return normalizeApostrophes(word).match(/[A-Za-z0-9\-\u2011\u2012\u2013\u2014\u2015\u2212]+(?:'[A-Za-z0-9\-\u2011\u2012\u2013\u2014\u2015\u2212]+)?/)?.[0] || "";
 }
 
 function normalizeApostrophes(text) {
@@ -2059,7 +2324,7 @@ function rebuildMinorSlotsFromWords() {
   const edgeGap = getMajorEdgeGap();
 
   // 문장 맨 앞/맨 뒤 슬롯에 몰리는 종요소 개수만큼 가장자리 점을 더 벌려 둔다.
-  const visibleMinorComponents = getComponentsByLane(sentence, "minor").slice(0, state.minorRevealCount);
+  const visibleMinorComponents = getPresentMinorComponents(sentence).slice(0, state.minorRevealCount);
   const startAnchorCount = visibleMinorComponents.filter((component) => {
     const start = Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1;
     return start <= firstIndex;
@@ -2164,6 +2429,22 @@ function getComponentsByLane(sentence, lane) {
   return sentence.components
     .filter((component) => component.lane === lane)
     .sort((a, b) => a.order - b.order);
+}
+
+function getPresentMinorComponents(sentence) {
+  if (!sentence) {
+    return [];
+  }
+  return sentence.components
+    .filter((component) => component.lane === "minor")
+    .sort((a, b) => {
+      const pinA = Number.isInteger(a.pinOrder) ? a.pinOrder : Infinity;
+      const pinB = Number.isInteger(b.pinOrder) ? b.pinOrder : Infinity;
+      if (pinA !== pinB) {
+        return pinA - pinB;
+      }
+      return a.order - b.order;
+    });
 }
 
 function getProgressText() {
@@ -2505,7 +2786,28 @@ function getModifierTargetComponent(component) {
 }
 
 function isVisibleModifierTarget(component, visibleMinorComponents) {
-  return visibleMinorComponents.some((minor) => getModifierTargetComponent(minor)?.id === component.id);
+  if (component.lane !== "minor") {
+    return false;
+  }
+  const compStart = component.startIndex;
+  const compEnd = component.endIndex;
+  if (!Number.isFinite(compStart) || !Number.isFinite(compEnd)) {
+    return false;
+  }
+
+  const modifiedIndexes = new Set();
+  visibleMinorComponents.forEach((minor) => {
+    if (minor.role === "adjective") {
+      getModifierTargetIndexes(minor).forEach((idx) => modifiedIndexes.add(idx));
+    }
+  });
+
+  for (let idx = compStart; idx < compEnd; idx += 1) {
+    if (modifiedIndexes.has(idx)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function goToPresentationNext() {
@@ -2690,6 +2992,7 @@ function getNextComponentId(baseId) {
 }
 
 function updateComponentRole(componentId, role) {
+  state.focusedComponentId = componentId;
   const sentence = getCurrentSentence();
   const component = sentence?.components.find((item) => item.id === componentId);
   if (!component) {
@@ -2904,7 +3207,7 @@ function applySettings() {
   elements.themeSelect.value = state.settings.theme;
   const width = window.innerWidth;
   const majorBase = clamp(56, width * 0.07, 124);
-  const minorBase = clamp(20, width * 0.022, 42);
+  const minorBase = clamp(16, width * 0.016, 32);
   elements.app.style.setProperty("--font-major-current", `${Math.round(majorBase)}px`);
   elements.app.style.setProperty("--font-minor-current", `${Math.round(minorBase)}px`);
 }
@@ -3098,7 +3401,8 @@ function updateMinorConnectorLengths() {
       : dotY;
 
     // CSS custom properties 설정
-    chip.style.setProperty("--connector-length", `${Math.max(28, Math.round(chipTop - targetBottomY))}px`);
+    const minConnector = component?.role === "adjective" ? 17 : 9;
+    chip.style.setProperty("--connector-length", `${Math.max(minConnector, Math.round(chipTop - targetBottomY))}px`);
     chip.style.setProperty("--connector-top", "-4px");
   });
 }
@@ -3136,7 +3440,7 @@ function updateMinorPositions() {
     return;
   }
 
-  const components = getComponentsByLane(sentence, "minor").slice(0, state.minorRevealCount);
+  const components = getPresentMinorComponents(sentence).slice(0, state.minorRevealCount);
   const metrics = getMinorLaneMetrics();
   const edgePercent = metrics.width ? (getStageEdgeGuard(metrics) / metrics.width) * 100 : 6;
   const anchorById = new Map();
@@ -3198,7 +3502,7 @@ function applyPendingEdits() {
   }
 }
 
-async function exportAnalysisTxt() {
+async function saveAnalysisTxt(saveAs = false) {
   applyPendingEdits();
 
   if (state.sentences.length === 0) {
@@ -3226,9 +3530,58 @@ async function exportAnalysisTxt() {
   }
   renderTxtGrid();
 
+  // "현재 TXT에 저장" (saveAs === false) 이고, 이전에 저장 시점 또는 불러오기 시점에 획득한 파일 핸들이 있는 경우
+  if (!saveAs && state.currentFileHandle) {
+    try {
+      // 쓰기 권한 재확인 및 요청 (보안상 읽기전용 핸들에서 createWritable 에러 방지)
+      const perm = await state.currentFileHandle.queryPermission({ mode: "readwrite" });
+      if (perm !== "granted") {
+        const reqPerm = await state.currentFileHandle.requestPermission({ mode: "readwrite" });
+        if (reqPerm !== "granted") {
+          throw new Error("파일 쓰기 권한이 거부되었습니다.");
+        }
+      }
+
+      const writable = await state.currentFileHandle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      
+      elements.inputMessage.style.color = "var(--color-primary)";
+      elements.inputMessage.textContent = `💾 ${fileName} 파일에 수정 사항을 저장했습니다.`;
+      setTimeout(() => {
+        if (elements.inputMessage.textContent.includes("수정 사항을 저장했습니다")) {
+          elements.inputMessage.textContent = "";
+          elements.inputMessage.style.color = "";
+        }
+      }, 3000);
+      return;
+    } catch (error) {
+      console.warn("기존 파일 핸들 쓰기 실패. 새 창을 띄웁니다.", error);
+      // 실패 시 fall through하여 다른 이름으로 저장 진행
+    }
+  }
+
+  let startInHandle = null;
+  if (state.directoryHandle) {
+    startInHandle = state.directoryHandle;
+  } else if (state.currentFileHandle) {
+    startInHandle = state.currentFileHandle;
+  }
+
+  if (startInHandle) {
+    try {
+      const perm = await startInHandle.queryPermission({ mode: "readwrite" });
+      if (perm !== "granted") {
+        await startInHandle.requestPermission({ mode: "readwrite" });
+      }
+    } catch (e) {
+      console.warn("Failed to acquire permission for startInHandle:", e);
+    }
+  }
+
   if (window.showSaveFilePicker) {
     try {
-      const fileHandle = await window.showSaveFilePicker({
+      const pickerOptions = {
         suggestedName: fileName,
         types: [
           {
@@ -3236,10 +3589,37 @@ async function exportAnalysisTxt() {
             accept: { "text/plain": [".txt"] }
           }
         ]
-      });
+      };
+      if (startInHandle) {
+        pickerOptions.startIn = startInHandle;
+      } else {
+        pickerOptions.id = "sentence_ppt_board";
+      }
+      const fileHandle = await window.showSaveFilePicker(pickerOptions);
+      state.currentFileHandle = fileHandle;
+      state.currentFileName = fileHandle.name;
+      
       const writable = await fileHandle.createWritable();
       await writable.write(blob);
       await writable.close();
+
+      // 저장된 새 파일명으로 로컬 스토리지 캐시 및 데이터 동기화 재정렬
+      localStorage.setItem(`sentence_board_file_cache_${fileHandle.name}`, content);
+      state.quickFilesMap.set(fileHandle.name, fileHandle); // FileHandle 저장
+      QUICK_TXT_DATA[fileHandle.name] = content;
+      if (!QUICK_TXT_FILES.includes(fileHandle.name)) {
+        QUICK_TXT_FILES.push(fileHandle.name);
+      }
+      renderTxtGrid();
+
+      elements.inputMessage.style.color = "var(--color-primary)";
+      elements.inputMessage.textContent = `💾 ${fileHandle.name} 파일로 저장했습니다.`;
+      setTimeout(() => {
+        if (elements.inputMessage.textContent.includes("저장했습니다")) {
+          elements.inputMessage.textContent = "";
+          elements.inputMessage.style.color = "";
+        }
+      }, 3000);
       return;
     } catch (error) {
       if (error?.name === "AbortError") {
@@ -3249,6 +3629,7 @@ async function exportAnalysisTxt() {
     }
   }
 
+  // File System Access API 미지원 또는 취소 시 다운로드 링크 생성
   downloadAnalysisTxt(blob, fileName);
 }
 
@@ -3325,6 +3706,7 @@ function buildAnalysisPayload() {
         modifierTargetIndexes: component.modifierTargetIndexes,
         pinnedAnchor: component.pinnedAnchor,
         boxPercent: component.boxPercent,
+        pinOrder: Number.isInteger(component.pinOrder) ? component.pinOrder : undefined,
         words: getComponentWords(component)
       }))
     }))
@@ -3338,9 +3720,65 @@ function formatOneBasedRange(startIndex, endIndex) {
   return `${Number(startIndex) + 1}-${Number(endIndex)}`;
 }
 
-function triggerAnalysisImport() {
-  elements.analysisFileInput.value = "";
-  elements.analysisFileInput.click();
+async function triggerAnalysisImport() {
+  if (!window.showOpenFilePicker) {
+    elements.analysisFileInput.value = "";
+    elements.analysisFileInput.click();
+    return;
+  }
+  
+  let startInHandle = null;
+  if (state.directoryHandle) {
+    startInHandle = state.directoryHandle;
+  } else if (state.currentFileHandle) {
+    startInHandle = state.currentFileHandle;
+  }
+
+  if (startInHandle) {
+    try {
+      const perm = await startInHandle.queryPermission({ mode: "readwrite" });
+      if (perm !== "granted") {
+        await startInHandle.requestPermission({ mode: "readwrite" });
+      }
+    } catch (e) {
+      console.warn("Failed to acquire permission for startInHandle:", e);
+    }
+  }
+
+  try {
+    const pickerOptions = {
+      types: [
+        {
+          description: "Text file",
+          accept: { "text/plain": [".txt"] }
+        }
+      ]
+    };
+    if (startInHandle) {
+      pickerOptions.startIn = startInHandle;
+    } else {
+      pickerOptions.id = "sentence_ppt_board";
+    }
+    const [fileHandle] = await window.showOpenFilePicker(pickerOptions);
+    if (!fileHandle) {
+      return;
+    }
+
+    state.currentFileName = fileHandle.name;
+    state.currentFileHandle = fileHandle; // 파일 핸들 즉시 저장!
+    await saveHandleToDB("currentFileHandle", fileHandle);
+    
+    const file = await fileHandle.getFile();
+    const resultText = await file.text();
+    
+    // 캐시 동기화 및 로드
+    localStorage.setItem(`sentence_board_file_cache_${fileHandle.name}`, resultText);
+    importAnalysisTxt(resultText);
+  } catch (error) {
+    if (error?.name === "AbortError") return;
+    console.error(error);
+    alert(`지문을 불러오지 못했습니다: ${error.message}`);
+  }
 }
 
 function handleAnalysisFileSelected(event) {
@@ -3351,6 +3789,7 @@ function handleAnalysisFileSelected(event) {
 
   // 최신 가져온 파일명 기록 및 빠른 지문 맵에 등록
   state.currentFileName = file.name;
+  state.currentFileHandle = null; // 수동으로 새 파일 로드 시 이전 핸들 초기화
   state.quickFilesMap.set(file.name, file);
   if (!QUICK_TXT_FILES.includes(file.name)) {
     QUICK_TXT_FILES.push(file.name);
@@ -3387,15 +3826,15 @@ function importAnalysisTxt(content) {
       state.componentSerial = loaded.componentSerial;
       state.settings = { ...state.settings, ...loaded.settings };
       elements.passageInput.value = state.passageText;
-      elements.inputMessage.textContent = "저장된 분석 결과를 불러왔습니다.";
-      setMode("edit");
+      elements.inputMessage.textContent = "저장된 분석 결과를 불러왔습니다. 아래 '2단계-문장분석 시작'을 누르시면 적용됩니다.";
+      state.hasLoadedAnalysis = true; // 분석 내용 로드 플래그 활성화
     } catch (error) {
       console.warn("분석 JSON 파싱 실패, 순수 지문 본문 추출 폴백 시도:", error);
       try {
         const plainText = extractPassageTextFromDamagedTxt(trimmed);
         loadAsPlainPassage(plainText);
         elements.inputMessage.style.color = "var(--color-primary)";
-        elements.inputMessage.textContent = "⚠️ 분석 파일 복원에 실패하여 지문 텍스트만 추출해 불러왔습니다.";
+        elements.inputMessage.textContent = "⚠️ 분석 파일 복원에 실패하여 지문 텍스트만 추출해 불러왔습니다. 아래 '2단계-문장분석 시작'을 누르면 새로 분석됩니다.";
       } catch (fallbackError) {
         throw new Error(`분석 파일 복원 및 지문 추출에 실패했습니다: ${fallbackError.message}`);
       }
@@ -3444,12 +3883,8 @@ function loadAsPlainPassage(content) {
     throw new Error("빈 텍스트 파일입니다.");
   }
   elements.passageInput.value = content;
-  const count = preparePresentation();
-  if (count === 0) {
-    throw new Error("분석할 영어 문장을 찾지 못했습니다.");
-  }
-  elements.inputMessage.textContent = "";
-  setMode("edit");
+  state.hasLoadedAnalysis = false;
+  elements.inputMessage.textContent = "지문 텍스트를 불러왔습니다. 아래 '2단계-문장분석 시작'을 누르시면 분석이 시작됩니다.";
 }
 
 function parseAnalysisTxt(content) {
@@ -3538,7 +3973,8 @@ function normalizeImportedComponent(component, sentenceIndex, componentIndex) {
       ? component.modifierTargetIndexes.map((index) => Number(index)).filter((index) => Number.isInteger(index) && index >= 0)
       : undefined,
     pinnedAnchor: component?.pinnedAnchor === true ? true : undefined,
-    boxPercent: Number.isFinite(boxPercent) ? boxPercent : undefined
+    boxPercent: Number.isFinite(boxPercent) ? boxPercent : undefined,
+    pinOrder: Number.isInteger(component?.pinOrder) ? Number(component.pinOrder) : undefined
   };
 }
 
@@ -3606,9 +4042,11 @@ function renderTxtGrid() {
   }
 }
 
-function loadQuickTxt(fileName) {
+async function loadQuickTxt(fileName) {
   try {
     state.currentFileName = fileName;
+    state.currentFileHandle = null; // 새 지문 불러오기 시 이전 파일 핸들 초기화
+    await saveHandleToDB("currentFileHandle", null);
     
     // 로컬 스토리지 캐시 우선 조회
     const cachedContent = localStorage.getItem(`sentence_board_file_cache_${fileName}`);
@@ -3634,11 +4072,51 @@ function loadQuickTxt(fileName) {
   }
 }
 
-function loadQuickTxtFromUploadedFile(fileName) {
+async function loadQuickTxtFromUploadedFile(fileName) {
   try {
     state.currentFileName = fileName;
+    state.currentFileHandle = null; // 새 지문 불러오기 시 이전 파일 핸들 초기화
     
-    // 1. 로컬 스토리지 수정본 캐시 우선 조회
+    const fileEntry = state.quickFilesMap.get(fileName);
+    
+    // 1. File System Access API의 파일 핸들인 경우 (entry.getFile이 존재) -> 덮어쓰기 권한을 유지하며 데이터 로드
+    if (fileEntry && typeof fileEntry.getFile === "function") {
+      state.currentFileHandle = fileEntry; // 현재 파일 핸들에 저장!
+      await saveHandleToDB("currentFileHandle", fileEntry);
+      try {
+        const file = await fileEntry.getFile();
+        const resultText = await file.text();
+        localStorage.setItem(`sentence_board_file_cache_${fileName}`, resultText);
+        localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, resultText);
+        importAnalysisTxt(resultText);
+        showSuccessfulLoadMessage(fileName);
+        return;
+      } catch (error) {
+        alert(`지문을 분석하는 중 오류가 발생했습니다: ${error.message}`);
+        return;
+      }
+    }
+    
+    // 2. Fallback: input directory 등 일반 File 객체인 경우
+    if (fileEntry && !fileEntry.isMock) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const resultText = String(reader.result || "");
+          localStorage.setItem(`sentence_board_file_cache_${fileName}`, resultText);
+          localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, resultText);
+          importAnalysisTxt(resultText);
+          showSuccessfulLoadMessage(fileName);
+        } catch (error) {
+          alert(`지문을 분석하는 중 오류가 발생했습니다: ${error.message}`);
+        }
+      };
+      reader.onerror = () => alert("파일을 읽는 중 오류가 발생했습니다.");
+      reader.readAsText(fileEntry, "utf-8");
+      return;
+    }
+
+    // 3. 실제 파일 객체가 없거나, mock 객체인 경우 (새로고침 후 자동 복구 상태 등) -> 캐시 우선 사용
     const cachedContent = localStorage.getItem(`sentence_board_file_cache_${fileName}`);
     if (cachedContent) {
       importAnalysisTxt(cachedContent);
@@ -3646,36 +4124,16 @@ function loadQuickTxtFromUploadedFile(fileName) {
       return;
     }
 
-    const file = state.quickFilesMap.get(fileName);
-    
-    // 2. 파일 객체가 없거나, mock 객체인 경우 (또는 로컬 스토리지에 원본 백업 캐시가 존재하는 경우)
-    if (!file || file.isMock) {
-      const rawCache = localStorage.getItem(`sentence_board_file_raw_cache_${fileName}`);
-      if (rawCache) {
-        // 첫 로딩 시 로컬 스토리지 수정본 캐시로도 복사
-        localStorage.setItem(`sentence_board_file_cache_${fileName}`, rawCache);
-        importAnalysisTxt(rawCache);
-        showSuccessfulLoadMessage(fileName);
-        return;
-      }
-      throw new Error("파일 객체 또는 캐시 데이터를 찾을 수 없습니다.");
+    const rawCache = localStorage.getItem(`sentence_board_file_raw_cache_${fileName}`);
+    if (rawCache) {
+      // 첫 로딩 시 로컬 스토리지 수정본 캐시로도 복사
+      localStorage.setItem(`sentence_board_file_cache_${fileName}`, rawCache);
+      importAnalysisTxt(rawCache);
+      showSuccessfulLoadMessage(fileName);
+      return;
     }
 
-    // 3. 실제 파일 읽기 진행
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const resultText = String(reader.result || "");
-        localStorage.setItem(`sentence_board_file_cache_${fileName}`, resultText);
-        localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, resultText);
-        importAnalysisTxt(resultText);
-        showSuccessfulLoadMessage(fileName);
-      } catch (error) {
-        alert(`지문을 분석하는 중 오류가 발생했습니다: ${error.message}`);
-      }
-    };
-    reader.onerror = () => alert("파일을 읽는 중 오류가 발생했습니다.");
-    reader.readAsText(file, "utf-8");
+    throw new Error("파일 객체 또는 캐시 데이터를 찾을 수 없습니다.");
   } catch (error) {
     console.error(error);
     elements.inputMessage.style.color = "var(--color-warning)";
@@ -3694,11 +4152,83 @@ function showSuccessfulLoadMessage(fileName) {
   }, 3000);
 }
 
+async function selectDirectory() {
+  if (!window.showDirectoryPicker) {
+    elements.folderInput.click();
+    return;
+  }
+  try {
+    const dirHandle = await window.showDirectoryPicker({
+      id: "sentence_ppt_board"
+    });
+    clearRawFolderCache(); // 이전 폴더 원본 백업 캐시 소거
+    state.quickFilesMap.clear();
+    state.directoryHandle = dirHandle;
+    state.currentFileHandle = null;
+    state.currentFileName = null;
+    state.hasFolderSelected = true;
+    
+    await saveHandleToDB("directoryHandle", dirHandle);
+    await saveHandleToDB("currentFileHandle", null);
+
+    const txtFiles = [];
+    for await (const entry of dirHandle.values()) {
+      if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".txt")) {
+        state.quickFilesMap.set(entry.name, entry); // FileHandle을 직접 맵에 저장
+        txtFiles.push(entry.name);
+      }
+    }
+
+    if (txtFiles.length === 0) {
+      localStorage.removeItem("sentence_board_has_folder_selected");
+      localStorage.removeItem("sentence_board_selected_folder_name");
+      localStorage.removeItem("sentence_board_selected_folder_files");
+      
+      elements.inputMessage.style.color = "var(--color-warning)";
+      elements.inputMessage.textContent = "⚠️ 선택한 폴더 바로 아래에 .txt 파일이 존재하지 않습니다.";
+      return;
+    }
+
+    // 로컬 스토리지에 폴더 메타데이터 저장
+    try {
+      localStorage.setItem("sentence_board_has_folder_selected", "true");
+      localStorage.setItem("sentence_board_selected_folder_name", dirHandle.name);
+      localStorage.setItem("sentence_board_selected_folder_files", JSON.stringify(txtFiles));
+    } catch (e) {
+      console.warn("Storage quota exceeded or storage disallowed for metadata:", e);
+    }
+
+    // 각 파일의 원본 콘텐츠를 비동기적으로 읽어서 localStorage에 캐싱
+    for (const fileName of txtFiles) {
+      const fileEntry = state.quickFilesMap.get(fileName);
+      if (!fileEntry) continue;
+      try {
+        const file = await fileEntry.getFile();
+        const content = await file.text();
+        localStorage.setItem(`sentence_board_file_raw_cache_${fileName}`, content);
+      } catch (e) {
+        console.warn(`Failed to cache raw content of ${fileName}:`, e);
+      }
+    }
+
+    renderTxtGrid();
+
+    elements.inputMessage.style.color = "var(--color-primary)";
+    elements.inputMessage.textContent = `📁 ${dirHandle.name} 폴더에서 ${txtFiles.length}개의 지문 파일을 성공적으로 연결했습니다.`;
+  } catch (error) {
+    if (error?.name === "AbortError") return;
+    console.error(error);
+    alert(`폴더 파일을 읽는 중 오류가 발생했습니다: ${error.message}`);
+  }
+}
+
 function handleFolderSelected(event) {
   try {
     const files = Array.from(event.target.files || []);
     clearRawFolderCache(); // 이전 폴더 원본 백업 캐시 소거
     state.quickFilesMap.clear();
+    state.currentFileHandle = null; // 폴더 변경 시 이전 파일 핸들 초기화
+    state.currentFileName = null;
 
     const txtFiles = [];
     files.forEach((file) => {
@@ -3770,13 +4300,23 @@ function setScreenOff(isOff) {
 function bindEvents() {
   elements.passageForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const count = preparePresentation();
-    if (count === 0) {
-      elements.inputMessage.textContent = "영어 지문을 먼저 입력해 주세요.";
-      return;
+    if (state.hasLoadedAnalysis) {
+      state.hasLoadedAnalysis = false;
+      elements.inputMessage.textContent = "";
+      setMode("edit");
+    } else {
+      const count = preparePresentation();
+      if (count === 0) {
+        elements.inputMessage.textContent = "영어 지문을 먼저 입력해 주세요.";
+        return;
+      }
+      elements.inputMessage.textContent = "";
+      setMode("edit");
     }
-    elements.inputMessage.textContent = "";
-    setMode("edit");
+  });
+
+  elements.passageInput.addEventListener("input", () => {
+    state.hasLoadedAnalysis = false;
   });
 
   elements.sampleButton.addEventListener("click", () => {
@@ -3784,22 +4324,26 @@ function bindEvents() {
     elements.inputMessage.textContent = "";
   });
 
-  elements.clearButton.addEventListener("click", () => {
+  elements.clearButton.addEventListener("click", async () => {
     elements.passageInput.value = "";
     elements.inputMessage.textContent = "";
     state.sentences = [];
     state.currentSentenceIndex = 0;
     state.minorRevealCount = 0;
+    state.currentFileName = null;
+    state.currentFileHandle = null;
+    await saveHandleToDB("currentFileHandle", null);
   });
 
-  elements.inputExportTxtButton.addEventListener("click", exportAnalysisTxt);
+  elements.inputSaveTxtButton.addEventListener("click", () => saveAnalysisTxt(false));
+  elements.inputSaveAsTxtButton.addEventListener("click", () => saveAnalysisTxt(true));
   elements.inputImportButton.addEventListener("click", triggerAnalysisImport);
-  elements.editImportButton.addEventListener("click", triggerAnalysisImport);
   elements.applySentenceTextButton.addEventListener("click", updateSentenceText);
   elements.toggleImportantButton.addEventListener("click", toggleImportantSentence);
   elements.addSentenceButton.addEventListener("click", insertNewSentence);
   elements.deleteSentenceButton.addEventListener("click", deleteCurrentSentence);
-  elements.exportTxtButton.addEventListener("click", exportAnalysisTxt);
+  elements.saveTxtButton.addEventListener("click", () => saveAnalysisTxt(false));
+  elements.saveAsTxtButton.addEventListener("click", () => saveAnalysisTxt(true));
   elements.analysisFileInput.addEventListener("change", handleAnalysisFileSelected);
 
   elements.themeSelect.addEventListener("change", () => {
@@ -3840,7 +4384,7 @@ function bindEvents() {
   elements.minorPresentLane.addEventListener("dragover", handlePresentMinorDragOver);
   elements.minorPresentLane.addEventListener("drop", handlePresentMinorDrop);
 
-  elements.selectFolderButton.addEventListener("click", () => elements.folderInput.click());
+  elements.selectFolderButton.addEventListener("click", selectDirectory);
   elements.folderInput.addEventListener("change", handleFolderSelected);
 
   document.addEventListener("keydown", handleKeyboard);
@@ -3848,6 +4392,7 @@ function bindEvents() {
     applySettings();
     schedulePresentationFit();
     scheduleDetailFit();
+    adjustEditViewScale();
   });
   elements.elementCloseButton.addEventListener("click", hideElementDetail);
   elements.elementDetailOverlay.addEventListener("click", (event) => {
@@ -3866,6 +4411,22 @@ function handleKeyboard(event) {
   if (!elements.screenOffOverlay.classList.contains("hidden")) {
     event.preventDefault();
     setScreenOff(false);
+    return;
+  }
+
+  if (state.mode === "edit") {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      if (state.currentSentenceIndex < state.sentences.length - 1) {
+        goToSentence(state.currentSentenceIndex + 1);
+      }
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      if (state.currentSentenceIndex > 0) {
+        goToSentence(state.currentSentenceIndex - 1);
+      }
+    }
     return;
   }
 
@@ -3935,8 +4496,85 @@ function clearRawFolderCache() {
   }
 }
 
-function restoreSelectedFolder() {
+// IndexedDB Helpers for persisting File System Access API handles
+const DB_NAME = "SentenceBoardDB";
+const STORE_NAME = "Handles";
+
+function getDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME);
+      }
+    };
+    request.onsuccess = (e) => resolve(e.target.result);
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
+
+async function saveHandleToDB(key, handle) {
   try {
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.put(handle, key);
+      request.onsuccess = () => resolve();
+      request.onerror = (e) => reject(e.target.error);
+    });
+  } catch (e) {
+    console.warn("IndexedDB save failed:", e);
+  }
+}
+
+async function getHandleFromDB(key) {
+  try {
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.get(key);
+      request.onsuccess = (e) => resolve(e.target.result);
+      request.onerror = (e) => reject(e.target.error);
+    });
+  } catch (e) {
+    console.warn("IndexedDB load failed:", e);
+    return null;
+  }
+}
+
+async function restoreSelectedFolder() {
+  try {
+    // 1. IndexedDB로부터 디렉터리 및 파일 핸들 복구 시도
+    const dirHandle = await getHandleFromDB("directoryHandle");
+    if (dirHandle) {
+      state.directoryHandle = dirHandle;
+      state.hasFolderSelected = true;
+      
+      // 권한 확인 및 빠른 지문 맵 재구축 시도
+      try {
+        const permission = await dirHandle.queryPermission({ mode: "readwrite" });
+        if (permission === "granted") {
+          state.quickFilesMap.clear();
+          for await (const entry of dirHandle.values()) {
+            if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".txt")) {
+              state.quickFilesMap.set(entry.name, entry);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to reconstruct map from dirHandle:", e);
+      }
+    }
+
+    const fileHandle = await getHandleFromDB("currentFileHandle");
+    if (fileHandle) {
+      state.currentFileHandle = fileHandle;
+    }
+
+    // 2. localStorage 메타데이터를 활용한 화면 구성 복구 (IndexedDB 스캔이 불가능하거나 실패 시 대비 폴백)
     const hasFolder = localStorage.getItem("sentence_board_has_folder_selected") === "true";
     if (!hasFolder) {
       renderTxtGrid();
@@ -3957,11 +4595,13 @@ function restoreSelectedFolder() {
     }
     
     state.hasFolderSelected = true;
-    state.quickFilesMap.clear();
     
-    txtFiles.forEach((fileName) => {
-      state.quickFilesMap.set(fileName, { name: fileName, isMock: true });
-    });
+    // quickFilesMap이 완전히 빈 경우에만 mock 데이터로 화면 그리드 채우기
+    if (state.quickFilesMap.size === 0) {
+      txtFiles.forEach((fileName) => {
+        state.quickFilesMap.set(fileName, { name: fileName, isMock: true });
+      });
+    }
     
     elements.inputMessage.style.color = "var(--color-primary)";
     elements.inputMessage.textContent = `📁 [연동됨] ${folderName} 폴더에서 ${txtFiles.length}개의 지문 파일이 연결되어 있습니다.`;

@@ -1,0 +1,1548 @@
+WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-06-01T12:57:17.088Z
+총 문장 수: 12
+
+[문장 및 성분 인덱스]
+
+[문장 1] Real-World Examples of Misinformation Case 1. The Great Moon Hoax(1835)
+  단어 수: 11
+  - 성분 1: id=s1-c1, lane=major, role=subject, order=1, wordIndex0=0-4, wordIndex1=1-4, text="Real-World Examples of Misinformation"
+  - 성분 2: id=s1-c2, lane=minor, role=adverb, order=1, wordIndex0=4-11, wordIndex1=5-11, text="Case 1. The Great Moon Hoax (1835)"
+
+[문장 2] In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon.
+  단어 수: 25
+  - 성분 1: id=s2-c1, lane=minor, role=adverb, order=1, wordIndex0=0-2, wordIndex1=1-2, text="In 1835,"
+  - 성분 2: id=s2-c2, lane=major, role=subject, order=1, wordIndex0=2-7, wordIndex1=3-7, text="the New York Sun newspaper"
+  - 성분 3: id=s2-c3, lane=major, role=verb, order=2, wordIndex0=7-8, wordIndex1=8-8, text="caused"
+  - 성분 4: id=s2-c4, lane=major, role=complement, order=3, wordIndex0=8-11, wordIndex1=9-11, text="a big stir"
+  - 성분 5: id=s2-c5, lane=minor, role=adverb, order=2, wordIndex0=11-16, wordIndex1=12-16, text="with a series of articles"
+  - 성분 6: id=s2-c6, lane=minor, role=adjective, order=3, wordIndex0=16-25, wordIndex1=17-25, text="claiming that life had been discovered on the moon."
+
+[문장 3] The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings.
+  단어 수: 26
+  - 성분 1: id=s3-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The articles"
+  - 성분 2: id=s3-c2, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="described"
+  - 성분 3: id=s3-c3, lane=minor, role=adverb, order=1, wordIndex0=3-6, wordIndex1=4-6, text="in great detail"
+  - 성분 4: id=s3-c4, lane=major, role=object, order=3, wordIndex0=6-19, wordIndex1=7-19, text="the moon's beautiful landscapes as well as the existence of strange, magical creatures"
+  - 성분 5: id=s3-c5, lane=minor, role=adjective, order=2, wordIndex0=19-26, wordIndex1=20-26, text="that looked like bat-like humanoids with wings."
+
+[문장 4] These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel.
+  단어 수: 29
+  - 성분 1: id=s4-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="These discoveries"
+  - 성분 2: id=s4-c2, lane=major, role=verb, order=2, wordIndex0=2-5, wordIndex1=3-5, text="were made"
+  - 성분 3: id=s4-c3, lane=minor, role=adverb, order=1, wordIndex0=3-4, wordIndex1=4-4, text="supposedly"
+  - 성분 4: id=s4-c4, lane=minor, role=adverb, order=2, wordIndex0=5-15, wordIndex1=6-15, text="by Dr. Andrew Grant, a character created for the hoax,"
+  - 성분 5: id=s4-c5, lane=minor, role=adjective, order=3, wordIndex0=15-29, wordIndex1=16-29, text="who was falsely said to be working with the real astronomer Sir John Herschel."
+
+[문장 5] The story claimed that these amazing discoveries were possible due to a powerful new telescope in South Africa, where Herschel was actually doing genuine research at the time.
+  단어 수: 28
+  - 성분 1: id=s5-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The story"
+  - 성분 2: id=s5-c2, lane=major, role=subject, order=2, wordIndex0=2-3, wordIndex1=3-3, text="claimed"
+  - 성분 3: id=s5-c3, lane=major, role=object, order=3, wordIndex0=3-9, wordIndex1=4-9, text="that these amazing discoveries were possible"
+  - 성분 4: id=s5-c4, lane=minor, role=adverb, order=1, wordIndex0=9-18, wordIndex1=10-18, text="due to a powerful new telescope in South Africa,"
+  - 성분 5: id=s5-c5, lane=minor, role=adjective, order=2, wordIndex0=18-28, wordIndex1=19-28, text="where Herschel was actually doing genuine research at the time."
+
+[문장 6] However, the story was completely made up by New York Sun reporter Richard Adams Locke.
+  단어 수: 15
+  - 성분 1: id=s6-c1, lane=minor, role=adverb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="However,"
+  - 성분 2: id=s6-c2, lane=major, role=subject, order=1, wordIndex0=1-3, wordIndex1=2-3, text="the story"
+  - 성분 3: id=s6-c3, lane=major, role=verb, order=2, wordIndex0=3-7, wordIndex1=4-7, text="was made up"
+  - 성분 4: id=s6-c4, lane=minor, role=adverb, order=2, wordIndex0=4-5, wordIndex1=5-5, text="completely"
+  - 성분 5: id=s6-c5, lane=minor, role=adverb, order=3, wordIndex0=7-15, wordIndex1=8-15, text="by New York Sun reporter Richard Adams Locke."
+
+[문장 7] Locke created the hoax to satirize how fascinated people were with the idea of life on other planets and how easily they believed wild, unproven claims.
+  단어 수: 26
+  - 성분 1: id=s7-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Locke"
+  - 성분 2: id=s7-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="created"
+  - 성분 3: id=s7-c3, lane=major, role=object, order=3, wordIndex0=2-4, wordIndex1=3-4, text="the hoax"
+  - 성분 4: id=s7-c4, lane=major, role=subject, order=4, wordIndex0=4-9, wordIndex1=5-9, text="to satirize how fascinated people"
+  - 성분 5: id=s7-c5, lane=major, role=verb, order=5, wordIndex0=9-10, wordIndex1=10-10, text="were"
+  - 성분 6: id=s7-c6, lane=major, role=complement, order=6, wordIndex0=21-26, wordIndex1=22-26, text="they believed wild, unproven claims."
+  - 성분 7: id=s7-c7, lane=minor, role=adverb, order=1, wordIndex0=10-13, wordIndex1=11-13, text="with the idea"
+  - 성분 8: id=s7-c8, lane=minor, role=adverb, order=2, wordIndex0=13-15, wordIndex1=14-15, text="of life"
+  - 성분 9: id=s7-c9, lane=minor, role=adverb, order=3, wordIndex0=15-20, wordIndex1=16-20, text="on other planets and how"
+  - 성분 10: id=s7-c10, lane=minor, role=adverb, order=4, wordIndex0=20-21, wordIndex1=21-21, text="easily"
+
+[문장 8] Even though the story seemed unbelievable, it captured the public's imagination, and many people accepted it as true.
+  단어 수: 18
+  - 성분 1: id=s8-c1, lane=minor, role=adverb, order=1, wordIndex0=0-6, wordIndex1=1-6, text="Even though the story seemed unbelievable,"
+  - 성분 2: id=s8-c2, lane=major, role=subject, order=1, wordIndex0=6-7, wordIndex1=7-7, text="it"
+  - 성분 3: id=s8-c3, lane=major, role=verb, order=2, wordIndex0=7-8, wordIndex1=8-8, text="captured"
+  - 성분 4: id=s8-c4, lane=major, role=object, order=3, wordIndex0=8-11, wordIndex1=9-11, text="the public's imagination,"
+  - 성분 5: id=s8-c5, lane=major, role=subject, order=4, wordIndex0=11-14, wordIndex1=12-14, text="and many people"
+  - 성분 6: id=s8-c6, lane=major, role=verb, order=5, wordIndex0=14-15, wordIndex1=15-15, text="accepted"
+  - 성분 7: id=s8-c7, lane=major, role=object, order=6, wordIndex0=15-16, wordIndex1=16-16, text="it"
+  - 성분 8: id=s8-c8, lane=minor, role=adverb, order=2, wordIndex0=16-18, wordIndex1=17-18, text="as true."
+
+[문장 9] The articles became so popular that the New York Sun sold many more copies than usual, and people all over the world, including scientists from places like Yale University, talked about the “discoveries” as if they were real.
+  단어 수: 38
+  - 성분 1: id=s9-c1, lane=major, role=subject, order=1, wordIndex0=0-2, wordIndex1=1-2, text="The articles"
+  - 성분 2: id=s9-c2, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="became"
+  - 성분 3: id=s9-c3, lane=minor, role=adverb, order=1, wordIndex0=3-4, wordIndex1=4-4, text="so"
+  - 성분 4: id=s9-c4, lane=major, role=complement, order=3, wordIndex0=4-5, wordIndex1=5-5, text="popular"
+  - 성분 5: id=s9-c5, lane=minor, role=adverb, order=2, wordIndex0=5-16, wordIndex1=6-16, text="that the New York Sun sold many more copies than usual,"
+  - 성분 6: id=s9-c6, lane=minor, role=adverb, order=3, wordIndex0=16-22, wordIndex1=17-22, text="and people all over the world,"
+  - 성분 7: id=s9-c7, lane=minor, role=adverb, order=4, wordIndex0=22-29, wordIndex1=23-29, text="including scientists from places like Yale University,"
+  - 성분 8: id=s9-c8, lane=minor, role=adverb, order=5, wordIndex0=29-33, wordIndex1=30-33, text="talked about the “discoveries”"
+  - 성분 9: id=s9-c9, lane=minor, role=adverb, order=6, wordIndex0=33-38, wordIndex1=34-38, text="as if they were real."
+
+[문장 10] It was not until later that the New York Sun admitted the whole thing was a joke ― a humorous way of showing how easily people can be fooled.
+  단어 수: 28
+  - 성분 1: id=s10-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="It"
+  - 성분 2: id=s10-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="was"
+  - 성분 3: id=s10-c3, lane=minor, role=adverb, order=1, wordIndex0=2-3, wordIndex1=3-3, text="not"
+  - 성분 4: id=s10-c4, lane=major, role=complement, order=3, wordIndex0=3-5, wordIndex1=4-5, text="until later"
+  - 성분 5: id=s10-c5, lane=major, role=subject, order=4, wordIndex0=5-17, wordIndex1=6-17, text="that the New York Sun admitted the whole thing was a joke"
+  - 성분 6: id=s10-c6, lane=minor, role=adverb, order=2, wordIndex0=17-28, wordIndex1=18-28, text="a humorous way of showing how easily people can be fooled."
+
+[문장 11] By then, the incident had already shown how quickly fake news can spread, especially when it matches what people want to believe.
+  단어 수: 22
+  - 성분 1: id=s11-c1, lane=minor, role=adverb, order=1, wordIndex0=0-2, wordIndex1=1-2, text="By then,"
+  - 성분 2: id=s11-c2, lane=major, role=subject, order=1, wordIndex0=2-4, wordIndex1=3-4, text="the incident"
+  - 성분 3: id=s11-c3, lane=major, role=verb, order=2, wordIndex0=4-5, wordIndex1=5-5, text="had"
+  - 성분 4: id=s11-c4, lane=minor, role=adverb, order=2, wordIndex0=5-6, wordIndex1=6-6, text="already"
+  - 성분 5: id=s11-c5, lane=major, role=verb, order=3, wordIndex0=6-7, wordIndex1=7-7, text="shown"
+  - 성분 6: id=s11-c6, lane=major, role=verb, order=4, wordIndex0=7-13, wordIndex1=8-13, text="how quickly fake news can spread,"
+  - 성분 7: id=s11-c7, lane=minor, role=adverb, order=3, wordIndex0=13-22, wordIndex1=14-22, text="especially when it matches what people want to believe."
+
+[문장 12] The Great Moon Hoax is still one of the earliest and most famous examples of how even educated people can be deceived by sensational stories when they don't carefully check the facts.
+  단어 수: 32
+  - 성분 1: id=s12-c1, lane=major, role=subject, order=1, wordIndex0=0-4, wordIndex1=1-4, text="The Great Moon Hoax"
+  - 성분 2: id=s12-c2, lane=major, role=verb, order=2, wordIndex0=4-5, wordIndex1=5-5, text="is"
+  - 성분 3: id=s12-c3, lane=minor, role=adverb, order=1, wordIndex0=5-6, wordIndex1=6-6, text="still"
+  - 성분 4: id=s12-c4, lane=major, role=complement, order=3, wordIndex0=6-14, wordIndex1=7-14, text="one of the earliest and most famous examples"
+  - 성분 5: id=s12-c5, lane=minor, role=adjective, order=2, wordIndex0=14-22, wordIndex1=15-22, text="of how even educated people can be deceived"
+  - 성분 6: id=s12-c6, lane=minor, role=adverb, order=3, wordIndex0=22-25, wordIndex1=23-25, text="by sensational stories"
+  - 성분 7: id=s12-c7, lane=minor, role=adverb, order=4, wordIndex0=25-32, wordIndex1=26-32, text="when they don't carefully check the facts."
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 1,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-06-01T12:57:17.088Z",
+  "passageText": "Real-World Examples of Misinformation Case 1. The Great Moon Hoax(1835) In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon. The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings. These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel. The story claimed that these amazing discoveries were possible due to a powerful new telescope in South Africa, where Herschel was actually doing genuine research at the time. However, the story was completely made up by New York Sun reporter Richard Adams Locke. Locke created the hoax to satirize how fascinated people were with the idea of life on other planets and how easily they believed wild, unproven claims. Even though the story seemed unbelievable, it captured the public's imagination, and many people accepted it as true. The articles became so popular that the New York Sun sold many more copies than usual, and people all over the world, including scientists from places like Yale University, talked about the “discoveries” as if they were real. It was not until later that the New York Sun admitted the whole thing was a joke ― a humorous way of showing how easily people can be fooled. By then, the incident had already shown how quickly fake news can spread, especially when it matches what people want to believe. The Great Moon Hoax is still one of the earliest and most famous examples of how even educated people can be deceived by sensational stories when they don't carefully check the facts.",
+  "currentSentenceIndex": 0,
+  "componentSerial": 157,
+  "settings": {
+    "theme": "light",
+    "align": "center"
+  },
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "Real-World Examples of Misinformation Case 1. The Great Moon Hoax(1835)",
+      "isImportant": false,
+      "wordCount": 11,
+      "components": [
+        {
+          "id": "s1-c1",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "Real-World Examples of Misinformation",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 4,
+          "words": [
+            "Real-World",
+            "Examples",
+            "of",
+            "Misinformation"
+          ]
+        },
+        {
+          "id": "s1-c2",
+          "sentenceIndex": 1,
+          "componentIndex": 2,
+          "text": "Case 1. The Great Moon Hoax (1835)",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 4,
+          "endIndex": 11,
+          "words": [
+            "Case",
+            "1.",
+            "The",
+            "Great",
+            "Moon",
+            "Hoax",
+            "(1835)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "In 1835, the New York Sun newspaper caused a big stir with a series of articles claiming that life had been discovered on the moon.",
+      "isImportant": false,
+      "wordCount": 25,
+      "components": [
+        {
+          "id": "s2-c1",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "In 1835,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "In",
+            "1835,"
+          ]
+        },
+        {
+          "id": "s2-c2",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "the New York Sun newspaper",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 7,
+          "words": [
+            "the",
+            "New",
+            "York",
+            "Sun",
+            "newspaper"
+          ]
+        },
+        {
+          "id": "s2-c3",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "caused",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 7,
+          "endIndex": 8,
+          "words": [
+            "caused"
+          ]
+        },
+        {
+          "id": "s2-c4",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "a big stir",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 8,
+          "endIndex": 11,
+          "words": [
+            "a",
+            "big",
+            "stir"
+          ]
+        },
+        {
+          "id": "s2-c5",
+          "sentenceIndex": 2,
+          "componentIndex": 5,
+          "text": "with a series of articles",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 11,
+          "endIndex": 16,
+          "words": [
+            "with",
+            "a",
+            "series",
+            "of",
+            "articles"
+          ]
+        },
+        {
+          "id": "s2-c6",
+          "sentenceIndex": 2,
+          "componentIndex": 6,
+          "text": "claiming that life had been discovered on the moon.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 16,
+          "endIndex": 25,
+          "modifierTargetStart": 12,
+          "modifierTargetEnd": 16,
+          "modifierTargetIndexes": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "words": [
+            "claiming",
+            "that",
+            "life",
+            "had",
+            "been",
+            "discovered",
+            "on",
+            "the",
+            "moon."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "The articles described in great detail the moon's beautiful landscapes as well as the existence of strange, magical creatures that looked like bat-like humanoids with wings.",
+      "isImportant": false,
+      "wordCount": 26,
+      "components": [
+        {
+          "id": "s3-c1",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "The articles",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "articles"
+          ]
+        },
+        {
+          "id": "s3-c2",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "described",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "described"
+          ]
+        },
+        {
+          "id": "s3-c3",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "in great detail",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 6,
+          "words": [
+            "in",
+            "great",
+            "detail"
+          ]
+        },
+        {
+          "id": "s3-c4",
+          "sentenceIndex": 3,
+          "componentIndex": 4,
+          "text": "the moon's beautiful landscapes as well as the existence of strange, magical creatures",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 19,
+          "words": [
+            "the",
+            "moon's",
+            "beautiful",
+            "landscapes",
+            "as",
+            "well",
+            "as",
+            "the",
+            "existence",
+            "of",
+            "strange,",
+            "magical",
+            "creatures"
+          ]
+        },
+        {
+          "id": "s3-c5",
+          "sentenceIndex": 3,
+          "componentIndex": 5,
+          "text": "that looked like bat-like humanoids with wings.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 19,
+          "endIndex": 26,
+          "modifierTargetStart": 16,
+          "modifierTargetEnd": 19,
+          "modifierTargetIndexes": [
+            16,
+            17,
+            18
+          ],
+          "words": [
+            "that",
+            "looked",
+            "like",
+            "bat-like",
+            "humanoids",
+            "with",
+            "wings."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-4",
+      "sentenceIndex": 4,
+      "text": "These discoveries were supposedly made by Dr. Andrew Grant, a character created for the hoax, who was falsely said to be working with the real astronomer Sir John Herschel.",
+      "isImportant": false,
+      "wordCount": 29,
+      "components": [
+        {
+          "id": "s4-c1",
+          "sentenceIndex": 4,
+          "componentIndex": 1,
+          "text": "These discoveries",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "These",
+            "discoveries"
+          ]
+        },
+        {
+          "id": "s4-c2",
+          "sentenceIndex": 4,
+          "componentIndex": 2,
+          "text": "were made",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 5,
+          "words": [
+            "were",
+            "made"
+          ]
+        },
+        {
+          "id": "s4-c3",
+          "sentenceIndex": 4,
+          "componentIndex": 3,
+          "text": "supposedly",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "supposedly"
+          ]
+        },
+        {
+          "id": "s4-c4",
+          "sentenceIndex": 4,
+          "componentIndex": 4,
+          "text": "by Dr. Andrew Grant, a character created for the hoax,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 15,
+          "words": [
+            "by",
+            "Dr.",
+            "Andrew",
+            "Grant,",
+            "a",
+            "character",
+            "created",
+            "for",
+            "the",
+            "hoax,"
+          ]
+        },
+        {
+          "id": "s4-c5",
+          "sentenceIndex": 4,
+          "componentIndex": 5,
+          "text": "who was falsely said to be working with the real astronomer Sir John Herschel.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 15,
+          "endIndex": 29,
+          "modifierTargetStart": 6,
+          "modifierTargetEnd": 9,
+          "modifierTargetIndexes": [
+            6,
+            7,
+            8
+          ],
+          "words": [
+            "who",
+            "was",
+            "falsely",
+            "said",
+            "to",
+            "be",
+            "working",
+            "with",
+            "the",
+            "real",
+            "astronomer",
+            "Sir",
+            "John",
+            "Herschel."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-5",
+      "sentenceIndex": 5,
+      "text": "The story claimed that these amazing discoveries were possible due to a powerful new telescope in South Africa, where Herschel was actually doing genuine research at the time.",
+      "isImportant": false,
+      "wordCount": 28,
+      "components": [
+        {
+          "id": "s5-c1",
+          "sentenceIndex": 5,
+          "componentIndex": 1,
+          "text": "The story",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "story"
+          ]
+        },
+        {
+          "id": "s5-c2",
+          "sentenceIndex": 5,
+          "componentIndex": 2,
+          "text": "claimed",
+          "role": "subject",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "claimed"
+          ]
+        },
+        {
+          "id": "s5-c3",
+          "sentenceIndex": 5,
+          "componentIndex": 3,
+          "text": "that these amazing discoveries were possible",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 9,
+          "words": [
+            "that",
+            "these",
+            "amazing",
+            "discoveries",
+            "were",
+            "possible"
+          ]
+        },
+        {
+          "id": "s5-c4",
+          "sentenceIndex": 5,
+          "componentIndex": 4,
+          "text": "due to a powerful new telescope in South Africa,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 9,
+          "endIndex": 18,
+          "words": [
+            "due",
+            "to",
+            "a",
+            "powerful",
+            "new",
+            "telescope",
+            "in",
+            "South",
+            "Africa,"
+          ]
+        },
+        {
+          "id": "s5-c5",
+          "sentenceIndex": 5,
+          "componentIndex": 5,
+          "text": "where Herschel was actually doing genuine research at the time.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 18,
+          "endIndex": 28,
+          "modifierTargetStart": 16,
+          "modifierTargetEnd": 18,
+          "modifierTargetIndexes": [
+            16,
+            17
+          ],
+          "words": [
+            "where",
+            "Herschel",
+            "was",
+            "actually",
+            "doing",
+            "genuine",
+            "research",
+            "at",
+            "the",
+            "time."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-6",
+      "sentenceIndex": 6,
+      "text": "However, the story was completely made up by New York Sun reporter Richard Adams Locke.",
+      "isImportant": false,
+      "wordCount": 15,
+      "components": [
+        {
+          "id": "s6-c1",
+          "sentenceIndex": 6,
+          "componentIndex": 1,
+          "text": "However,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "However,"
+          ]
+        },
+        {
+          "id": "s6-c2",
+          "sentenceIndex": 6,
+          "componentIndex": 2,
+          "text": "the story",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 1,
+          "endIndex": 3,
+          "words": [
+            "the",
+            "story"
+          ]
+        },
+        {
+          "id": "s6-c3",
+          "sentenceIndex": 6,
+          "componentIndex": 3,
+          "text": "was made up",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 3,
+          "endIndex": 7,
+          "words": [
+            "was",
+            "made",
+            "up"
+          ]
+        },
+        {
+          "id": "s6-c4",
+          "sentenceIndex": 6,
+          "componentIndex": 4,
+          "text": "completely",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 4,
+          "endIndex": 5,
+          "words": [
+            "completely"
+          ]
+        },
+        {
+          "id": "s6-c5",
+          "sentenceIndex": 6,
+          "componentIndex": 5,
+          "text": "by New York Sun reporter Richard Adams Locke.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 7,
+          "endIndex": 15,
+          "words": [
+            "by",
+            "New",
+            "York",
+            "Sun",
+            "reporter",
+            "Richard",
+            "Adams",
+            "Locke."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-7",
+      "sentenceIndex": 7,
+      "text": "Locke created the hoax to satirize how fascinated people were with the idea of life on other planets and how easily they believed wild, unproven claims.",
+      "isImportant": false,
+      "wordCount": 26,
+      "components": [
+        {
+          "id": "s7-c1",
+          "sentenceIndex": 7,
+          "componentIndex": 1,
+          "text": "Locke",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Locke"
+          ]
+        },
+        {
+          "id": "s7-c2",
+          "sentenceIndex": 7,
+          "componentIndex": 2,
+          "text": "created",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "created"
+          ]
+        },
+        {
+          "id": "s7-c3",
+          "sentenceIndex": 7,
+          "componentIndex": 3,
+          "text": "the hoax",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 4,
+          "words": [
+            "the",
+            "hoax"
+          ]
+        },
+        {
+          "id": "s7-c4",
+          "sentenceIndex": 7,
+          "componentIndex": 4,
+          "text": "to satirize how fascinated people",
+          "role": "subject",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 4,
+          "endIndex": 9,
+          "words": [
+            "to",
+            "satirize",
+            "how",
+            "fascinated",
+            "people"
+          ]
+        },
+        {
+          "id": "s7-c5",
+          "sentenceIndex": 7,
+          "componentIndex": 5,
+          "text": "were",
+          "role": "verb",
+          "lane": "major",
+          "order": 5,
+          "startIndex": 9,
+          "endIndex": 10,
+          "words": [
+            "were"
+          ]
+        },
+        {
+          "id": "s7-c6",
+          "sentenceIndex": 7,
+          "componentIndex": 6,
+          "text": "they believed wild, unproven claims.",
+          "role": "complement",
+          "lane": "major",
+          "order": 6,
+          "startIndex": 21,
+          "endIndex": 26,
+          "words": [
+            "they",
+            "believed",
+            "wild,",
+            "unproven",
+            "claims."
+          ]
+        },
+        {
+          "id": "s7-c7",
+          "sentenceIndex": 7,
+          "componentIndex": 7,
+          "text": "with the idea",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 10,
+          "endIndex": 13,
+          "words": [
+            "with",
+            "the",
+            "idea"
+          ]
+        },
+        {
+          "id": "s7-c8",
+          "sentenceIndex": 7,
+          "componentIndex": 8,
+          "text": "of life",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 13,
+          "endIndex": 15,
+          "words": [
+            "of",
+            "life"
+          ]
+        },
+        {
+          "id": "s7-c9",
+          "sentenceIndex": 7,
+          "componentIndex": 9,
+          "text": "on other planets and how",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 15,
+          "endIndex": 20,
+          "words": [
+            "on",
+            "other",
+            "planets",
+            "and",
+            "how"
+          ]
+        },
+        {
+          "id": "s7-c10",
+          "sentenceIndex": 7,
+          "componentIndex": 10,
+          "text": "easily",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 20,
+          "endIndex": 21,
+          "words": [
+            "easily"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-8",
+      "sentenceIndex": 8,
+      "text": "Even though the story seemed unbelievable, it captured the public's imagination, and many people accepted it as true.",
+      "isImportant": false,
+      "wordCount": 18,
+      "components": [
+        {
+          "id": "s8-c1",
+          "sentenceIndex": 8,
+          "componentIndex": 1,
+          "text": "Even though the story seemed unbelievable,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 6,
+          "words": [
+            "Even",
+            "though",
+            "the",
+            "story",
+            "seemed",
+            "unbelievable,"
+          ]
+        },
+        {
+          "id": "s8-c2",
+          "sentenceIndex": 8,
+          "componentIndex": 2,
+          "text": "it",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "it"
+          ]
+        },
+        {
+          "id": "s8-c3",
+          "sentenceIndex": 8,
+          "componentIndex": 3,
+          "text": "captured",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 7,
+          "endIndex": 8,
+          "words": [
+            "captured"
+          ]
+        },
+        {
+          "id": "s8-c4",
+          "sentenceIndex": 8,
+          "componentIndex": 4,
+          "text": "the public's imagination,",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 8,
+          "endIndex": 11,
+          "words": [
+            "the",
+            "public's",
+            "imagination,"
+          ]
+        },
+        {
+          "id": "s8-c5",
+          "sentenceIndex": 8,
+          "componentIndex": 5,
+          "text": "and many people",
+          "role": "subject",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 11,
+          "endIndex": 14,
+          "words": [
+            "and",
+            "many",
+            "people"
+          ]
+        },
+        {
+          "id": "s8-c6",
+          "sentenceIndex": 8,
+          "componentIndex": 6,
+          "text": "accepted",
+          "role": "verb",
+          "lane": "major",
+          "order": 5,
+          "startIndex": 14,
+          "endIndex": 15,
+          "words": [
+            "accepted"
+          ]
+        },
+        {
+          "id": "s8-c7",
+          "sentenceIndex": 8,
+          "componentIndex": 7,
+          "text": "it",
+          "role": "object",
+          "lane": "major",
+          "order": 6,
+          "startIndex": 15,
+          "endIndex": 16,
+          "words": [
+            "it"
+          ]
+        },
+        {
+          "id": "s8-c8",
+          "sentenceIndex": 8,
+          "componentIndex": 8,
+          "text": "as true.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 16,
+          "endIndex": 18,
+          "words": [
+            "as",
+            "true."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-9",
+      "sentenceIndex": 9,
+      "text": "The articles became so popular that the New York Sun sold many more copies than usual, and people all over the world, including scientists from places like Yale University, talked about the “discoveries” as if they were real.",
+      "isImportant": false,
+      "wordCount": 38,
+      "components": [
+        {
+          "id": "s9-c1",
+          "sentenceIndex": 9,
+          "componentIndex": 1,
+          "text": "The articles",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "The",
+            "articles"
+          ]
+        },
+        {
+          "id": "s9-c2",
+          "sentenceIndex": 9,
+          "componentIndex": 2,
+          "text": "became",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "became"
+          ]
+        },
+        {
+          "id": "s9-c3",
+          "sentenceIndex": 9,
+          "componentIndex": 3,
+          "text": "so",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 4,
+          "words": [
+            "so"
+          ]
+        },
+        {
+          "id": "s9-c4",
+          "sentenceIndex": 9,
+          "componentIndex": 4,
+          "text": "popular",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 4,
+          "endIndex": 5,
+          "words": [
+            "popular"
+          ]
+        },
+        {
+          "id": "s9-c5",
+          "sentenceIndex": 9,
+          "componentIndex": 5,
+          "text": "that the New York Sun sold many more copies than usual,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 16,
+          "words": [
+            "that",
+            "the",
+            "New",
+            "York",
+            "Sun",
+            "sold",
+            "many",
+            "more",
+            "copies",
+            "than",
+            "usual,"
+          ]
+        },
+        {
+          "id": "s9-c6",
+          "sentenceIndex": 9,
+          "componentIndex": 6,
+          "text": "and people all over the world,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 16,
+          "endIndex": 22,
+          "words": [
+            "and",
+            "people",
+            "all",
+            "over",
+            "the",
+            "world,"
+          ]
+        },
+        {
+          "id": "s9-c7",
+          "sentenceIndex": 9,
+          "componentIndex": 7,
+          "text": "including scientists from places like Yale University,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 22,
+          "endIndex": 29,
+          "words": [
+            "including",
+            "scientists",
+            "from",
+            "places",
+            "like",
+            "Yale",
+            "University,"
+          ]
+        },
+        {
+          "id": "s9-c8",
+          "sentenceIndex": 9,
+          "componentIndex": 8,
+          "text": "talked about the “discoveries”",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 5,
+          "startIndex": 29,
+          "endIndex": 33,
+          "words": [
+            "talked",
+            "about",
+            "the",
+            "“discoveries”"
+          ]
+        },
+        {
+          "id": "s9-c9",
+          "sentenceIndex": 9,
+          "componentIndex": 9,
+          "text": "as if they were real.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 6,
+          "startIndex": 33,
+          "endIndex": 38,
+          "words": [
+            "as",
+            "if",
+            "they",
+            "were",
+            "real."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-10",
+      "sentenceIndex": 10,
+      "text": "It was not until later that the New York Sun admitted the whole thing was a joke ― a humorous way of showing how easily people can be fooled.",
+      "isImportant": false,
+      "wordCount": 28,
+      "components": [
+        {
+          "id": "s10-c1",
+          "sentenceIndex": 10,
+          "componentIndex": 1,
+          "text": "It",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "It"
+          ]
+        },
+        {
+          "id": "s10-c2",
+          "sentenceIndex": 10,
+          "componentIndex": 2,
+          "text": "was",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "was"
+          ]
+        },
+        {
+          "id": "s10-c3",
+          "sentenceIndex": 10,
+          "componentIndex": 3,
+          "text": "not",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "not"
+          ]
+        },
+        {
+          "id": "s10-c4",
+          "sentenceIndex": 10,
+          "componentIndex": 4,
+          "text": "until later",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 5,
+          "words": [
+            "until",
+            "later"
+          ]
+        },
+        {
+          "id": "s10-c5",
+          "sentenceIndex": 10,
+          "componentIndex": 5,
+          "text": "that the New York Sun admitted the whole thing was a joke",
+          "role": "subject",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 5,
+          "endIndex": 17,
+          "words": [
+            "that",
+            "the",
+            "New",
+            "York",
+            "Sun",
+            "admitted",
+            "the",
+            "whole",
+            "thing",
+            "was",
+            "a",
+            "joke"
+          ]
+        },
+        {
+          "id": "s10-c6",
+          "sentenceIndex": 10,
+          "componentIndex": 6,
+          "text": "a humorous way of showing how easily people can be fooled.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 17,
+          "endIndex": 28,
+          "words": [
+            "a",
+            "humorous",
+            "way",
+            "of",
+            "showing",
+            "how",
+            "easily",
+            "people",
+            "can",
+            "be",
+            "fooled."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-11",
+      "sentenceIndex": 11,
+      "text": "By then, the incident had already shown how quickly fake news can spread, especially when it matches what people want to believe.",
+      "isImportant": false,
+      "wordCount": 22,
+      "components": [
+        {
+          "id": "s11-c1",
+          "sentenceIndex": 11,
+          "componentIndex": 1,
+          "text": "By then,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "By",
+            "then,"
+          ]
+        },
+        {
+          "id": "s11-c2",
+          "sentenceIndex": 11,
+          "componentIndex": 2,
+          "text": "the incident",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 4,
+          "words": [
+            "the",
+            "incident"
+          ]
+        },
+        {
+          "id": "s11-c3",
+          "sentenceIndex": 11,
+          "componentIndex": 3,
+          "text": "had",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 4,
+          "endIndex": 5,
+          "words": [
+            "had"
+          ]
+        },
+        {
+          "id": "s11-c4",
+          "sentenceIndex": 11,
+          "componentIndex": 4,
+          "text": "already",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 6,
+          "words": [
+            "already"
+          ]
+        },
+        {
+          "id": "s11-c5",
+          "sentenceIndex": 11,
+          "componentIndex": 5,
+          "text": "shown",
+          "role": "verb",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "shown"
+          ]
+        },
+        {
+          "id": "s11-c6",
+          "sentenceIndex": 11,
+          "componentIndex": 6,
+          "text": "how quickly fake news can spread,",
+          "role": "verb",
+          "lane": "major",
+          "order": 4,
+          "startIndex": 7,
+          "endIndex": 13,
+          "words": [
+            "how",
+            "quickly",
+            "fake",
+            "news",
+            "can",
+            "spread,"
+          ]
+        },
+        {
+          "id": "s11-c7",
+          "sentenceIndex": 11,
+          "componentIndex": 7,
+          "text": "especially when it matches what people want to believe.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 13,
+          "endIndex": 22,
+          "words": [
+            "especially",
+            "when",
+            "it",
+            "matches",
+            "what",
+            "people",
+            "want",
+            "to",
+            "believe."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-12",
+      "sentenceIndex": 12,
+      "text": "The Great Moon Hoax is still one of the earliest and most famous examples of how even educated people can be deceived by sensational stories when they don't carefully check the facts.",
+      "isImportant": false,
+      "wordCount": 32,
+      "components": [
+        {
+          "id": "s12-c1",
+          "sentenceIndex": 12,
+          "componentIndex": 1,
+          "text": "The Great Moon Hoax",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 4,
+          "words": [
+            "The",
+            "Great",
+            "Moon",
+            "Hoax"
+          ]
+        },
+        {
+          "id": "s12-c2",
+          "sentenceIndex": 12,
+          "componentIndex": 2,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 4,
+          "endIndex": 5,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s12-c3",
+          "sentenceIndex": 12,
+          "componentIndex": 3,
+          "text": "still",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 5,
+          "endIndex": 6,
+          "words": [
+            "still"
+          ]
+        },
+        {
+          "id": "s12-c4",
+          "sentenceIndex": 12,
+          "componentIndex": 4,
+          "text": "one of the earliest and most famous examples",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 14,
+          "words": [
+            "one",
+            "of",
+            "the",
+            "earliest",
+            "and",
+            "most",
+            "famous",
+            "examples"
+          ]
+        },
+        {
+          "id": "s12-c5",
+          "sentenceIndex": 12,
+          "componentIndex": 5,
+          "text": "of how even educated people can be deceived",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 14,
+          "endIndex": 22,
+          "modifierTargetStart": 13,
+          "modifierTargetEnd": 14,
+          "modifierTargetIndexes": [
+            13
+          ],
+          "words": [
+            "of",
+            "how",
+            "even",
+            "educated",
+            "people",
+            "can",
+            "be",
+            "deceived"
+          ]
+        },
+        {
+          "id": "s12-c6",
+          "sentenceIndex": 12,
+          "componentIndex": 6,
+          "text": "by sensational stories",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 22,
+          "endIndex": 25,
+          "words": [
+            "by",
+            "sensational",
+            "stories"
+          ]
+        },
+        {
+          "id": "s12-c7",
+          "sentenceIndex": 12,
+          "componentIndex": 7,
+          "text": "when they don't carefully check the facts.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 25,
+          "endIndex": 32,
+          "words": [
+            "when",
+            "they",
+            "don't",
+            "carefully",
+            "check",
+            "the",
+            "facts."
+          ]
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----
