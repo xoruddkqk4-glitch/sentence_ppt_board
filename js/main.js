@@ -1173,6 +1173,7 @@ const elements = {
   passageForm: document.getElementById("passageForm"),
   passageInput: document.getElementById("passageInput"),
   inputMessage: document.getElementById("inputMessage"),
+  editMessage: document.getElementById("editMessage"),
   sampleButton: document.getElementById("sampleButton"),
   clearButton: document.getElementById("clearButton"),
   inputSaveTxtButton: document.getElementById("inputSaveTxtButton"),
@@ -3537,12 +3538,21 @@ async function saveAnalysisTxt(saveAs = false) {
       await writable.write(blob);
       await writable.close();
       
+      const saveMsg = `💾 ${fileName} 파일에 수정 사항을 저장했습니다.`;
       elements.inputMessage.style.color = "var(--color-primary)";
-      elements.inputMessage.textContent = `💾 ${fileName} 파일에 수정 사항을 저장했습니다.`;
+      elements.inputMessage.textContent = saveMsg;
+      if (elements.editMessage) {
+        elements.editMessage.style.color = "var(--color-primary)";
+        elements.editMessage.textContent = saveMsg;
+      }
       setTimeout(() => {
-        if (elements.inputMessage.textContent.includes("수정 사항을 저장했습니다")) {
+        if (elements.inputMessage.textContent === saveMsg) {
           elements.inputMessage.textContent = "";
           elements.inputMessage.style.color = "";
+        }
+        if (elements.editMessage && elements.editMessage.textContent === saveMsg) {
+          elements.editMessage.textContent = "";
+          elements.editMessage.style.color = "";
         }
       }, 3000);
       return;
@@ -3604,12 +3614,21 @@ async function saveAnalysisTxt(saveAs = false) {
       }
       renderTxtGrid();
 
+      const saveMsg = `💾 ${fileHandle.name} 파일로 저장했습니다.`;
       elements.inputMessage.style.color = "var(--color-primary)";
-      elements.inputMessage.textContent = `💾 ${fileHandle.name} 파일로 저장했습니다.`;
+      elements.inputMessage.textContent = saveMsg;
+      if (elements.editMessage) {
+        elements.editMessage.style.color = "var(--color-primary)";
+        elements.editMessage.textContent = saveMsg;
+      }
       setTimeout(() => {
-        if (elements.inputMessage.textContent.includes("저장했습니다")) {
+        if (elements.inputMessage.textContent === saveMsg) {
           elements.inputMessage.textContent = "";
           elements.inputMessage.style.color = "";
+        }
+        if (elements.editMessage && elements.editMessage.textContent === saveMsg) {
+          elements.editMessage.textContent = "";
+          elements.editMessage.style.color = "";
         }
       }, 3000);
       return;
