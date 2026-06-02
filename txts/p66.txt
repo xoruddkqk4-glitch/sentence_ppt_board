@@ -1,6 +1,6 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-02T07:32:54.880Z
+저장 시각: 2026-06-02T07:59:59.459Z
 총 문장 수: 10
 
 [문장 및 성분 인덱스]
@@ -91,7 +91,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-02T07:32:54.880Z",
+  "savedAt": "2026-06-02T07:59:59.459Z",
   "passageText": "/Case 3 - Hawaii Wildfires: Viral False Stories (2023)/ The 2023 wildfires on the Hawaiian island of Maui caused major damage and led to the spread of false stories online. These rumors, shared by millions, show that false information can spread rapidly during disasters. One popular claim suggested the fires were started by “energy weapons,” such as laser beams or explosions. However, the videos and photos used to support these claims did not show the real situation. For example - A video claiming to show an explosion in Maui was actually footage of a transformer exploding in another country. - A photo seeming to show a laser beam striking a burning church was widely shared, but the original photo showed the burning church without the beam. - Other images, such as bright lights in the sky or flames rising high into the air, came from different events, including a rocket launch and an industrial fire from years ago. Another rumor claimed that rich people or corporations started the fires to take land from local Hawaiians. While this idea has been discussed online, there is no evidence to support it.",
   "currentSentenceIndex": 0,
   "componentSerial": 92,

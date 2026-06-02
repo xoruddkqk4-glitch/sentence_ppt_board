@@ -1,6 +1,6 @@
 WHITEBOARD_PPT_ANALYSIS_TXT_V1
 영어 문장 분석 저장 파일
-저장 시각: 2026-06-02T07:25:52.823Z
+저장 시각: 2026-06-02T07:57:15.641Z
 총 문장 수: 8
 
 [문장 및 성분 인덱스]
@@ -51,10 +51,10 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
   - 성분 1: id=s7-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="This"
   - 성분 2: id=s7-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="is"
   - 성분 3: id=s7-c3, lane=minor, role=adverb, order=1, wordIndex0=2-3, wordIndex1=3-3, text="not"
-  - 성분 4: id=s7-c6, lane=major, role=subject, order=4, wordIndex0=7-9, wordIndex1=8-9, text="— it"
-  - 성분 5: id=s7-c5-s7-c4-u40, lane=major, role=complement, order=3, wordIndex0=3-7, wordIndex1=4-7, text="just an imaginary situation"
-  - 성분 6: id=s7-c7, lane=major, role=verb, order=5, wordIndex0=9-11, wordIndex1=10-11, text="is happening"
-  - 성분 7: id=s7-c8, lane=minor, role=adverb, order=2, wordIndex0=11-17, wordIndex1=12-17, text="all over the world right now."
+  - 성분 4: id=s7-c4, lane=major, role=subject, order=4, wordIndex0=7-9, wordIndex1=8-9, text="— it"
+  - 성분 5: id=s7-c5, lane=major, role=complement, order=3, wordIndex0=3-7, wordIndex1=4-7, text="just an imaginary situation"
+  - 성분 6: id=s7-c6, lane=major, role=verb, order=5, wordIndex0=9-11, wordIndex1=10-11, text="is happening"
+  - 성분 7: id=s7-c7, lane=minor, role=adverb, order=2, wordIndex0=11-17, wordIndex1=12-17, text="all over the world right now."
 
 [문장 8] Let's look at some examples of misinformation to help build the skills we need to spot and fight it.
   단어 수: 19
@@ -67,9 +67,9 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
 {
   "version": 1,
   "app": "sentence-presentation-board",
-  "savedAt": "2026-06-02T07:25:52.823Z",
+  "savedAt": "2026-06-02T07:57:15.641Z",
   "passageText": "//The Dangers of Misinformation in Today's Digital World// In today's fast-paced digital age, misinformation is spreading more than ever. Imagine this: Two news articles pop up online. One is well researched and comes from a trusted source, while the other tells an incredible tale that grabs readers' attention. What happens? The first article gets little interest, while the false one spreads rapidly, taking advantage of how we process information and how social media promotes eye-catching content. This is not just an imaginary situation — it is happening all over the world right now. Let's look at some examples of misinformation to help build the skills we need to spot and fight it.",
-  "currentSentenceIndex": 7,
+  "currentSentenceIndex": 0,
   "componentSerial": 40,
   "settings": {
     "theme": "light",
@@ -576,7 +576,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s7-c6",
+          "id": "s7-c4",
           "sentenceIndex": 7,
           "componentIndex": 4,
           "text": "— it",
@@ -591,7 +591,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s7-c5-s7-c4-u40",
+          "id": "s7-c5",
           "sentenceIndex": 7,
           "componentIndex": 5,
           "text": "just an imaginary situation",
@@ -608,7 +608,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s7-c7",
+          "id": "s7-c6",
           "sentenceIndex": 7,
           "componentIndex": 6,
           "text": "is happening",
@@ -623,7 +623,7 @@ WHITEBOARD_PPT_ANALYSIS_TXT_V1
           ]
         },
         {
-          "id": "s7-c8",
+          "id": "s7-c7",
           "sentenceIndex": 7,
           "componentIndex": 7,
           "text": "all over the world right now.",
