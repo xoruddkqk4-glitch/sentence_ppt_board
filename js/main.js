@@ -4143,6 +4143,12 @@ function handleKeyboard(event) {
     return;
   }
 
+  if (event.key === "f" || event.key === "F") {
+    event.preventDefault();
+    togglePresentFullscreen();
+    return;
+  }
+
   if (event.key >= "1" && event.key <= "9") {
     event.preventDefault();
     const importantSentences = state.sentences
