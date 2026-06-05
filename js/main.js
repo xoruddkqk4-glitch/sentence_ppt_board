@@ -1192,6 +1192,7 @@ const elements = {
   minorAnchorLane: document.getElementById("minorAnchorLane"),
   minorPresentLane: document.getElementById("minorPresentLane"),
   emptyMinorNote: document.getElementById("emptyMinorNote"),
+  presentClickProgress: document.getElementById("presentClickProgress"),
   importantPresentNav: document.getElementById("importantPresentNav"),
   presentFitButton: document.getElementById("presentFitButton"),
   backToInputButton: document.getElementById("backToInputButton"),
@@ -1916,8 +1917,11 @@ function renderPresentView() {
   const isTitleOrSub = sentence.components.some(c => c.role === "title" || c.role === "subtitle");
   const hasMinor = sentence.components.some(c => c.lane === "minor");
   const isPureTitle = isTitleOrSub && !hasMinor;
+  const minorComponents = getPresentMinorComponents(sentence);
+  state.minorRevealCount = clamp(0, state.minorRevealCount, minorComponents.length);
 
   elements.presentProgress.textContent = getProgressText();
+  elements.presentClickProgress.textContent = getPresentClickProgressText(sentence);
   renderImportantSidebar();
   updateNavButtons();
 
@@ -1943,8 +1947,6 @@ function renderPresentView() {
   }
 
   const majorComponents = getComponentsByLane(sentence, "major");
-  const minorComponents = getPresentMinorComponents(sentence);
-  state.minorRevealCount = clamp(0, state.minorRevealCount, minorComponents.length);
   const visibleMinorComponents = minorComponents.slice(0, state.minorRevealCount);
 
   setWordGrid(sentence);
@@ -2385,6 +2387,15 @@ function getProgressText() {
     return "0 / 0";
   }
   return `${state.currentSentenceIndex + 1} / ${state.sentences.length}`;
+}
+
+function getPresentClickProgressText(sentence = getCurrentSentence()) {
+  if (!sentence) {
+    return "0 / 0";
+  }
+  const totalClicks = Math.max(1, getPresentMinorComponents(sentence).length + 1);
+  const currentClick = clamp(1, state.minorRevealCount + 1, totalClicks);
+  return `${currentClick} / ${totalClicks}`;
 }
 
 function goToSentence(index, revealCount = 0) {
