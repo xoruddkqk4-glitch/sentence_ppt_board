@@ -162,7 +162,7 @@
 ## 파일 구조
 
 ```text
-sentence_ppt_board/
+English Visualization Board/
 ├─ index.html
 ├─ css/
 │  └─ style.css
