@@ -271,6 +271,53 @@ select {
   font-weight: 700;
 }
 
+.passage-share-level-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  min-height: 54px;
+  margin-bottom: var(--space-3);
+  border: 1px solid #dbe3ef;
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  padding: var(--space-2) var(--space-3);
+}
+
+.passage-share-filter-label {
+  margin-right: var(--space-2);
+  color: #475569;
+  font-size: var(--font-ui-sm);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.passage-share-level-filter {
+  min-height: 34px;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-pill);
+  background: #ffffff;
+  color: #334155;
+  padding: 0 var(--space-3);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.passage-share-level-filter.is-selected {
+  border-color: #fb7185;
+  background: #fff1f2;
+  color: #be123c;
+  text-decoration: line-through;
+}
+
+.passage-plain-sentence.is-hidden,
+.passage-visual-sentence.is-hidden,
+.passage-outline-sentence.is-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .passage-share-content {
   --passage-font-size: 28px;
   --passage-columns: 1;
@@ -310,9 +357,30 @@ select {
   margin-left: var(--outline-indent);
   padding-left: 0.75em;
   border-left: 3px solid rgba(0, 102, 204, 0.3);
-  color: var(--color-ink);
+  color: var(--outline-color, var(--color-ink));
   font-size: calc(var(--passage-font-size) * var(--outline-scale, 1));
   font-weight: 700;
+  cursor: grab;
+  transition: opacity 120ms ease, background-color 120ms ease, outline-color 120ms ease;
+}
+
+.passage-outline-sentence:active {
+  cursor: grabbing;
+}
+
+.passage-outline-sentence.is-dragging {
+  opacity: 0.35;
+}
+
+.passage-outline-sentence.is-drop-target {
+  border-radius: var(--radius-sm);
+  outline: 2px dashed var(--color-primary);
+  outline-offset: 4px;
+  background: var(--color-drop);
+}
+
+.outline-share-content {
+  column-count: 1 !important;
 }
 
 .outline-marker {
@@ -432,6 +500,94 @@ select {
   border-color: #fecdd3;
   background: #fffafa;
   font-weight: 900;
+}
+
+.stage-toolbar:not(.analysis-toolbar) {
+  position: relative;
+  min-height: 98px;
+  margin-bottom: var(--space-3);
+  border: 1px solid #fed7d7;
+  border-radius: 18px;
+  background: linear-gradient(105deg, #fff7f7 0%, #ffffff 52%, #fffafa 100%);
+  padding: var(--space-4) var(--space-6);
+  box-shadow: 0 8px 24px rgba(185, 28, 28, 0.06);
+}
+
+.stage-toolbar:not(.analysis-toolbar) .stage-toolbar-title {
+  display: flex;
+  align-items: center;
+  min-height: 58px;
+  padding-left: var(--space-4);
+  border-left: 5px solid #fda4af;
+}
+
+.stage-toolbar:not(.analysis-toolbar) .stage-heading {
+  color: #f05b67;
+  letter-spacing: -0.04em;
+}
+
+.edit-view .stage-toolbar .stage-heading {
+  font-size: 25px !important;
+}
+
+.stage-toolbar:not(.analysis-toolbar) .stage-context-panel {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 64px;
+  max-width: 760px;
+  margin: 0 0 0 auto;
+  border: 1px solid #fecdd3;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: var(--space-3) var(--space-4);
+  box-shadow: 0 3px 12px rgba(148, 163, 184, 0.08);
+}
+
+.stage-toolbar:not(.analysis-toolbar) .stage-context-panel h3,
+.stage-toolbar:not(.analysis-toolbar) .stage-context-panel p {
+  margin: 0;
+}
+
+.stage-toolbar:not(.analysis-toolbar) .stage-context-panel h3 {
+  color: #1f2937;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.stage-toolbar:not(.analysis-toolbar) .stage-context-panel p {
+  margin-top: 3px;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.edit-context-panel .toolbar-message {
+  margin: 0 0 0 auto;
+  text-align: right;
+}
+
+.present-toolbar {
+  padding-top: var(--space-4) !important;
+}
+
+.present-toolbar .present-title-area {
+  flex-wrap: wrap;
+}
+
+.present-toolbar .present-context-panel {
+  max-width: 940px !important;
+}
+
+.present-toolbar .color-legend {
+  justify-content: flex-start;
+  gap: var(--space-3);
+  font-size: var(--font-ui-sm);
+}
+
+.passage-share-context-panel .passage-share-controls {
+  margin-left: auto;
 }
 
 .analysis-view .analysis-helper {

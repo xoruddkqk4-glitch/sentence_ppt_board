@@ -1140,6 +1140,9 @@ const QUICK_TXT_DATA = {
 };
 
 const QUICK_TXT_FILES = Object.keys(QUICK_TXT_DATA);
+const PICKER_HANDLE_DATABASE = "english_visualization_board_picker";
+const PICKER_HANDLE_STORE = "handles";
+const RECENT_PICKER_HANDLE_KEY = "recent-file";
 
 const state = {
   passageText: "",
@@ -1158,11 +1161,14 @@ const state = {
   lastModifierComponentId: null,
   currentFileName: null,
   currentFileHandle: null,
+  recentPickerHandle: null,
   hasLoadedAnalysis: false,
   focusedComponentId: null,
   analysisLevelCount: 3,
   connectiveSelectionAnchor: null,
-  passageShareMode: "plain"
+  passageShareMode: "plain",
+  draggedOutlineSentenceIndex: null,
+  hiddenPassageLevels: []
 };
 
 const elements = {
@@ -1210,6 +1216,7 @@ const elements = {
   visualShareModeButton: document.getElementById("visualShareModeButton"),
   outlineShareModeButton: document.getElementById("outlineShareModeButton"),
   passageShareHelper: document.getElementById("passageShareHelper"),
+  passageShareLevelFilters: document.getElementById("passageShareLevelFilters"),
   passageShareContent: document.getElementById("passageShareContent"),
   presentFirstSentenceButton: document.getElementById("presentFirstSentenceButton"),
   presentLastSentenceButton: document.getElementById("presentLastSentenceButton"),
@@ -1629,6 +1636,7 @@ function renderPassageShareView() {
   const isVisualMode = state.passageShareMode === "visual";
   const isOutlineMode = state.passageShareMode === "outline";
   const isPlainMode = state.passageShareMode === "plain";
+  renderPassageShareLevelFilters();
   elements.plainShareModeButton.classList.toggle("is-active", isPlainMode);
   elements.visualShareModeButton.classList.toggle("is-active", isVisualMode);
   elements.outlineShareModeButton.classList.toggle("is-active", isOutlineMode);
@@ -1646,32 +1654,91 @@ function renderPassageShareView() {
   content.className = `passage-share-content ${isVisualMode ? "visual-share-content" : isOutlineMode ? "outline-share-content" : "plain-share-content"}`;
   content.style.setProperty("--passage-columns", "1");
 
-  state.sentences.forEach((sentence, index) => {
+  const hiddenLevels = new Set(state.hiddenPassageLevels);
+  state.sentences.forEach((sentence, originalIndex) => {
     const level = clamp(1, Number(sentence.abstractLevel) || 1, state.analysisLevelCount);
     const sentenceElement = document.createElement(isOutlineMode ? "div" : "span");
     sentenceElement.className = isVisualMode ? "passage-visual-sentence" : isOutlineMode ? "passage-outline-sentence" : "passage-plain-sentence";
+    sentenceElement.dataset.abstractLevel = String(level);
+    sentenceElement.classList.toggle("is-hidden", hiddenLevels.has(level));
+    sentenceElement.setAttribute("aria-hidden", String(hiddenLevels.has(level)));
 
     if (isVisualMode) {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
       sentenceElement.style.setProperty("--abstract-scale", String(visual.scale));
       sentenceElement.style.setProperty("--abstract-color", visual.color);
     } else if (isOutlineMode) {
+      const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
       sentenceElement.style.setProperty("--outline-indent", `${(level - 1) * 1.8}em`);
-      sentenceElement.style.setProperty("--outline-scale", String(getAbstractLevelVisualStyle(level, state.analysisLevelCount).scale));
+      sentenceElement.style.setProperty("--outline-scale", String(visual.scale));
+      sentenceElement.style.setProperty("--outline-color", visual.color);
+      sentenceElement.dataset.sentenceIndex = String(originalIndex);
+      sentenceElement.draggable = true;
+      sentenceElement.addEventListener("dragstart", handleOutlineSentenceDragStart);
+      sentenceElement.addEventListener("dragend", handleOutlineSentenceDragEnd);
+      sentenceElement.addEventListener("dragover", handleOutlineSentenceDragOver);
+      sentenceElement.addEventListener("dragleave", handleOutlineSentenceDragLeave);
+      sentenceElement.addEventListener("drop", handleOutlineSentenceDrop);
       const marker = document.createElement("span");
       marker.className = "outline-marker";
-      marker.textContent = `${index + 1}.`;
+      marker.textContent = `${originalIndex + 1}.`;
       sentenceElement.appendChild(marker);
     }
 
     sentenceElement.appendChild(createConnectiveMarkedText(sentence, isVisualMode || isOutlineMode));
     content.appendChild(sentenceElement);
-    if (!isOutlineMode && index < state.sentences.length - 1) {
+    if (!isOutlineMode && originalIndex < state.sentences.length - 1) {
       content.appendChild(document.createTextNode(" "));
     }
   });
 
   schedulePassageShareFit();
+}
+
+function renderPassageShareLevelFilters() {
+  const container = elements.passageShareLevelFilters;
+  if (!container) return;
+
+  const hiddenLevels = new Set(state.hiddenPassageLevels);
+  container.innerHTML = "";
+  const label = document.createElement("span");
+  label.className = "passage-share-filter-label";
+  label.textContent = "표시 제외 단계";
+  container.appendChild(label);
+
+  for (let level = 1; level <= state.analysisLevelCount; level += 1) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "passage-share-level-filter";
+    button.classList.toggle("is-selected", hiddenLevels.has(level));
+    button.setAttribute("aria-pressed", String(hiddenLevels.has(level)));
+    button.textContent = `${level}단계`;
+    button.addEventListener("click", () => {
+      const nextHiddenLevels = new Set(state.hiddenPassageLevels);
+      if (nextHiddenLevels.has(level)) {
+        nextHiddenLevels.delete(level);
+      } else {
+        nextHiddenLevels.add(level);
+      }
+      state.hiddenPassageLevels = [...nextHiddenLevels].sort((a, b) => a - b);
+      renderPassageShareLevelFilters();
+      updatePassageShareLevelVisibility();
+    });
+    container.appendChild(button);
+  }
+}
+
+function updatePassageShareLevelVisibility() {
+  const content = elements.passageShareContent;
+  if (!content) return;
+
+  const hiddenLevels = new Set(state.hiddenPassageLevels);
+  content.querySelectorAll("[data-abstract-level]").forEach((sentenceElement) => {
+    const level = Number(sentenceElement.dataset.abstractLevel);
+    const isHidden = hiddenLevels.has(level);
+    sentenceElement.classList.toggle("is-hidden", isHidden);
+    sentenceElement.setAttribute("aria-hidden", String(isHidden));
+  });
 }
 
 function getAbstractLevelVisualStyle(level, levelCount) {
@@ -1708,30 +1775,72 @@ function fitPassageShare() {
   const content = elements.passageShareContent;
   const availableHeight = Math.max(180, window.innerHeight - content.getBoundingClientRect().top - 28);
   const isVisualMode = state.passageShareMode === "visual";
+  const isOutlineMode = state.passageShareMode === "outline";
   const baseSize = isVisualMode ? clamp(18, window.innerWidth * 0.028, 44) : clamp(15, window.innerWidth * 0.019, 28);
-  const maxColumns = Math.min(8, Math.max(1, Math.ceil(Math.max(state.sentences.length, 1) / 3)));
+  const maxColumns = isOutlineMode ? 1 : Math.min(12, Math.max(1, state.sentences.length));
 
   content.style.height = `${availableHeight}px`;
-  content.style.setProperty("--passage-font-size", `${Math.round(baseSize)}px`);
-  const targetHeight = availableHeight * 0.5;
   const maxFontSize = isVisualMode
     ? Math.min(200, Math.max(baseSize, window.innerWidth * 0.15, availableHeight * 0.45))
-    : Math.min(84, Math.max(baseSize, availableHeight * 0.12));
-  let fontSize = baseSize;
-  while (getPassageShareUsedHeight(content) < targetHeight && fontSize < maxFontSize) {
-    fontSize += 2;
-    content.style.setProperty("--passage-font-size", `${Math.round(fontSize)}px`);
-  }
-  let columns = 1;
-  while (content.scrollHeight > availableHeight && columns < maxColumns) {
-    columns += 1;
-    content.style.setProperty("--passage-columns", String(columns));
-  }
+    : isOutlineMode
+      ? Math.min(84, Math.max(baseSize, availableHeight * 0.12))
+      : Math.min(120, Math.max(baseSize, availableHeight * 0.2));
 
-  while (content.scrollHeight > availableHeight && fontSize > 10) {
-    fontSize -= 1;
-    content.style.setProperty("--passage-font-size", `${Math.round(fontSize)}px`);
+  let fitted = false;
+  for (let fontSize = Math.floor(maxFontSize); fontSize >= 4 && !fitted; fontSize -= 1) {
+    content.style.setProperty("--passage-font-size", `${fontSize}px`);
+    for (let columns = 1; columns <= maxColumns; columns += 1) {
+      content.style.setProperty("--passage-columns", String(columns));
+      const fitsWidth = content.scrollWidth <= content.clientWidth + 1;
+      const fitsHeight = content.scrollHeight <= content.clientHeight + 1;
+      if (fitsWidth && fitsHeight) {
+        fitted = true;
+        break;
+      }
+    }
   }
+}
+
+function handleOutlineSentenceDragStart(event) {
+  const sentenceIndex = Number(event.currentTarget.dataset.sentenceIndex);
+  if (!Number.isInteger(sentenceIndex)) return;
+  state.draggedOutlineSentenceIndex = sentenceIndex;
+  event.currentTarget.classList.add("is-dragging");
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", String(sentenceIndex));
+}
+
+function handleOutlineSentenceDragEnd(event) {
+  event.currentTarget.classList.remove("is-dragging");
+  document.querySelectorAll(".passage-outline-sentence.is-drop-target").forEach((item) => item.classList.remove("is-drop-target"));
+  state.draggedOutlineSentenceIndex = null;
+}
+
+function handleOutlineSentenceDragOver(event) {
+  event.preventDefault();
+  if (Number(event.currentTarget.dataset.sentenceIndex) !== state.draggedOutlineSentenceIndex) {
+    event.currentTarget.classList.add("is-drop-target");
+  }
+  event.dataTransfer.dropEffect = "move";
+}
+
+function handleOutlineSentenceDragLeave(event) {
+  event.currentTarget.classList.remove("is-drop-target");
+}
+
+function handleOutlineSentenceDrop(event) {
+  event.preventDefault();
+  const sourceIndex = Number(event.dataTransfer.getData("text/plain") || state.draggedOutlineSentenceIndex);
+  const targetIndex = Number(event.currentTarget.dataset.sentenceIndex);
+  event.currentTarget.classList.remove("is-drop-target");
+  if (!Number.isInteger(sourceIndex) || !Number.isInteger(targetIndex) || sourceIndex === targetIndex) return;
+
+  const currentSentence = getCurrentSentence();
+  const [movedSentence] = state.sentences.splice(sourceIndex, 1);
+  state.sentences.splice(targetIndex, 0, movedSentence);
+  reindexSentences();
+  state.currentSentenceIndex = Math.max(0, state.sentences.indexOf(currentSentence));
+  renderPassageShareView();
 }
 
 function getPassageShareUsedHeight(content) {
@@ -3783,8 +3892,9 @@ async function saveAnalysisTxt(saveAs = false) {
         ],
         id: "whiteboard_ppt_board_picker"
       };
-      if (state.currentFileHandle) {
-        pickerOptions.startIn = state.currentFileHandle;
+      const startIn = getPickerStartIn();
+      if (startIn) {
+        pickerOptions.startIn = startIn;
       }
       const fileHandle = await window.showSaveFilePicker(pickerOptions);
       if (!fileHandle) {
@@ -3794,6 +3904,7 @@ async function saveAnalysisTxt(saveAs = false) {
       // 새 파일 정보로 활성 파일 핸들 및 파일명 즉시 갱신 (A -> B 전환 버그 해결!)
       state.currentFileHandle = fileHandle;
       state.currentFileName = fileHandle.name;
+      void rememberRecentPickerHandle(fileHandle);
       updateFileNameDisplay();
 
       const writable = await fileHandle.createWritable();
@@ -3958,8 +4069,9 @@ async function triggerAnalysisImport() {
         ],
         id: "whiteboard_ppt_board_picker"
       };
-      if (state.currentFileHandle) {
-        pickerOptions.startIn = state.currentFileHandle;
+      const startIn = getPickerStartIn();
+      if (startIn) {
+        pickerOptions.startIn = startIn;
       }
       const [fileHandle] = await window.showOpenFilePicker(pickerOptions);
       if (!fileHandle) {
@@ -3968,6 +4080,7 @@ async function triggerAnalysisImport() {
 
       state.currentFileName = fileHandle.name;
       state.currentFileHandle = fileHandle;
+      void rememberRecentPickerHandle(fileHandle);
       updateFileNameDisplay();
 
       const file = await fileHandle.getFile();
@@ -4227,6 +4340,66 @@ function updateFileNameDisplay() {
   }
 }
 
+function getPickerStartIn() {
+  return state.currentFileHandle || state.recentPickerHandle || undefined;
+}
+
+function openPickerHandleDatabase() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) {
+      reject(new Error("IndexedDB is not available."));
+      return;
+    }
+
+    const request = window.indexedDB.open(PICKER_HANDLE_DATABASE, 1);
+    request.onupgradeneeded = () => {
+      const database = request.result;
+      if (!database.objectStoreNames.contains(PICKER_HANDLE_STORE)) {
+        database.createObjectStore(PICKER_HANDLE_STORE);
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function rememberRecentPickerHandle(fileHandle) {
+  if (!fileHandle) return;
+  state.recentPickerHandle = fileHandle;
+
+  try {
+    const database = await openPickerHandleDatabase();
+    await new Promise((resolve, reject) => {
+      const transaction = database.transaction(PICKER_HANDLE_STORE, "readwrite");
+      transaction.objectStore(PICKER_HANDLE_STORE).put(fileHandle, RECENT_PICKER_HANDLE_KEY);
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
+    database.close();
+  } catch (error) {
+    console.warn("최근 작업 폴더 정보를 저장하지 못했습니다.", error);
+  }
+}
+
+async function restoreRecentPickerHandle() {
+  try {
+    const database = await openPickerHandleDatabase();
+    const fileHandle = await new Promise((resolve, reject) => {
+      const transaction = database.transaction(PICKER_HANDLE_STORE, "readonly");
+      const request = transaction.objectStore(PICKER_HANDLE_STORE).get(RECENT_PICKER_HANDLE_KEY);
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error);
+    });
+    database.close();
+    if (fileHandle) {
+      state.recentPickerHandle = fileHandle;
+    }
+  } catch (error) {
+    console.warn("최근 작업 폴더 정보를 불러오지 못했습니다.", error);
+  }
+}
+
 
 
 function goToInputStart() {
@@ -4450,6 +4623,7 @@ function handleKeyboard(event) {
 bindEvents();
 applySettings();
 updateHeaderWorkflow(state.mode);
+void restoreRecentPickerHandle();
 
 function showElementDetail(component) {
   elements.elementDetailOverlay.classList.remove("hidden");
