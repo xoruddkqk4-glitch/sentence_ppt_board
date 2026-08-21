@@ -161,38 +161,36 @@
       </section>
 
       <section id="analysisView" class="view analysis-view hidden" aria-labelledby="analysisTitle">
-        <div class="toolbar">
+        <div class="toolbar analysis-toolbar">
           <div>
             <h2 id="analysisTitle" class="stage-heading">4단계-지문 분석</h2>
           </div>
+          <section class="analysis-intro-panel">
+            <div>
+              <h3>추상성 단계 설정</h3>
+              <p>교사가 각 문장의 의미적 추상성에 맞춰 단계를 직접 지정합니다.</p>
+            </div>
+            <label class="analysis-level-control" for="analysisLevelCount">
+              <span>단계 개수</span>
+              <select id="analysisLevelCount" aria-label="추상성 단계 개수"></select>
+            </label>
+          </section>
         </div>
-
-        <section class="analysis-intro-panel">
-          <div>
-            <h3>추상성 단계 설정</h3>
-            <p>교사가 각 문장의 의미적 추상성에 맞춰 단계를 직접 지정합니다.</p>
-          </div>
-          <label class="analysis-level-control" for="analysisLevelCount">
-            <span>단계 개수</span>
-            <select id="analysisLevelCount" aria-label="추상성 단계 개수"></select>
-          </label>
-        </section>
 
         <p class="analysis-helper">문장마다 단계 버튼을 하나 선택하세요. 연결어는 단어를 클릭해 선택하고, 여러 단어 또는 절은 Shift를 누른 채 첫 단어와 마지막 단어를 클릭하세요.</p>
         <div id="sentenceAnalysisList" class="sentence-analysis-list" aria-live="polite"></div>
       </section>
 
       <section id="passageShareView" class="view passage-share-view hidden" aria-labelledby="passageShareTitle">
-        <div class="toolbar">
+        <div class="toolbar passage-share-toolbar">
           <div>
             <h2 id="passageShareTitle" class="stage-heading">5단계-지문 공유</h2>
           </div>
-        </div>
-
-        <div class="passage-share-controls" role="group" aria-label="지문 시각화 방식">
-          <button class="button secondary passage-share-mode-button" type="button" id="plainShareModeButton" aria-pressed="true">원본</button>
-          <button class="button secondary passage-share-mode-button" type="button" id="visualShareModeButton" aria-pressed="false">줄글식 서술</button>
-          <button class="button secondary passage-share-mode-button" type="button" id="outlineShareModeButton" aria-pressed="false">개조식 서술</button>
+          <div class="passage-share-controls" role="group" aria-label="지문 시각화 방식">
+            <button class="button secondary passage-share-mode-button" type="button" id="plainShareModeButton" aria-pressed="true">원본</button>
+            <button class="button secondary passage-share-mode-button" type="button" id="visualShareModeButton" aria-pressed="false">줄글식 서술</button>
+            <button class="button secondary passage-share-mode-button" type="button" id="outlineShareModeButton" aria-pressed="false">개조식 서술</button>
+          </div>
         </div>
         <p id="passageShareHelper" class="passage-share-helper"></p>
         <section id="passageShareContent" class="passage-share-content" aria-live="polite"></section>
