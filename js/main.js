@@ -1159,7 +1159,10 @@ const state = {
   currentFileName: null,
   currentFileHandle: null,
   hasLoadedAnalysis: false,
-  focusedComponentId: null
+  focusedComponentId: null,
+  analysisLevelCount: 3,
+  connectiveSelectionAnchor: null,
+  passageShareMode: "plain"
 };
 
 const elements = {
@@ -1167,6 +1170,8 @@ const elements = {
   inputView: document.getElementById("inputView"),
   editView: document.getElementById("editView"),
   presentView: document.getElementById("presentView"),
+  analysisView: document.getElementById("analysisView"),
+  passageShareView: document.getElementById("passageShareView"),
   passageForm: document.getElementById("passageForm"),
   passageInput: document.getElementById("passageInput"),
   inputMessage: document.getElementById("inputMessage"),
@@ -1175,10 +1180,14 @@ const elements = {
   clearButton: document.getElementById("clearButton"),
   inputImportButton: document.getElementById("inputImportButton"),
   fileNameDisplay: document.getElementById("fileNameDisplay"),
-  saveTxtButton: document.getElementById("saveTxtButton"),
-  saveAsTxtButton: document.getElementById("saveAsTxtButton"),
   analysisFileInput: document.getElementById("analysisFileInput"),
-  themeSelect: document.getElementById("themeSelect"),
+  headerInputButton: document.getElementById("headerInputButton"),
+  headerEditButton: document.getElementById("headerEditButton"),
+  headerPresentButton: document.getElementById("headerPresentButton"),
+  headerAnalysisButton: document.getElementById("headerAnalysisButton"),
+  headerPassageShareButton: document.getElementById("headerPassageShareButton"),
+  headerSaveTxtButton: document.getElementById("headerSaveTxtButton"),
+  headerSaveAsTxtButton: document.getElementById("headerSaveAsTxtButton"),
   editProgress: document.getElementById("editProgress"),
   presentProgress: document.getElementById("presentProgress"),
   sentenceTextEditor: document.getElementById("sentenceTextEditor"),
@@ -1195,10 +1204,13 @@ const elements = {
   presentClickProgress: document.getElementById("presentClickProgress"),
   importantPresentNav: document.getElementById("importantPresentNav"),
   presentFitButton: document.getElementById("presentFitButton"),
-  backToInputButton: document.getElementById("backToInputButton"),
-  startPresentButton: document.getElementById("startPresentButton"),
-  returnEditButton: document.getElementById("returnEditButton"),
-  returnInputButton: document.getElementById("returnInputButton"),
+  analysisLevelCount: document.getElementById("analysisLevelCount"),
+  sentenceAnalysisList: document.getElementById("sentenceAnalysisList"),
+  plainShareModeButton: document.getElementById("plainShareModeButton"),
+  visualShareModeButton: document.getElementById("visualShareModeButton"),
+  outlineShareModeButton: document.getElementById("outlineShareModeButton"),
+  passageShareHelper: document.getElementById("passageShareHelper"),
+  passageShareContent: document.getElementById("passageShareContent"),
   presentFirstSentenceButton: document.getElementById("presentFirstSentenceButton"),
   presentLastSentenceButton: document.getElementById("presentLastSentenceButton"),
   screenOffOverlay: document.getElementById("screenOffOverlay"),
@@ -1422,9 +1434,11 @@ function preparePresentation() {
   state.passageText = text;
   state.sentences = sentences.map((sentenceText, index) => ({
     id: `sentence-${index + 1}`,
-    text: sentenceText,
-    isImportant: false,
-    wordCount: getPlainWords(sentenceText).length,
+      text: sentenceText,
+      isImportant: false,
+      abstractLevel: 1,
+      connectiveIndexes: [],
+      wordCount: getPlainWords(sentenceText).length,
     components: analyzeSentence(sentenceText, index)
   }));
   state.currentSentenceIndex = 0;
@@ -1440,12 +1454,45 @@ function setMode(mode) {
   if (mode === "present" && previousMode !== "present") {
     state.minorRevealCount = 0;
   }
+  if (mode === "passage-share" && previousMode !== "passage-share") {
+    state.passageShareMode = "plain";
+  }
   elements.app.dataset.mode = mode;
   document.documentElement.classList.toggle("present-lock", mode === "present");
   elements.inputView.classList.toggle("hidden", mode !== "input");
   elements.editView.classList.toggle("hidden", mode !== "edit");
   elements.presentView.classList.toggle("hidden", mode !== "present");
+  elements.analysisView.classList.toggle("hidden", mode !== "analysis");
+  elements.passageShareView.classList.toggle("hidden", mode !== "passage-share");
+  updateHeaderWorkflow(mode);
   render();
+}
+
+function updateHeaderWorkflow(mode) {
+  const buttonModes = [
+    [elements.headerInputButton, "input"],
+    [elements.headerEditButton, "edit"],
+    [elements.headerPresentButton, "present"],
+    [elements.headerAnalysisButton, "analysis"],
+    [elements.headerPassageShareButton, "passage-share"]
+  ];
+  buttonModes.forEach(([button, buttonMode]) => {
+    button?.classList.toggle("is-current", mode === buttonMode);
+    button?.setAttribute("aria-current", mode === buttonMode ? "step" : "false");
+  });
+}
+
+function goToWorkflowMode(mode) {
+  if (mode === "input") {
+    applyPendingEdits();
+    goToInputStart();
+    return;
+  }
+  if (state.sentences.length === 0) {
+    alert("먼저 1단계에서 영어 지문을 입력하고 문장 분석을 시작해 주세요.");
+    return;
+  }
+  setMode(mode);
 }
 
 function render() {
@@ -1456,6 +1503,243 @@ function render() {
   if (state.mode === "present") {
     renderPresentView();
   }
+  if (state.mode === "analysis") {
+    renderAnalysisView();
+  }
+  if (state.mode === "passage-share") {
+    renderPassageShareView();
+  }
+}
+
+function renderAnalysisView() {
+  if (!elements.sentenceAnalysisList || !elements.analysisLevelCount) {
+    return;
+  }
+
+  const levelCount = clamp(2, Number(state.analysisLevelCount) || 3, 9);
+  state.analysisLevelCount = levelCount;
+  elements.analysisLevelCount.innerHTML = "";
+  for (let count = 2; count <= 9; count += 1) {
+    const option = document.createElement("option");
+    option.value = String(count);
+    option.textContent = `${count}단계`;
+    option.selected = count === levelCount;
+    elements.analysisLevelCount.appendChild(option);
+  }
+
+  elements.sentenceAnalysisList.innerHTML = "";
+  state.sentences.forEach((sentence, sentenceIndex) => {
+    sentence.abstractLevel = clamp(1, Number(sentence.abstractLevel) || 1, levelCount);
+    sentence.connectiveIndexes = getSentenceConnectiveIndexes(sentence);
+
+    const card = document.createElement("article");
+    card.className = "sentence-analysis-card";
+    const header = document.createElement("div");
+    header.className = "analysis-card-header";
+    const title = document.createElement("h3");
+    title.textContent = `문장 ${sentenceIndex + 1}`;
+    const levelButtons = document.createElement("div");
+    levelButtons.className = "abstract-level-buttons";
+
+    for (let level = 1; level <= levelCount; level += 1) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "abstract-level-button";
+      button.classList.toggle("is-selected", sentence.abstractLevel === level);
+      button.textContent = `${level}단계`;
+      button.setAttribute("aria-pressed", String(sentence.abstractLevel === level));
+      button.addEventListener("click", () => {
+        sentence.abstractLevel = level;
+        renderAnalysisView();
+      });
+      levelButtons.appendChild(button);
+    }
+    header.append(title, levelButtons);
+
+    const text = document.createElement("p");
+    text.className = "analysis-sentence-text";
+    text.textContent = sentence.text;
+
+    const connectiveLabel = document.createElement("p");
+    connectiveLabel.className = "connective-label";
+    connectiveLabel.append("연결어 선택");
+    const connectiveHelp = document.createElement("span");
+    connectiveHelp.className = "connective-help";
+    connectiveHelp.textContent = "클릭: 단어 선택 · Shift+클릭: 범위 선택";
+    connectiveLabel.appendChild(connectiveHelp);
+
+    const words = document.createElement("div");
+    words.className = "connective-word-list";
+    getDisplayWords(sentence.text).forEach((word, wordIndex) => {
+      const wordButton = document.createElement("button");
+      wordButton.type = "button";
+      wordButton.className = "connective-word";
+      wordButton.classList.toggle("is-selected", sentence.connectiveIndexes.includes(wordIndex));
+      wordButton.textContent = word;
+      wordButton.setAttribute("aria-pressed", String(sentence.connectiveIndexes.includes(wordIndex)));
+      wordButton.addEventListener("click", (event) => {
+        updateSentenceConnectiveIndexes(sentenceIndex, wordIndex, event.shiftKey);
+      });
+      words.appendChild(wordButton);
+    });
+
+    card.append(header, text, connectiveLabel, words);
+    elements.sentenceAnalysisList.appendChild(card);
+  });
+}
+
+function getSentenceConnectiveIndexes(sentence) {
+  const wordCount = getDisplayWords(sentence.text).length;
+  return [...new Set(Array.isArray(sentence.connectiveIndexes) ? sentence.connectiveIndexes : [])]
+    .map((index) => Number(index))
+    .filter((index) => Number.isInteger(index) && index >= 0 && index < wordCount)
+    .sort((a, b) => a - b);
+}
+
+function updateSentenceConnectiveIndexes(sentenceIndex, wordIndex, useRange) {
+  const sentence = state.sentences[sentenceIndex];
+  if (!sentence) {
+    return;
+  }
+
+  const selected = new Set(getSentenceConnectiveIndexes(sentence));
+  const anchor = state.connectiveSelectionAnchor;
+  if (useRange && anchor?.sentenceIndex === sentenceIndex) {
+    const start = Math.min(anchor.wordIndex, wordIndex);
+    const end = Math.max(anchor.wordIndex, wordIndex);
+    for (let index = start; index <= end; index += 1) {
+      selected.add(index);
+    }
+  } else if (selected.has(wordIndex)) {
+    selected.delete(wordIndex);
+  } else {
+    selected.add(wordIndex);
+  }
+
+  sentence.connectiveIndexes = [...selected].sort((a, b) => a - b);
+  state.connectiveSelectionAnchor = { sentenceIndex, wordIndex };
+  renderAnalysisView();
+}
+
+function renderPassageShareView() {
+  if (!elements.passageShareContent) {
+    return;
+  }
+
+  const isVisualMode = state.passageShareMode === "visual";
+  const isOutlineMode = state.passageShareMode === "outline";
+  const isPlainMode = state.passageShareMode === "plain";
+  elements.plainShareModeButton.classList.toggle("is-active", isPlainMode);
+  elements.visualShareModeButton.classList.toggle("is-active", isVisualMode);
+  elements.outlineShareModeButton.classList.toggle("is-active", isOutlineMode);
+  elements.plainShareModeButton.setAttribute("aria-pressed", String(isPlainMode));
+  elements.visualShareModeButton.setAttribute("aria-pressed", String(isVisualMode));
+  elements.outlineShareModeButton.setAttribute("aria-pressed", String(isOutlineMode));
+  elements.passageShareHelper.textContent = isVisualMode
+    ? "문장 순서를 유지한 줄글식 서술입니다. 단계가 낮을수록 더 크게 표시되며, 연결어는 노란색으로 강조됩니다."
+    : isOutlineMode
+      ? "단계가 낮을수록 상위 항목으로 표시되는 개조식 서술입니다. 연결어는 노란색으로 강조됩니다."
+      : "원문 보기입니다. 원하는 시각화 방식을 선택하면 단계와 연결어 강조가 적용됩니다.";
+
+  const content = elements.passageShareContent;
+  content.innerHTML = "";
+  content.className = `passage-share-content ${isVisualMode ? "visual-share-content" : isOutlineMode ? "outline-share-content" : "plain-share-content"}`;
+  content.style.setProperty("--passage-columns", "1");
+
+  state.sentences.forEach((sentence, index) => {
+    const level = clamp(1, Number(sentence.abstractLevel) || 1, state.analysisLevelCount);
+    const sentenceElement = document.createElement(isOutlineMode ? "div" : "span");
+    sentenceElement.className = isVisualMode ? "passage-visual-sentence" : isOutlineMode ? "passage-outline-sentence" : "passage-plain-sentence";
+
+    if (isVisualMode) {
+      const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
+      sentenceElement.style.setProperty("--abstract-scale", String(visual.scale));
+      sentenceElement.style.setProperty("--abstract-color", visual.color);
+    } else if (isOutlineMode) {
+      sentenceElement.style.setProperty("--outline-indent", `${(level - 1) * 1.8}em`);
+      sentenceElement.style.setProperty("--outline-scale", String(getAbstractLevelVisualStyle(level, state.analysisLevelCount).scale));
+      const marker = document.createElement("span");
+      marker.className = "outline-marker";
+      marker.textContent = `${index + 1}.`;
+      sentenceElement.appendChild(marker);
+    }
+
+    sentenceElement.appendChild(createConnectiveMarkedText(sentence, isVisualMode || isOutlineMode));
+    content.appendChild(sentenceElement);
+    if (!isOutlineMode && index < state.sentences.length - 1) {
+      content.appendChild(document.createTextNode(" "));
+    }
+  });
+
+  schedulePassageShareFit();
+}
+
+function getAbstractLevelVisualStyle(level, levelCount) {
+  if (levelCount <= 1) return { scale: 1, color: "#111827" };
+  const ratio = (level - 1) / (levelCount - 1);
+  if (ratio === 0) return { scale: 1, color: "#dc2626" };
+  if (ratio === 1) return { scale: 0.55, color: "#111827" };
+  if (levelCount === 3 && level === 2) return { scale: 0.78, color: "#2563eb" };
+  const hue = Math.round(260 - ratio * 190);
+  return { scale: Math.round((1 - ratio * 0.45) * 100) / 100, color: `hsl(${hue} 70% 40%)` };
+}
+
+function createConnectiveMarkedText(sentence, showConnectiveHighlight) {
+  const wrapper = document.createElement("span");
+  const selectedIndexes = new Set(getSentenceConnectiveIndexes(sentence));
+  const words = getDisplayWords(sentence.text);
+  words.forEach((word, index) => {
+    const wordElement = document.createElement("span");
+    wordElement.textContent = word;
+    if (showConnectiveHighlight && selectedIndexes.has(index)) wordElement.className = "passage-connective";
+    wrapper.appendChild(wordElement);
+    if (index < words.length - 1) wrapper.appendChild(document.createTextNode(" "));
+  });
+  return wrapper;
+}
+
+function schedulePassageShareFit() {
+  requestAnimationFrame(fitPassageShare);
+}
+
+function fitPassageShare() {
+  if (state.mode !== "passage-share" || !elements.passageShareContent) return;
+
+  const content = elements.passageShareContent;
+  const availableHeight = Math.max(180, window.innerHeight - content.getBoundingClientRect().top - 28);
+  const isVisualMode = state.passageShareMode === "visual";
+  const baseSize = isVisualMode ? clamp(18, window.innerWidth * 0.028, 44) : clamp(15, window.innerWidth * 0.019, 28);
+  const maxColumns = Math.min(8, Math.max(1, Math.ceil(Math.max(state.sentences.length, 1) / 3)));
+
+  content.style.height = `${availableHeight}px`;
+  content.style.setProperty("--passage-font-size", `${Math.round(baseSize)}px`);
+  const targetHeight = availableHeight * 0.5;
+  const maxFontSize = isVisualMode
+    ? Math.min(200, Math.max(baseSize, window.innerWidth * 0.15, availableHeight * 0.45))
+    : Math.min(84, Math.max(baseSize, availableHeight * 0.12));
+  let fontSize = baseSize;
+  while (getPassageShareUsedHeight(content) < targetHeight && fontSize < maxFontSize) {
+    fontSize += 2;
+    content.style.setProperty("--passage-font-size", `${Math.round(fontSize)}px`);
+  }
+  let columns = 1;
+  while (content.scrollHeight > availableHeight && columns < maxColumns) {
+    columns += 1;
+    content.style.setProperty("--passage-columns", String(columns));
+  }
+
+  while (content.scrollHeight > availableHeight && fontSize > 10) {
+    fontSize -= 1;
+    content.style.setProperty("--passage-font-size", `${Math.round(fontSize)}px`);
+  }
+}
+
+function getPassageShareUsedHeight(content) {
+  const contentRect = content.getBoundingClientRect();
+  const children = [...content.children];
+  if (children.length === 0) return 0;
+  const bottom = Math.max(...children.map((child) => child.getBoundingClientRect().bottom));
+  return Math.max(0, bottom - contentRect.top);
 }
 
 function renderEditView() {
@@ -2420,6 +2704,7 @@ function updateSentenceText() {
   sentence.text = newText;
   sentence.wordCount = getPlainWords(newText).length;
   sentence.components = analyzeSentence(newText, state.currentSentenceIndex);
+  sentence.connectiveIndexes = [];
 
   state.passageText = state.sentences.map((s) => s.text).join(" ");
   elements.passageInput.value = state.passageText;
@@ -2437,6 +2722,8 @@ function insertNewSentence() {
     id: `sentence-inserted-${Date.now()}`,
     text: defaultText,
     isImportant: false,
+    abstractLevel: 1,
+    connectiveIndexes: [],
     wordCount: getPlainWords(defaultText).length,
     components: analyzeSentence(defaultText, insertIndex)
   };
@@ -3147,8 +3434,8 @@ function getDropIndex(lane, clientX, clientY) {
 }
 
 function applySettings() {
-  elements.app.dataset.theme = state.settings.theme;
-  elements.themeSelect.value = state.settings.theme;
+  state.settings.theme = "light";
+  elements.app.dataset.theme = "light";
   const width = window.innerWidth;
   const majorBase = clamp(56, width * 0.07, 124);
   const minorBase = clamp(16, width * 0.016, 32);
@@ -3619,12 +3906,15 @@ function buildAnalysisPayload() {
     passageText: state.passageText || state.sentences.map((sentence) => sentence.text).join(" "),
     currentSentenceIndex: state.currentSentenceIndex,
     componentSerial: state.componentSerial,
+    analysisLevelCount: state.analysisLevelCount,
     settings: { ...state.settings },
     sentences: state.sentences.map((sentence, sentenceIndex) => ({
       id: sentence.id || `sentence-${sentenceIndex + 1}`,
       sentenceIndex: sentenceIndex + 1,
       text: sentence.text,
       isImportant: sentence.isImportant === true,
+      abstractLevel: clamp(1, Number(sentence.abstractLevel) || 1, state.analysisLevelCount),
+      connectiveIndexes: getSentenceConnectiveIndexes(sentence),
       wordCount: Number.isFinite(sentence.wordCount) ? sentence.wordCount : getPlainWords(sentence.text).length,
       components: sentence.components.map((component, componentIndex) => ({
         id: component.id,
@@ -3738,6 +4028,7 @@ function importAnalysisTxt(content) {
       state.currentSentenceIndex = loaded.currentSentenceIndex;
       state.minorRevealCount = 0;
       state.componentSerial = loaded.componentSerial;
+      state.analysisLevelCount = loaded.analysisLevelCount;
       state.settings = { ...state.settings, ...loaded.settings };
       elements.passageInput.value = state.passageText;
       elements.inputMessage.textContent = "저장된 분석 결과를 불러왔습니다. 아래 '2단계-문장분석 시작'을 누르시면 적용됩니다.";
@@ -3835,6 +4126,7 @@ function normalizeImportedAnalysis(payload) {
     sentences,
     currentSentenceIndex: clamp(0, Number(payload.currentSentenceIndex) || 0, sentences.length - 1),
     componentSerial: Math.max(Number(payload.componentSerial) || 1, countImportedComponents(sentences) + 1),
+    analysisLevelCount: clamp(2, Number(payload.analysisLevelCount) || 3, 9),
     settings: typeof payload.settings === "object" && payload.settings ? payload.settings : {}
   };
 }
@@ -3853,6 +4145,8 @@ function normalizeImportedSentence(sentence, sentenceIndex) {
     id: String(sentence.id || `sentence-${sentenceIndex + 1}`),
     text,
     isImportant: sentence.isImportant === true,
+    abstractLevel: Number.isInteger(Number(sentence.abstractLevel)) ? Number(sentence.abstractLevel) : 1,
+    connectiveIndexes: Array.isArray(sentence.connectiveIndexes) ? sentence.connectiveIndexes : [],
     wordCount: Number.isFinite(Number(sentence.wordCount)) ? Number(sentence.wordCount) : getPlainWords(text).length,
     components
   };
@@ -3995,25 +4289,37 @@ function bindEvents() {
   elements.toggleImportantButton.addEventListener("click", toggleImportantSentence);
   elements.addSentenceButton.addEventListener("click", insertNewSentence);
   elements.deleteSentenceButton.addEventListener("click", deleteCurrentSentence);
-  elements.saveTxtButton.addEventListener("click", () => saveAnalysisTxt(false));
-  elements.saveAsTxtButton.addEventListener("click", () => saveAnalysisTxt(true));
   elements.analysisFileInput.addEventListener("change", handleAnalysisFileSelected);
 
-  elements.themeSelect.addEventListener("change", () => {
-    state.settings.theme = elements.themeSelect.value;
-    applySettings();
-    schedulePresentationFit();
-  });
+  elements.headerInputButton.addEventListener("click", () => goToWorkflowMode("input"));
+  elements.headerEditButton.addEventListener("click", () => goToWorkflowMode("edit"));
+  elements.headerPresentButton.addEventListener("click", () => goToWorkflowMode("present"));
+  elements.headerAnalysisButton.addEventListener("click", () => goToWorkflowMode("analysis"));
+  elements.headerPassageShareButton.addEventListener("click", () => goToWorkflowMode("passage-share"));
+  elements.headerSaveTxtButton.addEventListener("click", () => saveAnalysisTxt(false));
+  elements.headerSaveAsTxtButton.addEventListener("click", () => saveAnalysisTxt(true));
 
-  elements.backToInputButton.addEventListener("click", () => {
-    applyPendingEdits();
-    setMode("input");
+  elements.plainShareModeButton.addEventListener("click", () => {
+    state.passageShareMode = "plain";
+    renderPassageShareView();
   });
-  elements.returnInputButton.addEventListener("click", goToInputStart);
-  elements.startPresentButton.addEventListener("click", () => setMode("present"));
+  elements.visualShareModeButton.addEventListener("click", () => {
+    state.passageShareMode = "visual";
+    renderPassageShareView();
+  });
+  elements.outlineShareModeButton.addEventListener("click", () => {
+    state.passageShareMode = "outline";
+    renderPassageShareView();
+  });
+  elements.analysisLevelCount.addEventListener("change", () => {
+    state.analysisLevelCount = clamp(2, Number(elements.analysisLevelCount.value) || 3, 9);
+    state.sentences.forEach((sentence) => {
+      sentence.abstractLevel = clamp(1, Number(sentence.abstractLevel) || 1, state.analysisLevelCount);
+    });
+    renderAnalysisView();
+  });
   elements.presentFitButton.addEventListener("click", togglePresentFullscreen);
   document.addEventListener("fullscreenchange", handleFullscreenChange);
-  elements.returnEditButton.addEventListener("click", () => setMode("edit"));
   elements.presentFirstSentenceButton.addEventListener("click", goToPresentationFirstSentence);
   elements.presentLastSentenceButton.addEventListener("click", handlePresentationLastButton);
   elements.screenOnButton.addEventListener("click", () => setScreenOff(false));
@@ -4044,6 +4350,7 @@ function bindEvents() {
   window.addEventListener("resize", () => {
     applySettings();
     schedulePresentationFit();
+    schedulePassageShareFit();
     scheduleDetailFit();
     adjustEditViewScale();
   });
@@ -4142,6 +4449,7 @@ function handleKeyboard(event) {
 
 bindEvents();
 applySettings();
+updateHeaderWorkflow(state.mode);
 
 function showElementDetail(component) {
   elements.elementDetailOverlay.classList.remove("hidden");
