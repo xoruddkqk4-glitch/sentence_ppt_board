@@ -1703,7 +1703,7 @@ function renderPassageShareLevelFilters() {
   container.innerHTML = "";
   const label = document.createElement("span");
   label.className = "passage-share-filter-label";
-  label.textContent = "표시 제외 단계";
+  label.textContent = "단계 표시 : 전체 문장(숫자키 0)";
   container.appendChild(label);
 
   for (let level = 1; level <= state.analysisLevelCount; level += 1) {
@@ -1712,20 +1712,32 @@ function renderPassageShareLevelFilters() {
     button.className = "passage-share-level-filter";
     button.classList.toggle("is-selected", hiddenLevels.has(level));
     button.setAttribute("aria-pressed", String(hiddenLevels.has(level)));
-    button.textContent = `${level}단계`;
+    button.textContent = `${level}단계(숫자키 ${level})`;
+    button.title = `숫자키 ${level}: ${level}단계 문장 표시/숨김`;
     button.addEventListener("click", () => {
-      const nextHiddenLevels = new Set(state.hiddenPassageLevels);
-      if (nextHiddenLevels.has(level)) {
-        nextHiddenLevels.delete(level);
-      } else {
-        nextHiddenLevels.add(level);
-      }
-      state.hiddenPassageLevels = [...nextHiddenLevels].sort((a, b) => a - b);
-      renderPassageShareLevelFilters();
-      updatePassageShareLevelVisibility();
+      togglePassageShareLevel(level);
     });
     container.appendChild(button);
   }
+}
+
+function togglePassageShareLevel(level) {
+  const nextHiddenLevels = new Set(state.hiddenPassageLevels);
+  if (nextHiddenLevels.has(level)) {
+    nextHiddenLevels.delete(level);
+  } else {
+    nextHiddenLevels.add(level);
+  }
+  state.hiddenPassageLevels = [...nextHiddenLevels].sort((a, b) => a - b);
+  renderPassageShareLevelFilters();
+  updatePassageShareLevelVisibility();
+}
+
+function showAllPassageShareLevels() {
+  if (state.hiddenPassageLevels.length === 0) return;
+  state.hiddenPassageLevels = [];
+  renderPassageShareLevelFilters();
+  updatePassageShareLevelVisibility();
 }
 
 function updatePassageShareLevelVisibility() {
@@ -4559,6 +4571,21 @@ function handleKeyboard(event) {
       if (state.currentSentenceIndex > 0) {
         goToSentence(state.currentSentenceIndex - 1);
       }
+    }
+    return;
+  }
+
+  if (state.mode === "passage-share") {
+    if (event.key === "0") {
+      event.preventDefault();
+      showAllPassageShareLevels();
+      return;
+    }
+
+    const level = Number(event.key);
+    if (Number.isInteger(level) && level >= 1 && level <= state.analysisLevelCount) {
+      event.preventDefault();
+      togglePassageShareLevel(level);
     }
     return;
   }

@@ -278,11 +278,27 @@ select {
   justify-content: flex-end;
   gap: var(--space-2);
   min-height: 54px;
+}
+
+.passage-share-options-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
   margin-bottom: var(--space-3);
   border: 1px solid #dbe3ef;
   border-radius: var(--radius-md);
   background: #ffffff;
   padding: var(--space-2) var(--space-3);
+}
+
+.passage-share-options-panel .passage-share-controls {
+  margin: 0;
+}
+
+.passage-share-options-panel .passage-share-level-filters {
+  margin-left: auto;
 }
 
 .passage-share-filter-label {
