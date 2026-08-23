@@ -1,0 +1,35 @@
+/* 1·2단계 어휘 분석/공유 전용 스타일 */
+.vocabulary-view, .vocabulary-share-view { max-width: 1440px; margin: 0 auto; padding: var(--space-6) clamp(var(--space-4), 4vw, var(--space-12)); }
+.vocabulary-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin: var(--space-4) 0; }
+.vocabulary-list { display: grid; gap: var(--space-4); }
+.vocabulary-card { padding: var(--space-4); background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: 0 4px 14px rgba(15, 23, 42, .06); }
+.vocabulary-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); color: var(--color-primary); }
+.vocabulary-card-header strong { margin-right: auto; }
+.vocabulary-drag-handle { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; margin-right: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-muted); cursor: grab; font-size: 24px; line-height: 1; user-select: none; }
+.vocabulary-drag-handle:active { cursor: grabbing; }
+.vocabulary-card.is-dragging { opacity: .45; }
+.vocabulary-card.is-drop-before { box-shadow: inset 0 4px 0 var(--color-primary), 0 4px 14px rgba(15, 23, 42, .06); }
+.vocabulary-card.is-drop-after { box-shadow: inset 0 -4px 0 var(--color-primary), 0 4px 14px rgba(15, 23, 42, .06); }
+.vocabulary-fields { display: grid; grid-template-columns: 2fr 1fr 2fr 5fr; gap: var(--space-3); align-items: end; }
+.vocabulary-fields label { display: grid; gap: 6px; font-size: var(--font-ui-sm); font-weight: 800; }
+.vocabulary-fields input, .vocabulary-fields textarea { width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--color-ink); background: var(--color-bg); }
+.vocabulary-share-content { height: calc(100vh - 180px); min-height: 360px; display: grid; grid-template-columns: repeat(var(--vocabulary-columns, 2), minmax(0, 1fr)); grid-template-rows: repeat(var(--vocabulary-rows, 9), minmax(0, 1fr)); align-content: stretch; gap: clamp(8px, 1vw, 16px); overflow: hidden; }
+.vocabulary-share-content.is-focused { align-content: center; }
+.vocabulary-share-card { min-width: 0; min-height: 0; overflow: hidden; padding: var(--vocabulary-card-padding, clamp(18px, 2.4vw, 36px)); border: 2px solid var(--color-primary); border-radius: var(--radius-md); background: var(--color-panel); box-shadow: 0 7px 20px rgba(0, 102, 204, .10); }
+.vocabulary-share-card.is-clickable { cursor: zoom-in; }
+.vocabulary-share-card.is-focused-card { cursor: zoom-out; }
+.vocabulary-share-card.is-clickable:hover, .vocabulary-share-card.is-clickable:focus-visible { border-color: #dc2626; outline: 3px solid rgba(220, 38, 38, .22); outline-offset: 2px; }
+.vocabulary-share-heading { display: flex; align-items: baseline; gap: .35em; min-width: 0; color: #111111; }
+.vocabulary-share-card h3 { overflow-wrap: anywhere; margin: 0; color: #dc2626; font-size: var(--vocabulary-term-size, 42px); line-height: 1.15; }
+.vocabulary-meaning, .vocabulary-insight-text { margin: .3em 0 0; font-size: calc(var(--vocabulary-term-size, 42px) * .68); font-weight: 800; line-height: 1.25; }
+.vocabulary-meaning { color: #2563eb; }
+.vocabulary-location { margin: 0; color: #111111; font-size: calc(var(--vocabulary-term-size, 42px) * .45); font-weight: 800; white-space: nowrap; }
+.vocabulary-insight-text { color: #6b7280; white-space: pre-wrap; font-size: calc(var(--vocabulary-term-size, 42px) * .51); }
+.vocabulary-insight-text span { font-weight: 900; }
+.app-shell[data-theme="dark"] .vocabulary-card, .app-shell[data-theme="dark"] .vocabulary-share-card { background: var(--color-dark-panel); border-color: #3b82f6; }
+.app-shell[data-theme="dark"] .vocabulary-fields input, .app-shell[data-theme="dark"] .vocabulary-fields textarea { background: #0f172a; border-color: #475569; color: var(--color-dark-ink); }
+.app-shell[data-theme="dark"] .vocabulary-share-heading, .app-shell[data-theme="dark"] .vocabulary-location { color: #f8fafc; }
+.app-shell[data-theme="dark"] .vocabulary-insight-text { color: #9ca3af; }
+.app-shell[data-theme="dark"] .vocabulary-share-card h3 { color: #f87171; }
+.app-shell[data-theme="dark"] .vocabulary-meaning { color: #60a5fa; }
+@media (max-width: 760px) { .vocabulary-fields { grid-template-columns: 1fr; } .vocabulary-actions { align-items: stretch; flex-direction: column; } }

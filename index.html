@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/vocabulary.css">
 </head>
 <body>
   <div id="app" class="app-shell" data-mode="input" data-theme="light">
@@ -18,17 +19,37 @@
       </div>
       <nav class="top-workflow-nav" aria-label="작업 단계">
         <button class="top-workflow-button" type="button" id="headerInputButton">1단계-지문 입력</button>
-        <button class="top-workflow-button" type="button" id="headerEditButton">2단계-문장 분석</button>
-        <button class="top-workflow-button" type="button" id="headerPresentButton">3단계-문장 공유</button>
-        <button class="top-workflow-button" type="button" id="headerAnalysisButton">4단계-지문 분석</button>
-        <button class="top-workflow-button" type="button" id="headerPassageShareButton">5단계-지문 공유</button>
+        <button class="top-workflow-button" type="button" id="headerVocabularyButton">2단계-어휘 분석</button>
+        <button class="top-workflow-button" type="button" id="headerVocabularyShareButton">3단계-어휘 공유</button>
+        <button class="top-workflow-button" type="button" id="headerEditButton">4단계-문장 분석</button>
+        <button class="top-workflow-button" type="button" id="headerPresentButton">5단계-문장 공유</button>
+        <button class="top-workflow-button" type="button" id="headerAnalysisButton">6단계-지문 분석</button>
+        <button class="top-workflow-button" type="button" id="headerPassageShareButton">7단계-지문 공유</button>
         <span class="top-workflow-divider" aria-hidden="true">|||</span>
         <button class="top-workflow-button" type="button" id="headerSaveTxtButton">현재 TXT에 저장</button>
         <button class="top-workflow-button" type="button" id="headerSaveAsTxtButton">다른 이름으로 저장</button>
       </nav>
     </header>
+    <p id="saveStatus" class="save-status" role="status" aria-live="polite"></p>
 
     <main>
+      <section id="vocabularyView" class="view vocabulary-view hidden" aria-labelledby="vocabularyTitle">
+        <div class="toolbar stage-toolbar">
+          <div class="stage-toolbar-title"><h2 id="vocabularyTitle" class="stage-heading">2단계-어휘 분석</h2></div>
+          <section class="stage-context-panel"><div><h3>수업 핵심 어휘</h3><p>어렵거나 중요한 단어·표현을 골라 위치, 의미, Word Insights를 기록하세요.</p></div></section>
+        </div>
+        <div class="vocabulary-actions"><p id="vocabularyMessage" class="message" aria-live="polite"></p><button id="addVocabularyButton" class="button primary" type="button">+ 어휘 추가</button></div>
+        <div id="vocabularyList" class="vocabulary-list" aria-live="polite"></div>
+      </section>
+
+      <section id="vocabularyShareView" class="view vocabulary-share-view hidden" aria-labelledby="vocabularyShareTitle">
+        <div class="toolbar stage-toolbar">
+          <div class="stage-toolbar-title"><h2 id="vocabularyShareTitle" class="stage-heading">3단계-어휘 공유</h2></div>
+          <section class="stage-context-panel"><div><h3>핵심 어휘 한눈에 보기</h3><p><kbd>0</kbd>: 전체 보기 · <kbd>1</kbd>~<kbd>9</kbd>: 행의 카드 2장 보기 · <kbd>←</kbd>/<kbd>→</kbd>: 이전/다음 행 (단일 카드 포커스에서는 이전/다음 카드)</p></div></section>
+        </div>
+        <section id="vocabularyShareContent" class="vocabulary-share-content" aria-live="polite"></section>
+      </section>
+
       <section id="inputView" class="view input-view" aria-labelledby="inputTitle">
         <div class="toolbar stage-toolbar input-toolbar">
           <div class="stage-toolbar-title">
@@ -64,7 +85,7 @@
               <button class="button secondary" type="button" id="clearButton">초기화</button>
               <button class="button secondary" type="button" id="sampleButton">샘플 넣기</button>
               <button class="button secondary" type="button" id="inputImportButton">TXT 불러오기</button>
-              <button class="button primary" type="submit">2단계-문장 분석 시작</button>
+              <button class="button primary" type="submit">2단계-어휘 분석 시작</button>
             </div>
           </form>
         </div>
@@ -73,7 +94,7 @@
       <section id="editView" class="view edit-view hidden" aria-labelledby="editTitle">
         <div class="toolbar stage-toolbar edit-toolbar">
           <div class="stage-toolbar-title">
-            <h2 id="editTitle" class="stage-heading">2단계-문장 분석</h2>
+            <h2 id="editTitle" class="stage-heading">4단계-문장 분석</h2>
           </div>
           <section class="stage-context-panel edit-context-panel">
             <div>
@@ -133,7 +154,7 @@
       <section id="presentView" class="view present-view hidden" aria-labelledby="presentTitle">
         <div class="present-topbar stage-toolbar present-toolbar">
           <div class="present-title-area stage-toolbar-title">
-            <h2 class="stage-heading">3단계-문장 공유</h2>
+            <h2 class="stage-heading">5단계-문장 공유</h2>
             <span id="presentProgress" class="progress-badge">0 / 0</span>
           </div>
           <section class="stage-context-panel present-context-panel">
@@ -181,7 +202,7 @@
       <section id="analysisView" class="view analysis-view hidden" aria-labelledby="analysisTitle">
         <div class="toolbar stage-toolbar analysis-toolbar">
           <div class="stage-toolbar-title">
-            <h2 id="analysisTitle" class="stage-heading">4단계-지문 분석</h2>
+            <h2 id="analysisTitle" class="stage-heading">6단계-지문 분석</h2>
           </div>
           <section class="stage-context-panel analysis-intro-panel">
             <div>
@@ -202,7 +223,7 @@
       <section id="passageShareView" class="view passage-share-view hidden" aria-labelledby="passageShareTitle">
         <div class="toolbar stage-toolbar passage-share-toolbar">
           <div class="stage-toolbar-title">
-            <h2 id="passageShareTitle" class="stage-heading">5단계-지문 공유</h2>
+            <h2 id="passageShareTitle" class="stage-heading">7단계-지문 공유</h2>
           </div>
           <section class="stage-context-panel passage-share-context-panel">
             <div>
@@ -238,6 +259,8 @@
   </div>
 
   <input id="analysisFileInput" type="file" accept=".txt,text/plain" hidden>
+  <script src="js/quick-txt-data.js"></script>
+  <script src="js/vocabulary.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
