@@ -87,7 +87,8 @@ const state = {
   hiddenPassageLevels: [],
   vocabularyItems: [],
   saveFeedbackTimer: null,
-  outlineFocusSentenceIndex: null
+  outlineFocusSentenceIndex: null,
+  passageShareFitCache: new Map()
 };
 
 const elements = {
@@ -593,6 +594,10 @@ function renderPassageShareView() {
 
   const content = elements.passageShareContent;
   content.innerHTML = "";
+  // 보기 전환 시 이전 보기의 계산 크기와 캐시된 inline 값을 남기지 않는다.
+  content.style.removeProperty("height");
+  content.style.removeProperty("--passage-font-size");
+  content.style.removeProperty("--passage-columns");
   content.className = `passage-share-content ${isVisualMode ? "visual-share-content" : isOutlineMode ? "outline-share-content" : "plain-share-content"}`;
   content.style.setProperty("--passage-columns", "1");
   content.style.setProperty("--outline-columns", String(state.analysisLevelCount));
@@ -678,7 +683,7 @@ function renderPassageShareView() {
     applyOutlineHierarchySpacing();
     applyOutlineGroupStartAlignment();
   }
-  schedulePassageShareFit();
+  schedulePassageShareFit(true);
 }
 
 function applyOutlineHierarchySpacing() {
@@ -688,10 +693,7 @@ function applyOutlineHierarchySpacing() {
     .sort(([parentA], [parentB]) => Number(state.sentences[parentB].abstractLevel) - Number(state.sentences[parentA].abstractLevel));
   content.querySelectorAll(".passage-outline-sentence").forEach((card) => {
     card.style.marginBottom = "";
-    const rect = card.getBoundingClientRect();
-    const scaleAllowance = Math.max(0, getOutlineReservedBottom(card) - rect.bottom);
     // 같은 단계의 다음 카드와도 확대된 글자가 겹치지 않게 한다.
-    card.style.marginBottom = `${Math.ceil(scaleAllowance + 6)}px`;
   });
 
   parentEntries.forEach(([parentIndex]) => {
@@ -713,6 +715,23 @@ function applyOutlineHierarchySpacing() {
     const extraSpace = Math.ceil(descendantBottom + 14 - nextTop);
     const currentMargin = Number.parseFloat(parent.style.marginBottom) || 0;
     if (extraSpace > currentMargin) parent.style.marginBottom = `${extraSpace}px`;
+  });
+  applyOutlineRootScaleSpacing(content);
+}
+
+function applyOutlineRootScaleSpacing(content) {
+  const rootCards = [...content.querySelectorAll(".passage-outline-sentence")]
+    .filter((card) => {
+      const sentenceIndex = Number(card.dataset.sentenceIndex);
+      return clamp(1, Number(state.sentences[sentenceIndex]?.abstractLevel) || 1, state.analysisLevelCount) === 1;
+    });
+
+  rootCards.forEach((rootCard, index) => {
+    const nextRootCard = rootCards[index + 1];
+    if (!nextRootCard) return;
+    const extraSpace = Math.ceil(getOutlineReservedBottom(rootCard) + 10 - nextRootCard.getBoundingClientRect().top);
+    const currentMargin = Number.parseFloat(rootCard.style.marginBottom) || 0;
+    if (extraSpace > currentMargin) rootCard.style.marginBottom = `${extraSpace}px`;
   });
 }
 
@@ -1027,11 +1046,32 @@ function createConnectiveMarkedText(sentence, showConnectiveHighlight) {
   return wrapper;
 }
 
-function schedulePassageShareFit() {
-  requestAnimationFrame(fitPassageShare);
+function schedulePassageShareFit(forceRecalculate = false) {
+  if (!forceRecalculate) {
+    requestAnimationFrame(() => fitPassageShare(false));
+    return;
+  }
+  // 전체화면·보기 전환 직후에는 flex/grid 크기가 한 프레임 늦게 확정된다.
+  // 두 번째 프레임에서 측정해야 이전 보기의 높이를 물려받지 않는다.
+  requestAnimationFrame(() => requestAnimationFrame(() => fitPassageShare(true)));
 }
 
-function fitPassageShare() {
+function getPassageShareFitCacheKey(content, availableHeight) {
+  const sentenceSignature = state.sentences
+    .map((sentence) => `${sentence.abstractLevel}:${sentence.text}`)
+    .join("\u0001");
+  return [
+    state.passageShareMode,
+    state.hiddenPassageLevels.join(","),
+    document.fullscreenElement === elements.passageShareView ? "fullscreen" : "window",
+    Math.round(content.clientWidth),
+    Math.round(availableHeight),
+    state.analysisLevelCount,
+    sentenceSignature
+  ].join("\u0002");
+}
+
+function fitPassageShare(forceRecalculate = false) {
   if (state.mode !== "passage-share" || !elements.passageShareContent) return;
 
   const content = elements.passageShareContent;
@@ -1046,6 +1086,18 @@ function fitPassageShare() {
   const maxColumns = (isVisualMode || isOutlineMode) ? 1 : Math.min(12, Math.max(1, state.sentences.length));
 
   content.style.height = `${availableHeight}px`;
+  const cacheKey = getPassageShareFitCacheKey(content, availableHeight);
+  const cachedFit = state.passageShareFitCache.get(cacheKey);
+  if (cachedFit && !forceRecalculate) {
+    content.style.setProperty("--passage-font-size", `${cachedFit.fontSize}px`);
+    content.style.setProperty("--passage-columns", String(cachedFit.columns));
+    if (isOutlineMode) {
+      applyOutlineHierarchySpacing();
+      applyOutlineGroupStartAlignment();
+      drawOutlineGroupBlocks();
+    }
+    return;
+  }
   const maxFontSize = isVisualMode
     ? Math.min(200, Math.max(baseSize, window.innerWidth * 0.15, availableHeight * 0.45))
     : isOutlineMode
@@ -1056,31 +1108,58 @@ function fitPassageShare() {
   // 밀어 넣어 글자가 지나치게 작아지는 것보다, 최소 가독성을 지키고
   // 필요한 경우 카드 영역만 스크롤하는 편이 낫다.
   const minimumFontSize = isOutlineMode ? clamp(18, window.innerWidth * 0.012, 24) : 4;
-  let fitted = false;
-  for (let fontSize = Math.floor(maxFontSize); fontSize >= minimumFontSize && !fitted; fontSize -= 1) {
+  const applyFontCandidate = (fontSize) => {
     content.style.setProperty("--passage-font-size", `${fontSize}px`);
     if (isOutlineMode) {
       applyOutlineHierarchySpacing();
       applyOutlineGroupStartAlignment();
     }
-    for (let columns = 1; columns <= maxColumns; columns += 1) {
-      content.style.setProperty("--passage-columns", String(columns));
-      const fitsWidth = content.scrollWidth <= content.clientWidth + 1;
-      const fitsHeight = content.scrollHeight <= content.clientHeight + 1;
-      if (fitsWidth && fitsHeight) {
+    content.style.setProperty("--passage-columns", "1");
+    return content.scrollWidth <= content.clientWidth + 1
+      && content.scrollHeight <= content.clientHeight + 1;
+  };
+  let fitted = false;
+  if (isVisualMode || isOutlineMode) {
+    // 1px씩 줄이며 수십 번 레이아웃을 다시 그리지 않고, 최대 약 7회의
+    // 이분 탐색으로 가장 큰 읽기 가능한 글자 크기를 찾는다.
+    let low = Math.ceil(minimumFontSize);
+    let high = Math.floor(maxFontSize);
+    let best = low;
+    while (low <= high) {
+      const fontSize = Math.floor((low + high) / 2);
+      if (applyFontCandidate(fontSize)) {
+        best = fontSize;
         fitted = true;
-        break;
+        low = fontSize + 1;
+      } else {
+        high = fontSize - 1;
       }
     }
-  }
-  if (!fitted && isOutlineMode) {
-    content.style.setProperty("--passage-font-size", `${minimumFontSize}px`);
+    applyFontCandidate(fitted ? best : minimumFontSize);
+  } else {
+    for (let fontSize = Math.floor(maxFontSize); fontSize >= minimumFontSize && !fitted; fontSize -= 1) {
+      content.style.setProperty("--passage-font-size", `${fontSize}px`);
+      for (let columns = 1; columns <= maxColumns; columns += 1) {
+        content.style.setProperty("--passage-columns", String(columns));
+        const fitsWidth = content.scrollWidth <= content.clientWidth + 1;
+        const fitsHeight = content.scrollHeight <= content.clientHeight + 1;
+        if (fitsWidth && fitsHeight) {
+          fitted = true;
+          break;
+        }
+      }
+    }
   }
   if (isOutlineMode) {
     applyOutlineHierarchySpacing();
     applyOutlineGroupStartAlignment();
     drawOutlineGroupBlocks();
   }
+  if (state.passageShareFitCache.size >= 24) state.passageShareFitCache.clear();
+  state.passageShareFitCache.set(cacheKey, {
+    fontSize: Number.parseFloat(content.style.getPropertyValue("--passage-font-size")) || minimumFontSize,
+    columns: Number.parseInt(content.style.getPropertyValue("--passage-columns"), 10) || 1
+  });
 }
 
 function handleOutlineSentenceDragStart(event) {
@@ -2502,7 +2581,7 @@ function handleFullscreenChange() {
     schedulePresentationFit();
   }
   if (isPassageShareFullscreen || (!fullscreenElement && state.mode === "passage-share")) {
-    requestAnimationFrame(() => schedulePassageShareFit());
+    schedulePassageShareFit(true);
   }
 }
 
