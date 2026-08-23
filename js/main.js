@@ -143,6 +143,7 @@ const elements = {
   plainShareModeButton: document.getElementById("plainShareModeButton"),
   visualShareModeButton: document.getElementById("visualShareModeButton"),
   outlineShareModeButton: document.getElementById("outlineShareModeButton"),
+  passageShareFullscreenButton: document.getElementById("passageShareFullscreenButton"),
   passageShareHelper: document.getElementById("passageShareHelper"),
   passageShareLevelFilters: document.getElementById("passageShareLevelFilters"),
   passageShareContent: document.getElementById("passageShareContent"),
@@ -687,6 +688,10 @@ function applyOutlineHierarchySpacing() {
     .sort(([parentA], [parentB]) => Number(state.sentences[parentB].abstractLevel) - Number(state.sentences[parentA].abstractLevel));
   content.querySelectorAll(".passage-outline-sentence").forEach((card) => {
     card.style.marginBottom = "";
+    const rect = card.getBoundingClientRect();
+    const scaleAllowance = Math.max(0, getOutlineReservedBottom(card) - rect.bottom);
+    // 같은 단계의 다음 카드와도 확대된 글자가 겹치지 않게 한다.
+    card.style.marginBottom = `${Math.ceil(scaleAllowance + 6)}px`;
   });
 
   parentEntries.forEach(([parentIndex]) => {
@@ -700,11 +705,23 @@ function applyOutlineHierarchySpacing() {
       .map((index) => content.querySelector(`[data-sentence-index="${index}"]`))
       .filter((card) => card && !card.classList.contains("is-hidden"));
     if (descendantCards.length === 0) return;
-    const descendantBottom = Math.max(...descendantCards.map((card) => card.getBoundingClientRect().bottom));
+    // 단계 필터로 남은 카드가 최대 1.6배까지 커져도 다음 상위 문장
+    // 블록으로 넘어가지 않도록, 최초 레이아웃에서 그 크기만큼 공간을
+    // 미리 확보한다. transform은 레이아웃 크기에 반영되지 않기 때문이다.
+    const descendantBottom = Math.max(...descendantCards.map(getOutlineReservedBottom));
     const nextTop = nextSibling.getBoundingClientRect().top;
     const extraSpace = Math.ceil(descendantBottom + 14 - nextTop);
-    if (extraSpace > 0) parent.style.marginBottom = `${extraSpace}px`;
+    const currentMargin = Number.parseFloat(parent.style.marginBottom) || 0;
+    if (extraSpace > currentMargin) parent.style.marginBottom = `${extraSpace}px`;
   });
+}
+
+function getOutlineReservedBottom(card) {
+  const rect = card.getBoundingClientRect();
+  const currentScale = Number.parseFloat(card.style.getPropertyValue("--outline-card-scale")) || 1;
+  const unscaledHeight = rect.height / currentScale;
+  const maximumScale = 1.6;
+  return rect.top + (unscaledHeight * maximumScale);
 }
 
 function getOutlineDescendantIndexes(parentIndex) {
@@ -844,21 +861,38 @@ function drawOutlineGroupBlocks() {
   content.querySelectorAll(".outline-group-block").forEach((block) => block.remove());
   const contentRect = content.getBoundingClientRect();
   if (contentRect.width <= 0 || contentRect.height <= 0) return;
+  const allCards = [...content.querySelectorAll(".passage-outline-sentence")];
+  const rootCards = allCards
+    .filter((card) => {
+      const sentenceIndex = Number(card.dataset.sentenceIndex);
+      return clamp(1, Number(state.sentences[sentenceIndex]?.abstractLevel) || 1, state.analysisLevelCount) === 1;
+    })
+    .sort((first, second) => Number(first.dataset.sentenceIndex) - Number(second.dataset.sentenceIndex));
 
-  for (let groupIndex = 0; groupIndex < groups.count; groupIndex += 1) {
-    const cards = [...content.querySelectorAll(".passage-outline-sentence")]
+  rootCards.forEach((rootCard, groupIndex) => {
+    const cards = allCards
       .filter((card) => groups.bySentence.get(Number(card.dataset.sentenceIndex)) === groupIndex);
-    if (cards.length === 0) continue;
+    if (cards.length === 0) return;
     const rects = cards.map((card) => card.getBoundingClientRect());
-    const top = Math.max(0, Math.min(...rects.map((rect) => rect.top - contentRect.top)) - 6);
-    const bottom = Math.min(contentRect.height, Math.max(...rects.map((rect) => rect.bottom - contentRect.top)) + 6);
+    // 카드의 화면 좌표를 내부 스크롤 컨테이너 좌표로 환산한다. 스크롤
+    // 위치를 빼거나 보이는 높이로 자르면, 화면 밖 그룹의 배경이 사라진다.
+    // 한 1단계 트리의 블록은 그 문장부터 다음 1단계 문장 직전까지다.
+    // 카드 범위의 합집합을 쓰지 않으므로 서로 다른 트리의 배경이 겹치지 않는다.
+    const rootRect = rootCard.getBoundingClientRect();
+    const nextRootCard = rootCards[groupIndex + 1];
+    const top = Math.max(0, rootRect.top - contentRect.top + content.scrollTop - 6);
+    const lastGroupBottom = Math.max(...rects.map((rect) => rect.bottom - contentRect.top + content.scrollTop + 6));
+    const nextGroupTop = nextRootCard
+      ? nextRootCard.getBoundingClientRect().top - contentRect.top + content.scrollTop - 6
+      : lastGroupBottom;
+    const bottom = Math.max(top + rootRect.height + 6, nextGroupTop);
     const block = document.createElement("div");
     block.className = "outline-group-block";
     block.style.setProperty("--outline-group-hue", String(getOutlineGroupHue(groupIndex, groups.count)));
     block.style.top = `${top}px`;
     block.style.height = `${Math.max(0, bottom - top)}px`;
     content.prepend(block);
-  }
+  });
 }
 
 function applyOutlineGroupStartAlignment() {
@@ -868,24 +902,33 @@ function applyOutlineGroupStartAlignment() {
   const cards = [...content.querySelectorAll(".passage-outline-sentence")];
   cards.forEach((card) => { card.style.marginTop = ""; });
 
-  for (let groupIndex = 0; groupIndex < groups.count; groupIndex += 1) {
-    const rootCard = cards.find((card) => {
-      const sentenceIndex = Number(card.dataset.sentenceIndex);
-      return groups.bySentence.get(sentenceIndex) === groupIndex
-        && clamp(1, Number(state.sentences[sentenceIndex].abstractLevel) || 1, state.analysisLevelCount) === 1;
+  // 1단계만이 아니라 모든 부모 문장이 기준선이다. 즉, 2단계의 새
+  // 문장이 시작되면 그 첫 3단계 자식도 같은 높이에서 시작해야 한다.
+  // 상위 단계부터 차례로 맞춘 뒤 반복 보정해 확대/축소 시 소수점 오차도 없앤다.
+  const parentEntries = [...(state.outlineRelationChildren || new Map()).entries()]
+    .sort(([parentA], [parentB]) => {
+      const levelA = Number(state.sentences[parentA]?.abstractLevel) || 1;
+      const levelB = Number(state.sentences[parentB]?.abstractLevel) || 1;
+      return levelA - levelB;
     });
-    if (!rootCard) continue;
-    const groupTop = rootCard.getBoundingClientRect().top;
-    for (let level = 2; level <= state.analysisLevelCount; level += 1) {
-      const firstCardInLevel = cards.find((card) => {
-        const sentenceIndex = Number(card.dataset.sentenceIndex);
-        return groups.bySentence.get(sentenceIndex) === groupIndex
-          && clamp(1, Number(state.sentences[sentenceIndex].abstractLevel) || 1, state.analysisLevelCount) === level;
+
+  for (let pass = 0; pass < 3; pass += 1) {
+    parentEntries.forEach(([parentIndex, childIndexes]) => {
+      const parentCard = content.querySelector(`[data-sentence-index="${parentIndex}"]`);
+      const firstChildIndex = childIndexes.find((childIndex) => {
+        const child = content.querySelector(`[data-sentence-index="${childIndex}"]`);
+        return child && !child.classList.contains("is-hidden");
       });
-      if (!firstCardInLevel) continue;
-      const offset = Math.round(groupTop - firstCardInLevel.getBoundingClientRect().top);
-      if (offset !== 0) firstCardInLevel.style.marginTop = `${offset}px`;
-    }
+      const firstChildCard = Number.isInteger(firstChildIndex)
+        ? content.querySelector(`[data-sentence-index="${firstChildIndex}"]`)
+        : null;
+      if (!parentCard || parentCard.classList.contains("is-hidden") || !firstChildCard) return;
+
+      const correction = parentCard.getBoundingClientRect().top - firstChildCard.getBoundingClientRect().top;
+      if (Math.abs(correction) < 0.1) return;
+      const currentMargin = Number.parseFloat(firstChildCard.style.marginTop) || 0;
+      firstChildCard.style.marginTop = `${currentMargin + correction}px`;
+    });
   }
 }
 
@@ -955,10 +998,9 @@ function updatePassageShareLevelVisibility() {
       sentenceElement.style.setProperty("--outline-card-scale", isHidden ? "1" : String(outlineVisibleFontScale));
     }
   });
-  if (state.passageShareMode === "outline") {
-    applyOutlineGroupStartAlignment();
-    drawOutlineGroupBlocks();
-  }
+  // 단계 필터는 표시와 글자 확대만 바꾼다. 이 시점에 트리 간격이나
+  // 배경 블록 좌표를 다시 계산하면 숨긴 단계에 따라 1단계 위치까지
+  // 달라지므로, 전체 개조식 화면을 만들 때 확정한 좌표를 그대로 쓴다.
 }
 
 function getAbstractLevelVisualStyle(level, levelCount) {
@@ -996,7 +1038,11 @@ function fitPassageShare() {
   const availableHeight = Math.max(180, window.innerHeight - content.getBoundingClientRect().top - 28);
   const isVisualMode = state.passageShareMode === "visual";
   const isOutlineMode = state.passageShareMode === "outline";
-  const baseSize = isVisualMode ? clamp(18, window.innerWidth * 0.028, 44) : clamp(15, window.innerWidth * 0.019, 28);
+  const baseSize = isVisualMode
+    ? clamp(18, window.innerWidth * 0.028, 44)
+    : isOutlineMode
+      ? clamp(20, window.innerWidth * 0.016, 34)
+      : clamp(15, window.innerWidth * 0.019, 28);
   const maxColumns = (isVisualMode || isOutlineMode) ? 1 : Math.min(12, Math.max(1, state.sentences.length));
 
   content.style.height = `${availableHeight}px`;
@@ -1006,8 +1052,12 @@ function fitPassageShare() {
       ? Math.min(84, Math.max(baseSize, availableHeight * 0.12))
       : Math.min(120, Math.max(baseSize, availableHeight * 0.2));
 
+  // 개조식 서술은 교실 발표용 화면이다. 모든 트리를 한 화면에 강제로
+  // 밀어 넣어 글자가 지나치게 작아지는 것보다, 최소 가독성을 지키고
+  // 필요한 경우 카드 영역만 스크롤하는 편이 낫다.
+  const minimumFontSize = isOutlineMode ? clamp(18, window.innerWidth * 0.012, 24) : 4;
   let fitted = false;
-  for (let fontSize = Math.floor(maxFontSize); fontSize >= 4 && !fitted; fontSize -= 1) {
+  for (let fontSize = Math.floor(maxFontSize); fontSize >= minimumFontSize && !fitted; fontSize -= 1) {
     content.style.setProperty("--passage-font-size", `${fontSize}px`);
     if (isOutlineMode) {
       applyOutlineHierarchySpacing();
@@ -1022,6 +1072,9 @@ function fitPassageShare() {
         break;
       }
     }
+  }
+  if (!fitted && isOutlineMode) {
+    content.style.setProperty("--passage-font-size", `${minimumFontSize}px`);
   }
   if (isOutlineMode) {
     applyOutlineHierarchySpacing();
@@ -2430,12 +2483,27 @@ function togglePresentFullscreen() {
   elements.presentView.requestFullscreen?.().catch(() => { });
 }
 
+function togglePassageShareFullscreen() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen?.();
+    return;
+  }
+  elements.passageShareView.requestFullscreen?.().catch(() => { });
+}
+
 function handleFullscreenChange() {
-  const isFullscreen = Boolean(document.fullscreenElement);
-  elements.presentFitButton.textContent = isFullscreen ? "전체화면 종료 (🔍)" : "전체화면 (🔍)";
-  // 전체화면 진입/이탈로 화면 크기가 바뀌므로 글자 크기와 배치를 다시 맞춘다.
-  applySettings();
-  schedulePresentationFit();
+  const fullscreenElement = document.fullscreenElement;
+  const isPresentFullscreen = fullscreenElement === elements.presentView;
+  const isPassageShareFullscreen = fullscreenElement === elements.passageShareView;
+  elements.presentFitButton.textContent = isPresentFullscreen ? "전체화면 종료 (🔍)" : "전체화면 (🔍)";
+  elements.passageShareFullscreenButton.textContent = isPassageShareFullscreen ? "전체화면 종료 (F)" : "전체화면 (F)";
+  if (isPresentFullscreen || (!fullscreenElement && state.mode === "present")) {
+    applySettings();
+    schedulePresentationFit();
+  }
+  if (isPassageShareFullscreen || (!fullscreenElement && state.mode === "passage-share")) {
+    requestAnimationFrame(() => schedulePassageShareFit());
+  }
 }
 
 function handlePresentationLastButton() {
@@ -3748,6 +3816,7 @@ function bindEvents() {
     state.passageShareMode = "outline";
     renderPassageShareView();
   });
+  elements.passageShareFullscreenButton.addEventListener("click", togglePassageShareFullscreen);
   elements.analysisLevelCount.addEventListener("change", () => {
     state.analysisLevelCount = clamp(2, Number(elements.analysisLevelCount.value) || 3, 9);
     state.sentences.forEach((sentence) => {
@@ -3828,6 +3897,11 @@ function handleKeyboard(event) {
   }
 
   if (state.mode === "passage-share") {
+    if (event.key === "f" || event.key === "F") {
+      event.preventDefault();
+      togglePassageShareFullscreen();
+      return;
+    }
     if (state.outlineFocusSentenceIndex !== null) {
       if (event.key === "ArrowRight" && moveOutlineDescendantFocus(1)) {
         event.preventDefault();

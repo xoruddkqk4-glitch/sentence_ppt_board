@@ -239,6 +239,44 @@ select {
   margin: 0 auto;
 }
 
+/* 7단계 전체화면: 본문에 가능한 한 많은 높이를 배정한다. */
+.passage-share-view:fullscreen,
+.passage-share-view:fullscreen::backdrop {
+  background: var(--color-bg-soft);
+}
+
+.passage-share-view:fullscreen {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  padding: clamp(12px, 1.5vw, 28px);
+  display: flex;
+  flex-direction: column;
+}
+
+.passage-share-view:fullscreen .passage-share-toolbar,
+.passage-share-view:fullscreen .passage-share-helper {
+  display: none;
+}
+
+.passage-share-view:fullscreen .passage-share-options-panel {
+  flex: 0 0 auto;
+  margin-bottom: clamp(8px, 1vw, 16px);
+}
+
+.passage-share-view:fullscreen .passage-share-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto !important;
+}
+
+.app-shell[data-theme="dark"] .passage-share-view:fullscreen,
+.app-shell[data-theme="dark"] .passage-share-view:fullscreen::backdrop {
+  background: var(--color-dark-bg);
+}
+
 .passage-share-controls {
   display: flex;
   flex-wrap: wrap;
@@ -379,10 +417,12 @@ select {
   border-left: 3px solid rgba(0, 102, 204, 0.3);
   color: var(--outline-color, var(--color-ink));
   font-size: var(--passage-font-size);
-  font-weight: 700;
+  font-weight: 800;
+  line-height: 1.55;
   cursor: grab;
   transform: scale(var(--outline-card-scale, 1));
-  transform-origin: left center;
+  /* 단계 필터에서 확대되어도 각 카드의 시작 위치는 움직이지 않는다. */
+  transform-origin: left top;
   transition: opacity 120ms ease, background-color 120ms ease, outline-color 120ms ease, transform 160ms ease;
 }
 
@@ -419,6 +459,10 @@ select {
   grid-template-columns: repeat(var(--outline-columns, 3), minmax(0, 1fr));
   align-content: start;
   gap: clamp(10px, 1.5vw, 22px);
+  /* 가독성 하한을 지키기 위해, 긴 지문은 이 영역에서만 세로 스크롤한다. */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
 }
 
 .outline-level-lane {
@@ -442,10 +486,13 @@ select {
 }
 
 .outline-descendant-focus {
-  position: absolute;
-  z-index: 5;
+  /* 포커스는 개조식 카드 영역이 아니라 화면 전체를 덮어야 한다.
+     카드 영역 안의 absolute 레이어는 내부 스크롤 시 원래 화면을 노출한다. */
+  position: fixed;
+  z-index: 100;
   inset: 0;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: clamp(20px, 3vw, 48px);
   background: var(--color-panel);
 }
