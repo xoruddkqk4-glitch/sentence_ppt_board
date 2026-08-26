@@ -3209,6 +3209,7 @@ async function saveAnalysisTxt(saveAs = false) {
     return;
   }
 
+  const saveSummary = getCurrentAnalysisSaveSummary();
   const content = buildAnalysisText();
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
 
@@ -3230,7 +3231,7 @@ async function saveAnalysisTxt(saveAs = false) {
       // 최신 수정본 캐시 업데이트
       localStorage.setItem(`sentence_board_file_cache_${state.currentFileName}`, content);
 
-      const saveMsg = `💾 ${state.currentFileName} 파일에 수정 사항을 덮어써 저장했습니다.`;
+      const saveMsg = `💾 ${state.currentFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`;
       elements.inputMessage.style.color = "var(--color-primary)";
       elements.inputMessage.textContent = saveMsg;
       if (elements.editMessage) {
@@ -3290,7 +3291,7 @@ async function saveAnalysisTxt(saveAs = false) {
 
       localStorage.setItem(`sentence_board_file_cache_${fileHandle.name}`, content);
 
-      const saveMsg = `💾 ${fileHandle.name} 파일로 저장했습니다.`;
+      const saveMsg = `💾 ${fileHandle.name}에 전체 분석 정보를 저장했습니다. (${saveSummary})`;
       elements.inputMessage.style.color = "var(--color-primary)";
       elements.inputMessage.textContent = saveMsg;
       if (elements.editMessage) {
@@ -3326,7 +3327,7 @@ async function saveAnalysisTxt(saveAs = false) {
   localStorage.setItem(`sentence_board_file_cache_${fallbackFileName}`, content);
   downloadAnalysisTxt(blob, fallbackFileName);
 
-  const saveMsg = `💾 ${fallbackFileName} 파일로 저장했습니다.`;
+  const saveMsg = `⬇️ ${fallbackFileName} 파일을 새로 다운로드했습니다. 기존 파일은 덮어쓰지 않았습니다. (${saveSummary})`;
   elements.inputMessage.style.color = "var(--color-primary)";
   elements.inputMessage.textContent = saveMsg;
   if (elements.editMessage) {
@@ -3376,11 +3377,13 @@ function downloadAnalysisTxt(blob, fileName) {
 
 function buildAnalysisText() {
   const payload = buildAnalysisPayload();
+  const saveSummary = getAnalysisSaveSummary(payload);
   const lines = [
     EXPORT_MARKER,
     "영어 문장 분석 저장 파일",
     `저장 시각: ${payload.savedAt}`,
     `총 문장 수: ${payload.sentences.length}`,
+    `[저장 요약] ${saveSummary}`,
     "",
     "[문장 및 성분 인덱스]"
   ];
@@ -3401,6 +3404,24 @@ function buildAnalysisText() {
   return lines.join("\n");
 }
 
+function getCurrentAnalysisSaveSummary() {
+  return getAnalysisSaveSummary({
+    vocabularyItems: state.vocabularyItems,
+    sentences: state.sentences
+  });
+}
+
+function getAnalysisSaveSummary(payload) {
+  const sentences = Array.isArray(payload.sentences) ? payload.sentences : [];
+  const vocabularyCount = Array.isArray(payload.vocabularyItems)
+    ? payload.vocabularyItems.filter((item) => item.term || item.location || item.meaning || item.insights || item.imageData).length
+    : 0;
+  const componentCount = sentences.reduce((count, sentence) => count + (Array.isArray(sentence.components) ? sentence.components.length : 0), 0);
+  const abstractLevelCount = sentences.filter((sentence) => Number(sentence.abstractLevel) > 1).length;
+  const connectiveCount = sentences.reduce((count, sentence) => count + (Array.isArray(sentence.connectiveIndexes) ? sentence.connectiveIndexes.length : 0), 0);
+  return `어휘 ${vocabularyCount}개 · 문장 성분 ${componentCount}개 · 지문 단계 ${abstractLevelCount}건 · 연결어 ${connectiveCount}개`;
+}
+
 function buildAnalysisPayload() {
   return {
     version: 2,
@@ -3418,7 +3439,9 @@ function buildAnalysisPayload() {
       term: item.term,
       location: item.location,
       meaning: item.meaning,
-      insights: item.insights
+      insights: item.insights,
+      imageData: item.imageData,
+      imageName: item.imageName
     })),
     sentences: state.sentences.map((sentence, sentenceIndex) => ({
       id: sentence.id || `sentence-${sentenceIndex + 1}`,

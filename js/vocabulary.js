@@ -10,7 +10,9 @@
       term: String(item.term || ""),
       location: String(item.location || ""),
       meaning: String(item.meaning || ""),
-      insights: String(item.insights || "")
+      insights: String(item.insights || ""),
+      imageData: typeof item.imageData === "string" ? item.imageData : "",
+      imageName: String(item.imageName || "")
     };
   }
 
@@ -37,11 +39,48 @@
             <label>위치<input data-field="location" value="${escapeAttribute(item.location)}" placeholder="예: 2번 문장/3번째 줄"></label>
             <label>의미<input data-field="meaning" value="${escapeAttribute(item.meaning)}" placeholder="예: ~에 참여하다"></label>
             <label class="vocabulary-insights">Word Insights<input data-field="insights" value="${escapeAttribute(item.insights)}" placeholder="품사, 어원, 연어, 기억법, 수업 질문"></label>
+          </div>
+          <div class="vocabulary-image-field">
+            <label class="vocabulary-image-upload">이미지 삽입<input class="vocabulary-image-input" type="file" accept="image/*"></label>
+            <p class="vocabulary-image-help">단어 카드에 함께 표시할 이미지를 선택하세요. (최대 2MB)</p>
+            ${item.imageData ? `<div class="vocabulary-image-preview"><img src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}"><span>${escapeHtml(item.imageName || "첨부 이미지")}</span><button class="button secondary compact vocabulary-image-remove" type="button">이미지 삭제</button></div>` : ""}
           </div>`;
         card.querySelectorAll("[data-field]").forEach((field) => field.addEventListener("input", (event) => {
           item[event.target.dataset.field] = event.target.value;
           elements.vocabularyMessage.textContent = "어휘 내용이 현재 수업 세션에 저장되었습니다.";
         }));
+        const imageInput = card.querySelector(".vocabulary-image-input");
+        imageInput.addEventListener("change", () => {
+          const [file] = imageInput.files;
+          if (!file) return;
+          if (!file.type.startsWith("image/")) {
+            elements.vocabularyMessage.textContent = "이미지 파일만 삽입할 수 있습니다.";
+            imageInput.value = "";
+            return;
+          }
+          if (file.size > 2 * 1024 * 1024) {
+            elements.vocabularyMessage.textContent = "이미지는 2MB 이하의 파일만 삽입할 수 있습니다.";
+            imageInput.value = "";
+            return;
+          }
+          const reader = new FileReader();
+          reader.addEventListener("load", () => {
+            item.imageData = String(reader.result || "");
+            item.imageName = file.name;
+            elements.vocabularyMessage.textContent = "이미지를 어휘 카드에 추가했습니다. TXT 저장 시 함께 저장됩니다.";
+            renderAnalysis();
+          });
+          reader.addEventListener("error", () => {
+            elements.vocabularyMessage.textContent = "이미지를 읽지 못했습니다. 다른 파일을 선택해 주세요.";
+          });
+          reader.readAsDataURL(file);
+        });
+        card.querySelector(".vocabulary-image-remove")?.addEventListener("click", () => {
+          item.imageData = "";
+          item.imageName = "";
+          elements.vocabularyMessage.textContent = "어휘 카드에서 이미지를 삭제했습니다.";
+          renderAnalysis();
+        });
         card.querySelector(".vocabulary-delete").addEventListener("click", () => {
           state.vocabularyItems.splice(index, 1);
           renderAnalysis();
@@ -84,7 +123,7 @@
     }
 
     function renderShare() {
-      const items = state.vocabularyItems.filter((item) => item.term.trim() || item.meaning.trim() || item.insights.trim());
+      const items = state.vocabularyItems.filter((item) => item.term.trim() || item.meaning.trim() || item.insights.trim() || item.imageData);
       elements.vocabularyShareContent.innerHTML = "";
       if (!items.length) {
         elements.vocabularyShareContent.innerHTML = '<p class="empty-note vocabulary-empty">공유할 어휘가 없습니다. 2단계에서 어휘를 추가해 주세요.</p>';
@@ -114,7 +153,9 @@
       visibleItems.forEach((item) => {
         const card = document.createElement("article");
         card.className = "vocabulary-share-card";
+        if (item.imageData) card.classList.add("has-image");
         card.innerHTML = `<div class="vocabulary-share-heading"><p class="vocabulary-location">${escapeHtml(item.location || "위치 미입력")}</p><span aria-hidden="true">|</span><h3>${escapeHtml(item.term || "(어휘 미입력)")}</h3></div>
+          ${item.imageData ? `<img class="vocabulary-share-image" src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}">` : ""}
           ${item.meaning ? `<p class="vocabulary-meaning">${escapeHtml(item.meaning)}</p>` : ""}
           ${item.insights ? `<p class="vocabulary-insight-text">${escapeHtml(item.insights)}</p>` : ""}`;
         if (!selectedItem && !focusItems) {
@@ -182,7 +223,7 @@
       if (state.mode === "vocabulary-share") renderShare();
     });
     function handleShareKey(key) {
-      const items = state.vocabularyItems.filter((item) => item.term.trim() || item.meaning.trim() || item.insights.trim());
+      const items = state.vocabularyItems.filter((item) => item.term.trim() || item.meaning.trim() || item.insights.trim() || item.imageData);
       const rowCount = Math.ceil(items.length / 2);
       if (key === "0") {
         state.vocabularyShareFocusRow = null;

@@ -13,9 +13,18 @@
 .vocabulary-fields { display: grid; grid-template-columns: 2fr 1fr 2fr 5fr; gap: var(--space-3); align-items: end; }
 .vocabulary-fields label { display: grid; gap: 6px; font-size: var(--font-ui-sm); font-weight: 800; }
 .vocabulary-fields input, .vocabulary-fields textarea { width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--color-ink); background: var(--color-bg); }
+.vocabulary-image-field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
+.vocabulary-image-upload { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--color-primary); border-radius: var(--radius-sm); color: var(--color-primary); font-size: var(--font-ui-sm); font-weight: 800; cursor: pointer; }
+.vocabulary-image-upload:hover { background: color-mix(in srgb, var(--color-primary) 8%, transparent); }
+.vocabulary-image-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.vocabulary-image-help { margin: 0; color: var(--color-muted); font-size: var(--font-ui-sm); }
+.vocabulary-image-preview { display: flex; align-items: center; gap: var(--space-2); width: 100%; padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bg); }
+.vocabulary-image-preview img { width: 88px; height: 60px; object-fit: cover; border-radius: 6px; }
+.vocabulary-image-preview span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--font-ui-sm); font-weight: 700; }
+.vocabulary-image-preview .vocabulary-image-remove { margin-left: auto; }
 .vocabulary-share-content { height: calc(100vh - 180px); min-height: 360px; display: grid; grid-template-columns: repeat(var(--vocabulary-columns, 2), minmax(0, 1fr)); grid-template-rows: repeat(var(--vocabulary-rows, 9), minmax(0, 1fr)); align-content: stretch; gap: clamp(8px, 1vw, 16px); overflow: hidden; }
 .vocabulary-share-content.is-focused { align-content: center; }
-.vocabulary-share-card { min-width: 0; min-height: 0; overflow: hidden; padding: var(--vocabulary-card-padding, clamp(18px, 2.4vw, 36px)); border: 2px solid var(--color-primary); border-radius: var(--radius-md); background: var(--color-panel); box-shadow: 0 7px 20px rgba(0, 102, 204, .10); }
+.vocabulary-share-card { position: relative; min-width: 0; min-height: 0; overflow: hidden; padding: var(--vocabulary-card-padding, clamp(18px, 2.4vw, 36px)); border: 2px solid var(--color-primary); border-radius: var(--radius-md); background: var(--color-panel); box-shadow: 0 7px 20px rgba(0, 102, 204, .10); }
 .vocabulary-share-card.is-clickable { cursor: zoom-in; }
 .vocabulary-share-card.is-focused-card { cursor: zoom-out; }
 .vocabulary-share-card.is-clickable:hover, .vocabulary-share-card.is-clickable:focus-visible { border-color: #dc2626; outline: 3px solid rgba(220, 38, 38, .22); outline-offset: 2px; }
@@ -26,6 +35,8 @@
 .vocabulary-location { margin: 0; color: #111111; font-size: calc(var(--vocabulary-term-size, 42px) * .45); font-weight: 800; white-space: nowrap; }
 .vocabulary-insight-text { color: #6b7280; white-space: pre-wrap; font-size: calc(var(--vocabulary-term-size, 42px) * .51); }
 .vocabulary-insight-text span { font-weight: 900; }
+.vocabulary-share-card.has-image .vocabulary-share-heading, .vocabulary-share-card.has-image .vocabulary-meaning, .vocabulary-share-card.has-image .vocabulary-insight-text { max-width: 68%; position: relative; z-index: 1; }
+.vocabulary-share-image { position: absolute; top: 7%; right: 3%; width: 25%; height: 86%; object-fit: contain; border-radius: 8px; }
 .app-shell[data-theme="dark"] .vocabulary-card, .app-shell[data-theme="dark"] .vocabulary-share-card { background: var(--color-dark-panel); border-color: #3b82f6; }
 .app-shell[data-theme="dark"] .vocabulary-fields input, .app-shell[data-theme="dark"] .vocabulary-fields textarea { background: #0f172a; border-color: #475569; color: var(--color-dark-ink); }
 .app-shell[data-theme="dark"] .vocabulary-share-heading, .app-shell[data-theme="dark"] .vocabulary-location { color: #f8fafc; }
