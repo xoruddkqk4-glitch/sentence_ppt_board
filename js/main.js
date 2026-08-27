@@ -98,6 +98,7 @@ const elements = {
   vocabularyShareView: document.getElementById("vocabularyShareView"),
   vocabularyList: document.getElementById("vocabularyList"),
   vocabularyShareContent: document.getElementById("vocabularyShareContent"),
+  vocabularyShareProgress: document.getElementById("vocabularyShareProgress"),
   vocabularyMessage: document.getElementById("vocabularyMessage"),
   addVocabularyButton: document.getElementById("addVocabularyButton"),
   inputView: document.getElementById("inputView"),

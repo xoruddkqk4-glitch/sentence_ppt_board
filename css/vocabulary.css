@@ -1,6 +1,7 @@
 /* 1·2단계 어휘 분석/공유 전용 스타일 */
 .vocabulary-view, .vocabulary-share-view { max-width: 1440px; margin: 0 auto; padding: var(--space-6) clamp(var(--space-4), 4vw, var(--space-12)); }
 .vocabulary-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin: var(--space-4) 0; }
+.vocabulary-share-progress { margin-left: clamp(96px, 9vw, 150px); color: var(--color-primary); font-size: clamp(20px, 1.8vw, 30px); font-weight: 900; letter-spacing: -.03em; }
 .vocabulary-list { display: grid; gap: var(--space-4); }
 .vocabulary-card { padding: var(--space-4); background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: 0 4px 14px rgba(15, 23, 42, .06); }
 .vocabulary-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); color: var(--color-primary); }

@@ -126,11 +126,16 @@
       const items = state.vocabularyItems.filter((item) => item.term.trim() || item.meaning.trim() || item.insights.trim() || item.imageData);
       elements.vocabularyShareContent.innerHTML = "";
       if (!items.length) {
+        elements.vocabularyShareProgress.hidden = true;
+        elements.vocabularyShareProgress.textContent = "";
         elements.vocabularyShareContent.innerHTML = '<p class="empty-note vocabulary-empty">공유할 어휘가 없습니다. 2단계에서 어휘를 추가해 주세요.</p>';
         return;
       }
       const selectedItem = state.vocabularyShareSelectedItemId ? items.find((item) => item.id === state.vocabularyShareSelectedItemId) : null;
       if (state.vocabularyShareSelectedItemId && !selectedItem) state.vocabularyShareSelectedItemId = null;
+      const selectedIndex = selectedItem ? items.indexOf(selectedItem) : -1;
+      elements.vocabularyShareProgress.hidden = selectedIndex < 0;
+      elements.vocabularyShareProgress.textContent = selectedIndex >= 0 ? `${selectedIndex + 1}/${items.length}` : "";
       const focusItem = state.vocabularyShareFocusRow === null ? null : items[state.vocabularyShareFocusRow * 2];
       if (state.vocabularyShareFocusRow !== null && !focusItem) state.vocabularyShareFocusRow = null;
       const focusItems = focusItem
