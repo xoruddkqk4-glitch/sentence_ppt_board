@@ -527,7 +527,7 @@ function renderAnalysisView() {
       wordButton.className = "connective-word";
       const color = getSentenceConnectiveColor(sentence, wordIndex);
       if (color) {
-        wordButton.classList.add("is-selected", `is-selected-${color}`);
+        wordButton.classList.add("is-selected", `is-selected-${color}`, `is-${color}`);
         wordButton.setAttribute("data-color", color);
       }
       wordButton.textContent = word;
@@ -1138,7 +1138,7 @@ function createConnectiveMarkedText(sentence, showConnectiveHighlight) {
     wordElement.textContent = word;
     if (showConnectiveHighlight && selectedIndexes.has(index)) {
       const color = getSentenceConnectiveColor(sentence, index);
-      wordElement.className = `passage-connective passage-connective-${color}`;
+      wordElement.className = `passage-connective passage-connective-${color} is-${color}`;
     }
     wrapper.appendChild(wordElement);
     if (index < words.length - 1) wrapper.appendChild(document.createTextNode(" "));

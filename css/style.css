@@ -520,28 +520,28 @@ select {
   column-count: 1 !important;
 }
 
-.passage-connective {
+.passage-connective,
+.passage-connective.is-yellow,
+.passage-connective-yellow {
   border-radius: 0.15em;
   background: #fef08a;
   color: #3f2d00;
   box-shadow: inset 0 -0.12em 0 #eab308;
 }
 
-.passage-connective-yellow {
-  background: #fef08a;
-  color: #3f2d00;
-  box-shadow: inset 0 -0.12em 0 #eab308;
-}
-
+.passage-connective.is-red,
 .passage-connective-red {
+  border-radius: 0.15em;
   background: #fecdd3;
-  color: #881337;
+  color: #4c0519;
   box-shadow: inset 0 -0.12em 0 #f43f5e;
 }
 
+.passage-connective.is-blue,
 .passage-connective-blue {
+  border-radius: 0.15em;
   background: #bfdbfe;
-  color: #1e3a8a;
+  color: #172554;
   box-shadow: inset 0 -0.12em 0 #3b82f6;
 }
 
@@ -571,20 +571,23 @@ select {
 }
 
 .app-shell[data-theme="dark"] .passage-connective,
+.app-shell[data-theme="dark"] .passage-connective.is-yellow,
 .app-shell[data-theme="dark"] .passage-connective-yellow {
   background: #854d0e;
   color: #fef9c3;
   box-shadow: inset 0 -0.12em 0 #facc15;
 }
 
+.app-shell[data-theme="dark"] .passage-connective.is-red,
 .app-shell[data-theme="dark"] .passage-connective-red {
-  background: #9f1239;
+  background: #881337;
   color: #ffe4e6;
   box-shadow: inset 0 -0.12em 0 #fb7185;
 }
 
+.app-shell[data-theme="dark"] .passage-connective.is-blue,
 .app-shell[data-theme="dark"] .passage-connective-blue {
-  background: #1e40af;
+  background: #1e3a8a;
   color: #dbeafe;
   box-shadow: inset 0 -0.12em 0 #60a5fa;
 }
@@ -888,22 +891,22 @@ select {
 }
 
 .connective-word.is-selected,
-.connective-word.is-selected-yellow {
+.connective-word.is-selected.is-yellow {
   border-color: #a16207;
   background: #fef08a;
   color: #713f12;
   box-shadow: inset 0 -3px 0 #eab308;
 }
 
-.connective-word.is-selected-red {
-  border-color: #e11d48;
+.connective-word.is-selected.is-red {
+  border-color: #be123c;
   background: #fecdd3;
   color: #881337;
   box-shadow: inset 0 -3px 0 #f43f5e;
 }
 
-.connective-word.is-selected-blue {
-  border-color: #2563eb;
+.connective-word.is-selected.is-blue {
+  border-color: #1d4ed8;
   background: #bfdbfe;
   color: #1e3a8a;
   box-shadow: inset 0 -3px 0 #3b82f6;
@@ -936,22 +939,25 @@ select {
 }
 
 .app-shell[data-theme="dark"] .connective-word.is-selected,
-.app-shell[data-theme="dark"] .connective-word.is-selected-yellow {
+.app-shell[data-theme="dark"] .connective-word.is-selected.is-yellow {
   border-color: #facc15;
   background: #713f12;
   color: #fef9c3;
+  box-shadow: inset 0 -3px 0 #facc15;
 }
 
-.app-shell[data-theme="dark"] .connective-word.is-selected-red {
+.app-shell[data-theme="dark"] .connective-word.is-selected.is-red {
   border-color: #fb7185;
   background: #881337;
   color: #ffe4e6;
+  box-shadow: inset 0 -3px 0 #fb7185;
 }
 
-.app-shell[data-theme="dark"] .connective-word.is-selected-blue {
+.app-shell[data-theme="dark"] .connective-word.is-selected.is-blue {
   border-color: #60a5fa;
-  background: #1e40af;
+  background: #1e3a8a;
   color: #dbeafe;
+  box-shadow: inset 0 -3px 0 #60a5fa;
 }
 
 .input-layout {
