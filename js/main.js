@@ -516,7 +516,7 @@ function renderAnalysisView() {
     connectiveLabel.append("연결어 선택");
     const connectiveHelp = document.createElement("span");
     connectiveHelp.className = "connective-help";
-    connectiveHelp.textContent = "클릭: 단어 선택 · Shift+클릭: 범위 선택";
+    connectiveHelp.textContent = "클릭: 색상 전환(노랑→빨강→파랑→해제) · Shift+클릭: 범위 선택";
     connectiveLabel.appendChild(connectiveHelp);
 
     const words = document.createElement("div");
@@ -525,9 +525,13 @@ function renderAnalysisView() {
       const wordButton = document.createElement("button");
       wordButton.type = "button";
       wordButton.className = "connective-word";
-      wordButton.classList.toggle("is-selected", sentence.connectiveIndexes.includes(wordIndex));
+      const color = getSentenceConnectiveColor(sentence, wordIndex);
+      if (color) {
+        wordButton.classList.add("is-selected", `is-selected-${color}`);
+        wordButton.setAttribute("data-color", color);
+      }
       wordButton.textContent = word;
-      wordButton.setAttribute("aria-pressed", String(sentence.connectiveIndexes.includes(wordIndex)));
+      wordButton.setAttribute("aria-pressed", String(Boolean(color)));
       wordButton.addEventListener("click", (event) => {
         updateSentenceConnectiveIndexes(sentenceIndex, wordIndex, event.shiftKey);
       });
@@ -547,6 +551,29 @@ function getSentenceConnectiveIndexes(sentence) {
     .sort((a, b) => a - b);
 }
 
+function getSentenceConnectiveColor(sentence, wordIndex) {
+  const index = Number(wordIndex);
+  const connectiveIndexes = getSentenceConnectiveIndexes(sentence);
+  if (!connectiveIndexes.includes(index)) {
+    return null;
+  }
+  const colorMap = sentence?.connectiveColors || {};
+  const color = colorMap[index] ?? colorMap[String(index)];
+  if (color === "red" || color === "blue" || color === "yellow") {
+    return color;
+  }
+  return "yellow";
+}
+
+function getSentenceConnectiveColorsMap(sentence) {
+  const connectiveIndexes = getSentenceConnectiveIndexes(sentence);
+  const result = {};
+  connectiveIndexes.forEach((index) => {
+    result[index] = getSentenceConnectiveColor(sentence, index);
+  });
+  return result;
+}
+
 function updateSentenceConnectiveIndexes(sentenceIndex, wordIndex, useRange) {
   const sentence = state.sentences[sentenceIndex];
   if (!sentence) {
@@ -554,20 +581,41 @@ function updateSentenceConnectiveIndexes(sentenceIndex, wordIndex, useRange) {
   }
 
   const selected = new Set(getSentenceConnectiveIndexes(sentence));
+  const colorsMap = getSentenceConnectiveColorsMap(sentence);
   const anchor = state.connectiveSelectionAnchor;
+
   if (useRange && anchor?.sentenceIndex === sentenceIndex) {
+    const targetColor = getSentenceConnectiveColor(sentence, anchor.wordIndex) || "yellow";
     const start = Math.min(anchor.wordIndex, wordIndex);
     const end = Math.max(anchor.wordIndex, wordIndex);
     for (let index = start; index <= end; index += 1) {
       selected.add(index);
+      colorsMap[index] = targetColor;
     }
-  } else if (selected.has(wordIndex)) {
-    selected.delete(wordIndex);
   } else {
-    selected.add(wordIndex);
+    const currentColor = getSentenceConnectiveColor(sentence, wordIndex);
+    let nextColor = null;
+    if (!currentColor) {
+      nextColor = "yellow";
+    } else if (currentColor === "yellow") {
+      nextColor = "red";
+    } else if (currentColor === "red") {
+      nextColor = "blue";
+    } else if (currentColor === "blue") {
+      nextColor = null;
+    }
+
+    if (nextColor) {
+      selected.add(wordIndex);
+      colorsMap[wordIndex] = nextColor;
+    } else {
+      selected.delete(wordIndex);
+      delete colorsMap[wordIndex];
+    }
   }
 
   sentence.connectiveIndexes = [...selected].sort((a, b) => a - b);
+  sentence.connectiveColors = colorsMap;
   state.connectiveSelectionAnchor = { sentenceIndex, wordIndex };
   renderAnalysisView();
 }
@@ -1088,7 +1136,10 @@ function createConnectiveMarkedText(sentence, showConnectiveHighlight) {
   words.forEach((word, index) => {
     const wordElement = document.createElement("span");
     wordElement.textContent = word;
-    if (showConnectiveHighlight && selectedIndexes.has(index)) wordElement.className = "passage-connective";
+    if (showConnectiveHighlight && selectedIndexes.has(index)) {
+      const color = getSentenceConnectiveColor(sentence, index);
+      wordElement.className = `passage-connective passage-connective-${color}`;
+    }
     wrapper.appendChild(wordElement);
     if (index < words.length - 1) wrapper.appendChild(document.createTextNode(" "));
   });
@@ -2224,6 +2275,7 @@ function updateSentenceText() {
   sentence.wordCount = getPlainWords(newText).length;
   sentence.components = analyzeSentence(newText, state.currentSentenceIndex);
   sentence.connectiveIndexes = [];
+  sentence.connectiveColors = {};
 
   state.passageText = state.sentences.map((s) => s.text).join(" ");
   elements.passageInput.value = state.passageText;
@@ -2243,6 +2295,7 @@ function insertNewSentence() {
     isImportant: false,
     abstractLevel: 1,
     connectiveIndexes: [],
+    connectiveColors: {},
     wordCount: getPlainWords(defaultText).length,
     components: analyzeSentence(defaultText, insertIndex)
   };
@@ -3499,6 +3552,7 @@ function buildAnalysisPayload() {
       isImportant: sentence.isImportant === true,
       abstractLevel: clamp(1, Number(sentence.abstractLevel) || 1, state.analysisLevelCount),
       connectiveIndexes: getSentenceConnectiveIndexes(sentence),
+      connectiveColors: getSentenceConnectiveColorsMap(sentence),
       wordCount: Number.isFinite(sentence.wordCount) ? sentence.wordCount : getPlainWords(sentence.text).length,
       components: sentence.components.map((component, componentIndex) => ({
         id: component.id,
@@ -3741,6 +3795,7 @@ function normalizeImportedSentence(sentence, sentenceIndex) {
     isImportant: sentence.isImportant === true,
     abstractLevel: Number.isInteger(Number(sentence.abstractLevel)) ? Number(sentence.abstractLevel) : 1,
     connectiveIndexes: Array.isArray(sentence.connectiveIndexes) ? sentence.connectiveIndexes : [],
+    connectiveColors: typeof sentence.connectiveColors === "object" && sentence.connectiveColors !== null ? sentence.connectiveColors : {},
     wordCount: Number.isFinite(Number(sentence.wordCount)) ? Number(sentence.wordCount) : getPlainWords(text).length,
     components
   };
