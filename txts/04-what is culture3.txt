@@ -1,0 +1,886 @@
+WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-08-26T00:43:17.695Z
+총 문장 수: 8
+[저장 요약] 어휘 6개 · 문장 성분 37개 · 지문 단계 7건 · 연결어 3개
+
+[문장 및 성분 인덱스]
+
+[문장 1] HALL'S ANALOGY FOR APPROACHING INTERCULTURAL UNDERSTANDING.
+  단어 수: 6
+  - 성분 1: id=s1-c1, lane=major, role=subtitle, order=1, wordIndex0=0-2, wordIndex1=1-2, text="HALL'S ANALOGY"
+  - 성분 2: id=s1-c2, lane=minor, role=adjective, order=1, wordIndex0=2-6, wordIndex1=3-6, text="FOR APPROACHING INTERCULTURAL UNDERSTANDING."
+
+[문장 2] The concept of the cultural iceberg was coined in 1976 by Edward T Hall, who suggested that culture is analogous to an iceberg in that only about 10% of the iceberg is visible at any given time and that a large part of it is hidden beneath the surface.
+  단어 수: 48
+  - 성분 1: id=s2-c1, lane=major, role=subject, order=1, wordIndex0=0-6, wordIndex1=1-6, text="The concept of the cultural iceberg"
+  - 성분 2: id=s2-c2, lane=major, role=verb, order=2, wordIndex0=6-8, wordIndex1=7-8, text="was coined"
+  - 성분 3: id=s2-c3, lane=minor, role=adverb, order=1, wordIndex0=8-10, wordIndex1=9-10, text="in 1976"
+  - 성분 4: id=s2-c4, lane=minor, role=adverb, order=2, wordIndex0=10-13, wordIndex1=11-13, text="by Edward'T Hall,"
+  - 성분 5: id=s2-c5, lane=minor, role=adjective, order=3, wordIndex0=13-22, wordIndex1=14-22, text="who suggested that culture is analogous to an iceberg"
+  - 성분 6: id=s2-c6, lane=minor, role=adverb, order=4, wordIndex0=22-36, wordIndex1=23-36, text="in that only about 10 of the iceberg is visible at any given time"
+  - 성분 7: id=s2-c7, lane=minor, role=adverb, order=5, wordIndex0=36-48, wordIndex1=37-48, text="and that a large part of it is hidden beneath the surface."
+
+[문장 3] Culture has components that are above the surface and visible, and the majority of culture, about 90%, is hidden below the surface.
+  단어 수: 22
+  - 성분 1: id=s3-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Culture"
+  - 성분 2: id=s3-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="has"
+  - 성분 3: id=s3-c3, lane=major, role=object, order=3, wordIndex0=2-13, wordIndex1=3-13, text="components that are above the surface and visible, and the majority"
+  - 성분 4: id=s3-c4, lane=minor, role=adverb, order=4, wordIndex0=13-15, wordIndex1=14-15, text="of culture,"
+  - 성분 5: id=s3-c5, lane=minor, role=adverb, order=5, wordIndex0=15-22, wordIndex1=16-22, text="about 90 is hidden below the surface."
+
+[문장 4] The iceberg analogy of culture is highly mentioned as it illustrates how much of culture is invisible and intangible.
+  단어 수: 19
+  - 성분 1: id=s4-c1, lane=major, role=subject, order=1, wordIndex0=0-5, wordIndex1=1-5, text="The iceberg analogy of culture"
+  - 성분 2: id=s4-c2, lane=major, role=verb, order=2, wordIndex0=5-6, wordIndex1=6-6, text="is"
+  - 성분 3: id=s4-c3, lane=major, role=verb, order=3, wordIndex0=6-7, wordIndex1=7-7, text="mentioned"
+  - 성분 4: id=s4-c4, lane=minor, role=adverb, order=1, wordIndex0=6-7, wordIndex1=7-7, text="highly"
+  - 성분 5: id=s4-c5, lane=minor, role=adverb, order=2, wordIndex0=8-19, wordIndex1=9-19, text="as it illustrates how much of culture is invisible and intangible."
+
+[문장 5] It also demonstrates that values and beliefs are deeply set.
+  단어 수: 10
+  - 성분 1: id=s5-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="It"
+  - 성분 2: id=s5-c2, lane=minor, role=adverb, order=1, wordIndex0=1-2, wordIndex1=2-2, text="also"
+  - 성분 3: id=s5-c3, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="demonstrates"
+  - 성분 4: id=s5-c4, lane=major, role=object, order=3, wordIndex0=3-10, wordIndex1=4-10, text="that values and beliefs are deeply set."
+
+[문장 6] Please keep in mind that the cultural iceberg, like any analogy, is limited.
+  단어 수: 13
+  - 성분 1: id=s6-c1, lane=minor, role=adverb, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Please"
+  - 성분 2: id=s6-c2, lane=major, role=verb, order=1, wordIndex0=1-4, wordIndex1=2-4, text="keep in mind"
+  - 성분 3: id=s6-c3, lane=major, role=object, order=2, wordIndex0=4-8, wordIndex1=5-8, text="that the cultural iceberg,"
+  - 성분 4: id=s6-c4, lane=minor, role=adverb, order=2, wordIndex0=8-11, wordIndex1=9-11, text="like any analogy,"
+  - 성분 5: id=s6-c5, lane=major, role=object, order=3, wordIndex0=11-13, wordIndex1=12-13, text="is limited."
+
+[문장 7] For example, the image of the iceberg is static and fixed, while culture is dynamic and complex.
+  단어 수: 17
+  - 성분 1: id=s7-c1, lane=minor, role=adverb, order=1, wordIndex0=0-2, wordIndex1=1-2, text="For example,"
+  - 성분 2: id=s7-c2, lane=major, role=subject, order=1, wordIndex0=2-7, wordIndex1=3-7, text="the image of the iceberg"
+  - 성분 3: id=s7-c3, lane=major, role=verb, order=2, wordIndex0=7-8, wordIndex1=8-8, text="is"
+  - 성분 4: id=s7-c4, lane=major, role=complement, order=3, wordIndex0=8-11, wordIndex1=9-11, text="static and fixed,"
+  - 성분 5: id=s7-c5, lane=minor, role=adverb, order=2, wordIndex0=11-17, wordIndex1=12-17, text="while culture is dynamic and complex."
+
+[문장 8] Culture is not a 'thing' as this image suggests, and the iceberg is used as a means of illustrating a concept.
+  단어 수: 21
+  - 성분 1: id=s8-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Culture"
+  - 성분 2: id=s8-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="is"
+  - 성분 3: id=s8-c3, lane=major, role=complement, order=3, wordIndex0=2-17, wordIndex1=3-17, text="not a 'thing' as this image suggests, and the iceberg is used as a means"
+  - 성분 4: id=s8-c4, lane=minor, role=adverb, order=4, wordIndex0=17-21, wordIndex1=18-21, text="of illustrating a concept."
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 2,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-08-26T00:43:17.695Z",
+  "passageText": "HALL'S ANALOGY FOR APPROACHING INTERCULTURAL UNDERSTANDING.\nThe concept of the cultural iceberg was coined in 1976 by Edward T Hall, who suggested that culture is analogous to an iceberg in that only about 10% of the iceberg is visible at any given time and that a large part of it is hidden beneath the surface. Culture has components that are above the surface and visible, and the majority of culture, about 90%, is hidden below the surface. The iceberg analogy of culture is highly mentioned as it illustrates how much of culture is invisible and intangible. It also demonstrates that values and beliefs are deeply set. Please keep in mind that the cultural iceberg, like any analogy, is limited. For example, the image of the iceberg is static and fixed, while culture is dynamic and complex. Culture is not a 'thing' as this image suggests, and the iceberg is used as a means of illustrating a concept.",
+  "currentSentenceIndex": 6,
+  "componentSerial": 89,
+  "analysisLevelCount": 4,
+  "settings": {
+    "theme": "light",
+    "align": "center"
+  },
+  "passageShareMode": "outline",
+  "hiddenPassageLevels": [],
+  "vocabularyItems": [
+    {
+      "id": "vocab-1787700680639-2t9ure",
+      "term": "analogy",
+      "location": "소제목",
+      "meaning": "(명) 비슷함, 유사, 닮음",
+      "insights": "(형) analogous : 비슷한, 유사한, 닮은 / cf) analogue : 아날로그 ↔ digital : 디지털",
+      "imageData": "",
+      "imageName": ""
+    },
+    {
+      "id": "vocab-1787700865819-5vqtjx",
+      "term": "iceberg",
+      "location": "1번째 줄",
+      "meaning": "(명) 빙산",
+      "insights": "the tip of the iceberg : 빙산의 일각",
+      "imageData": "data:image/jpeg;base64,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",
+      "imageName": "iceberg.jpg"
+    },
+    {
+      "id": "vocab-1787700978593-0i8u0k",
+      "term": "coin",
+      "location": "1번째 줄",
+      "meaning": "(동) 주조하다, 동전을 찍어내다; 만들어 내다",
+      "insights": "(명) 동전",
+      "imageData": "",
+      "imageName": ""
+    },
+    {
+      "id": "vocab-1787701062095-n5s1ga",
+      "term": "intangible",
+      "location": "7번째 줄",
+      "meaning": "(형) 만질 수 없는",
+      "insights": "tough가 어원 / ↔ tangible : 만져서 알 수 있는, 명백한",
+      "imageData": "",
+      "imageName": ""
+    },
+    {
+      "id": "vocab-1787701173305-v8q9ru",
+      "term": "keep in mind that ~",
+      "location": "7번째 줄",
+      "meaning": "~를 명심하다, 염두하다, 고려하다",
+      "insights": "",
+      "imageData": "",
+      "imageName": ""
+    },
+    {
+      "id": "vocab-1787701346187-rn1k62",
+      "term": "static",
+      "location": "9번째 줄",
+      "meaning": "(형) 정적인, 고정된",
+      "insights": "↔ fluid : 유동적인, 움직이는",
+      "imageData": "",
+      "imageName": ""
+    }
+  ],
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "HALL'S ANALOGY FOR APPROACHING INTERCULTURAL UNDERSTANDING.",
+      "isImportant": true,
+      "abstractLevel": 1,
+      "connectiveIndexes": [],
+      "wordCount": 6,
+      "components": [
+        {
+          "id": "s1-c1",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "HALL'S ANALOGY",
+          "role": "subtitle",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "HALL'S",
+            "ANALOGY"
+          ]
+        },
+        {
+          "id": "s1-c2",
+          "sentenceIndex": 1,
+          "componentIndex": 2,
+          "text": "FOR APPROACHING INTERCULTURAL UNDERSTANDING.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 6,
+          "modifierTargetStart": 0,
+          "modifierTargetEnd": 2,
+          "modifierTargetIndexes": [
+            0,
+            1
+          ],
+          "words": [
+            "FOR",
+            "APPROACHING",
+            "INTERCULTURAL",
+            "UNDERSTANDING."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "The concept of the cultural iceberg was coined in 1976 by Edward T Hall, who suggested that culture is analogous to an iceberg in that only about 10% of the iceberg is visible at any given time and that a large part of it is hidden beneath the surface.",
+      "isImportant": true,
+      "abstractLevel": 2,
+      "connectiveIndexes": [],
+      "wordCount": 48,
+      "components": [
+        {
+          "id": "s2-c1",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "The concept of the cultural iceberg",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 6,
+          "words": [
+            "The",
+            "concept",
+            "of",
+            "the",
+            "cultural",
+            "iceberg"
+          ]
+        },
+        {
+          "id": "s2-c2",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "was coined",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 6,
+          "endIndex": 8,
+          "words": [
+            "was",
+            "coined"
+          ]
+        },
+        {
+          "id": "s2-c3",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "in 1976",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 8,
+          "endIndex": 10,
+          "words": [
+            "in",
+            "1976"
+          ]
+        },
+        {
+          "id": "s2-c4",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "by Edward'T Hall,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 10,
+          "endIndex": 13,
+          "words": [
+            "by",
+            "Edward'T",
+            "Hall,"
+          ]
+        },
+        {
+          "id": "s2-c5",
+          "sentenceIndex": 2,
+          "componentIndex": 5,
+          "text": "who suggested that culture is analogous to an iceberg",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 13,
+          "endIndex": 22,
+          "modifierTargetStart": 11,
+          "modifierTargetEnd": 13,
+          "modifierTargetIndexes": [
+            11,
+            12
+          ],
+          "words": [
+            "who",
+            "suggested",
+            "that",
+            "culture",
+            "is",
+            "analogous",
+            "to",
+            "an",
+            "iceberg"
+          ]
+        },
+        {
+          "id": "s2-c6",
+          "sentenceIndex": 2,
+          "componentIndex": 6,
+          "text": "in that only about 10 of the iceberg is visible at any given time",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 22,
+          "endIndex": 36,
+          "words": [
+            "in",
+            "that",
+            "only",
+            "about",
+            "10",
+            "of",
+            "the",
+            "iceberg",
+            "is",
+            "visible",
+            "at",
+            "any",
+            "given",
+            "time"
+          ]
+        },
+        {
+          "id": "s2-c7",
+          "sentenceIndex": 2,
+          "componentIndex": 7,
+          "text": "and that a large part of it is hidden beneath the surface.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 5,
+          "startIndex": 36,
+          "endIndex": 48,
+          "words": [
+            "and",
+            "that",
+            "a",
+            "large",
+            "part",
+            "of",
+            "it",
+            "is",
+            "hidden",
+            "beneath",
+            "the",
+            "surface."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "Culture has components that are above the surface and visible, and the majority of culture, about 90%, is hidden below the surface.",
+      "isImportant": false,
+      "abstractLevel": 3,
+      "connectiveIndexes": [],
+      "wordCount": 22,
+      "components": [
+        {
+          "id": "s3-c1",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "Culture",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Culture"
+          ]
+        },
+        {
+          "id": "s3-c2",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "has",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "has"
+          ]
+        },
+        {
+          "id": "s3-c3",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "components that are above the surface and visible, and the majority",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 13,
+          "words": [
+            "components",
+            "that",
+            "are",
+            "above",
+            "the",
+            "surface",
+            "and",
+            "visible,",
+            "and",
+            "the",
+            "majority"
+          ]
+        },
+        {
+          "id": "s3-c4",
+          "sentenceIndex": 3,
+          "componentIndex": 4,
+          "text": "of culture,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 13,
+          "endIndex": 15,
+          "words": [
+            "of",
+            "culture,"
+          ]
+        },
+        {
+          "id": "s3-c5",
+          "sentenceIndex": 3,
+          "componentIndex": 5,
+          "text": "about 90 is hidden below the surface.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 5,
+          "startIndex": 15,
+          "endIndex": 22,
+          "words": [
+            "about",
+            "90",
+            "is",
+            "hidden",
+            "below",
+            "the",
+            "surface."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-4",
+      "sentenceIndex": 4,
+      "text": "The iceberg analogy of culture is highly mentioned as it illustrates how much of culture is invisible and intangible.",
+      "isImportant": true,
+      "abstractLevel": 3,
+      "connectiveIndexes": [],
+      "wordCount": 19,
+      "components": [
+        {
+          "id": "s4-c1",
+          "sentenceIndex": 4,
+          "componentIndex": 1,
+          "text": "The iceberg analogy of culture",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 5,
+          "words": [
+            "The",
+            "iceberg",
+            "analogy",
+            "of",
+            "culture"
+          ]
+        },
+        {
+          "id": "s4-c2",
+          "sentenceIndex": 4,
+          "componentIndex": 2,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 6,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s4-c3",
+          "sentenceIndex": 4,
+          "componentIndex": 3,
+          "text": "mentioned",
+          "role": "verb",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "mentioned"
+          ]
+        },
+        {
+          "id": "s4-c4",
+          "sentenceIndex": 4,
+          "componentIndex": 4,
+          "text": "highly",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "highly"
+          ]
+        },
+        {
+          "id": "s4-c5",
+          "sentenceIndex": 4,
+          "componentIndex": 5,
+          "text": "as it illustrates how much of culture is invisible and intangible.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 8,
+          "endIndex": 19,
+          "words": [
+            "as",
+            "it",
+            "illustrates",
+            "how",
+            "much",
+            "of",
+            "culture",
+            "is",
+            "invisible",
+            "and",
+            "intangible."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-5",
+      "sentenceIndex": 5,
+      "text": "It also demonstrates that values and beliefs are deeply set.",
+      "isImportant": true,
+      "abstractLevel": 2,
+      "connectiveIndexes": [
+        1
+      ],
+      "wordCount": 10,
+      "components": [
+        {
+          "id": "s5-c1",
+          "sentenceIndex": 5,
+          "componentIndex": 1,
+          "text": "It",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "It"
+          ]
+        },
+        {
+          "id": "s5-c2",
+          "sentenceIndex": 5,
+          "componentIndex": 2,
+          "text": "also",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "also"
+          ]
+        },
+        {
+          "id": "s5-c3",
+          "sentenceIndex": 5,
+          "componentIndex": 3,
+          "text": "demonstrates",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "demonstrates"
+          ]
+        },
+        {
+          "id": "s5-c4",
+          "sentenceIndex": 5,
+          "componentIndex": 4,
+          "text": "that values and beliefs are deeply set.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 10,
+          "words": [
+            "that",
+            "values",
+            "and",
+            "beliefs",
+            "are",
+            "deeply",
+            "set."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-6",
+      "sentenceIndex": 6,
+      "text": "Please keep in mind that the cultural iceberg, like any analogy, is limited.",
+      "isImportant": true,
+      "abstractLevel": 2,
+      "connectiveIndexes": [],
+      "wordCount": 13,
+      "components": [
+        {
+          "id": "s6-c1",
+          "sentenceIndex": 6,
+          "componentIndex": 1,
+          "text": "Please",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Please"
+          ]
+        },
+        {
+          "id": "s6-c2",
+          "sentenceIndex": 6,
+          "componentIndex": 2,
+          "text": "keep in mind",
+          "role": "verb",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 1,
+          "endIndex": 4,
+          "words": [
+            "keep",
+            "in",
+            "mind"
+          ]
+        },
+        {
+          "id": "s6-c3",
+          "sentenceIndex": 6,
+          "componentIndex": 3,
+          "text": "that the cultural iceberg,",
+          "role": "object",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 4,
+          "endIndex": 8,
+          "words": [
+            "that",
+            "the",
+            "cultural",
+            "iceberg,"
+          ]
+        },
+        {
+          "id": "s6-c4",
+          "sentenceIndex": 6,
+          "componentIndex": 4,
+          "text": "like any analogy,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 8,
+          "endIndex": 11,
+          "words": [
+            "like",
+            "any",
+            "analogy,"
+          ]
+        },
+        {
+          "id": "s6-c5",
+          "sentenceIndex": 6,
+          "componentIndex": 5,
+          "text": "is limited.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 11,
+          "endIndex": 13,
+          "words": [
+            "is",
+            "limited."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-7",
+      "sentenceIndex": 7,
+      "text": "For example, the image of the iceberg is static and fixed, while culture is dynamic and complex.",
+      "isImportant": true,
+      "abstractLevel": 3,
+      "connectiveIndexes": [
+        0,
+        1
+      ],
+      "wordCount": 17,
+      "components": [
+        {
+          "id": "s7-c1",
+          "sentenceIndex": 7,
+          "componentIndex": 1,
+          "text": "For example,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "For",
+            "example,"
+          ]
+        },
+        {
+          "id": "s7-c2",
+          "sentenceIndex": 7,
+          "componentIndex": 2,
+          "text": "the image of the iceberg",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 7,
+          "words": [
+            "the",
+            "image",
+            "of",
+            "the",
+            "iceberg"
+          ]
+        },
+        {
+          "id": "s7-c3",
+          "sentenceIndex": 7,
+          "componentIndex": 3,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 7,
+          "endIndex": 8,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s7-c4",
+          "sentenceIndex": 7,
+          "componentIndex": 4,
+          "text": "static and fixed,",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 8,
+          "endIndex": 11,
+          "words": [
+            "static",
+            "and",
+            "fixed,"
+          ]
+        },
+        {
+          "id": "s7-c5",
+          "sentenceIndex": 7,
+          "componentIndex": 5,
+          "text": "while culture is dynamic and complex.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 11,
+          "endIndex": 17,
+          "words": [
+            "while",
+            "culture",
+            "is",
+            "dynamic",
+            "and",
+            "complex."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-8",
+      "sentenceIndex": 8,
+      "text": "Culture is not a 'thing' as this image suggests, and the iceberg is used as a means of illustrating a concept.",
+      "isImportant": false,
+      "abstractLevel": 4,
+      "connectiveIndexes": [],
+      "wordCount": 21,
+      "components": [
+        {
+          "id": "s8-c1",
+          "sentenceIndex": 8,
+          "componentIndex": 1,
+          "text": "Culture",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Culture"
+          ]
+        },
+        {
+          "id": "s8-c2",
+          "sentenceIndex": 8,
+          "componentIndex": 2,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s8-c3",
+          "sentenceIndex": 8,
+          "componentIndex": 3,
+          "text": "not a 'thing' as this image suggests, and the iceberg is used as a means",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 17,
+          "words": [
+            "not",
+            "a",
+            "'thing'",
+            "as",
+            "this",
+            "image",
+            "suggests,",
+            "and",
+            "the",
+            "iceberg",
+            "is",
+            "used",
+            "as",
+            "a",
+            "means"
+          ]
+        },
+        {
+          "id": "s8-c4",
+          "sentenceIndex": 8,
+          "componentIndex": 4,
+          "text": "of illustrating a concept.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 17,
+          "endIndex": 21,
+          "words": [
+            "of",
+            "illustrating",
+            "a",
+            "concept."
+          ]
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----

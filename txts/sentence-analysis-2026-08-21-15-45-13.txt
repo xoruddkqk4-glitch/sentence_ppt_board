@@ -1,0 +1,774 @@
+WHITEBOARD_PPT_ANALYSIS_TXT_V1
+영어 문장 분석 저장 파일
+저장 시각: 2026-08-21T16:01:11.902Z
+총 문장 수: 7
+
+[문장 및 성분 인덱스]
+
+[문장 1] The concept of the cultural iceberg was coined in 1976 by Edward T. Hall, who suggested that culture is analogous to an iceberg in that only about 10% of the iceberg is visible at any given time and that a large part of it is hidden beneath the surface.
+  단어 수: 48
+  - 성분 1: id=s1-c1, lane=major, role=subject, order=1, wordIndex0=0-6, wordIndex1=1-6, text="The concept of the cultural iceberg"
+  - 성분 2: id=s1-c2, lane=major, role=verb, order=2, wordIndex0=6-8, wordIndex1=7-8, text="was coined"
+  - 성분 3: id=s1-c3, lane=minor, role=adverb, order=1, wordIndex0=8-10, wordIndex1=9-10, text="in 1976"
+  - 성분 4: id=s1-c4, lane=minor, role=adverb, order=2, wordIndex0=10-13, wordIndex1=11-13, text="by Edward'T. Hall,"
+  - 성분 5: id=s1-c5, lane=minor, role=adjective, order=3, wordIndex0=13-22, wordIndex1=14-22, text="who suggested that culture is analogous to an iceberg"
+  - 성분 6: id=s1-c6, lane=minor, role=adverb, order=4, wordIndex0=22-36, wordIndex1=23-36, text="in that only about 10 of the iceberg is visible at any given time"
+  - 성분 7: id=s1-c7, lane=minor, role=adverb, order=5, wordIndex0=36-48, wordIndex1=37-48, text="and that a large part of it is hidden beneath the surface."
+
+[문장 2] Culture has components that are above the surface and visible, and the majority of culture, about 90%, is hidden below the surface.
+  단어 수: 22
+  - 성분 1: id=s2-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Culture"
+  - 성분 2: id=s2-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="has"
+  - 성분 3: id=s2-c3, lane=major, role=object, order=3, wordIndex0=2-3, wordIndex1=3-3, text="components"
+  - 성분 4: id=s2-c4, lane=minor, role=adjective, order=1, wordIndex0=3-10, wordIndex1=4-10, text="that are above the surface and visible,"
+  - 성분 5: id=s2-c5, lane=minor, role=adjective, order=2, wordIndex0=10-22, wordIndex1=11-22, text="and the majority of culture, about 90 is hidden below the surface."
+
+[문장 3] The iceberg analogy of culture is highly mentioned as it illustrates how much of culture is invisible and intangible.
+  단어 수: 19
+  - 성분 1: id=s3-c1, lane=major, role=subject, order=1, wordIndex0=0-5, wordIndex1=1-5, text="The iceberg analogy of culture"
+  - 성분 2: id=s3-c2, lane=major, role=verb, order=2, wordIndex0=5-6, wordIndex1=6-6, text="is"
+  - 성분 3: id=s3-c3, lane=major, role=complement, order=3, wordIndex0=7-8, wordIndex1=8-8, text="mentioned"
+  - 성분 4: id=s3-c4, lane=minor, role=adverb, order=2, wordIndex0=8-19, wordIndex1=9-19, text="as it illustrates how much of culture is invisible and intangible."
+  - 성분 5: id=s3-c5, lane=minor, role=adverb, order=1, wordIndex0=6-7, wordIndex1=7-7, text="highly"
+
+[문장 4] It also demonstrates that values and beliefs are deeply set.
+  단어 수: 10
+  - 성분 1: id=s4-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="It"
+  - 성분 2: id=s4-c2, lane=minor, role=adverb, order=1, wordIndex0=1-2, wordIndex1=2-2, text="also"
+  - 성분 3: id=s4-c3, lane=major, role=verb, order=2, wordIndex0=2-3, wordIndex1=3-3, text="demonstrates"
+  - 성분 4: id=s4-c4, lane=major, role=object, order=3, wordIndex0=3-10, wordIndex1=4-10, text="that values and beliefs are set."
+  - 성분 5: id=s4-c5, lane=minor, role=adverb, order=2, wordIndex0=8-9, wordIndex1=9-9, text="deeply"
+
+[문장 5] Please keep in mind that the cultural iceberg, like any analogy, is limited.
+  단어 수: 13
+  - 성분 1: id=s5-c1, lane=major, role=verb, order=1, wordIndex0=0-4, wordIndex1=1-4, text="Please keep in mind"
+  - 성분 2: id=s5-c2, lane=major, role=object, order=2, wordIndex0=4-13, wordIndex1=5-13, text="that the cultural iceberg, like any analogy, is limited."
+
+[문장 6] For example, the image of the iceberg is static and fixed, while culture is dynamic and complex.
+  단어 수: 17
+  - 성분 1: id=s6-c1, lane=minor, role=adverb, order=1, wordIndex0=0-2, wordIndex1=1-2, text="For example,"
+  - 성분 2: id=s6-c2, lane=major, role=subject, order=1, wordIndex0=2-7, wordIndex1=3-7, text="the image of the iceberg"
+  - 성분 3: id=s6-c3, lane=major, role=verb, order=2, wordIndex0=7-8, wordIndex1=8-8, text="is"
+  - 성분 4: id=s6-c4, lane=major, role=complement, order=3, wordIndex0=8-11, wordIndex1=9-11, text="static and fixed,"
+  - 성분 5: id=s6-c5, lane=minor, role=adverb, order=2, wordIndex0=11-17, wordIndex1=12-17, text="while culture is dynamic and complex."
+
+[문장 7] Culture is not a 'thing' as this image suggests, and the iceberg is used as a means of illustrating a concept.
+  단어 수: 21
+  - 성분 1: id=s7-c1, lane=major, role=subject, order=1, wordIndex0=0-1, wordIndex1=1-1, text="Culture"
+  - 성분 2: id=s7-c2, lane=major, role=verb, order=2, wordIndex0=1-2, wordIndex1=2-2, text="is"
+  - 성분 3: id=s7-c3, lane=minor, role=adverb, order=1, wordIndex0=2-3, wordIndex1=3-3, text="not"
+  - 성분 4: id=s7-c4, lane=major, role=complement, order=3, wordIndex0=3-9, wordIndex1=4-9, text="a 'thing' as this image suggests,"
+  - 성분 5: id=s7-c5, lane=minor, role=adverb, order=2, wordIndex0=9-21, wordIndex1=10-21, text="and the iceberg is used as a means of illustrating a concept."
+
+-----BEGIN WHITEBOARD_PPT_ANALYSIS_JSON-----
+{
+  "version": 1,
+  "app": "sentence-presentation-board",
+  "savedAt": "2026-08-21T16:01:11.902Z",
+  "passageText": "The concept of the cultural iceberg was coined in 1976 by Edward T. Hall, who suggested that culture is analogous to an iceberg in that only about 10% of the iceberg is visible at any given time and that a large part of it is hidden beneath the surface. Culture has components that are above the surface and visible, and the majority of culture, about 90%, is hidden below the surface. The iceberg analogy of culture is highly mentioned as it illustrates how much of culture is invisible and intangible. It also demonstrates that values and beliefs are deeply set. Please keep in mind that the cultural iceberg, like any analogy, is limited. For example, the image of the iceberg is static and fixed, while culture is dynamic and complex. Culture is not a 'thing' as this image suggests, and the iceberg is used as a means of illustrating a concept.",
+  "currentSentenceIndex": 0,
+  "componentSerial": 55,
+  "analysisLevelCount": 3,
+  "settings": {
+    "theme": "light",
+    "align": "center"
+  },
+  "sentences": [
+    {
+      "id": "sentence-1",
+      "sentenceIndex": 1,
+      "text": "The concept of the cultural iceberg was coined in 1976 by Edward T. Hall, who suggested that culture is analogous to an iceberg in that only about 10% of the iceberg is visible at any given time and that a large part of it is hidden beneath the surface.",
+      "isImportant": false,
+      "abstractLevel": 2,
+      "connectiveIndexes": [],
+      "wordCount": 48,
+      "components": [
+        {
+          "id": "s1-c1",
+          "sentenceIndex": 1,
+          "componentIndex": 1,
+          "text": "The concept of the cultural iceberg",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 6,
+          "words": [
+            "The",
+            "concept",
+            "of",
+            "the",
+            "cultural",
+            "iceberg"
+          ]
+        },
+        {
+          "id": "s1-c2",
+          "sentenceIndex": 1,
+          "componentIndex": 2,
+          "text": "was coined",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 6,
+          "endIndex": 8,
+          "words": [
+            "was",
+            "coined"
+          ]
+        },
+        {
+          "id": "s1-c3",
+          "sentenceIndex": 1,
+          "componentIndex": 3,
+          "text": "in 1976",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 8,
+          "endIndex": 10,
+          "words": [
+            "in",
+            "1976"
+          ]
+        },
+        {
+          "id": "s1-c4",
+          "sentenceIndex": 1,
+          "componentIndex": 4,
+          "text": "by Edward'T. Hall,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 10,
+          "endIndex": 13,
+          "words": [
+            "by",
+            "Edward'T.",
+            "Hall,"
+          ]
+        },
+        {
+          "id": "s1-c5",
+          "sentenceIndex": 1,
+          "componentIndex": 5,
+          "text": "who suggested that culture is analogous to an iceberg",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 3,
+          "startIndex": 13,
+          "endIndex": 22,
+          "modifierTargetStart": 11,
+          "modifierTargetEnd": 13,
+          "modifierTargetIndexes": [
+            11,
+            12
+          ],
+          "words": [
+            "who",
+            "suggested",
+            "that",
+            "culture",
+            "is",
+            "analogous",
+            "to",
+            "an",
+            "iceberg"
+          ]
+        },
+        {
+          "id": "s1-c6",
+          "sentenceIndex": 1,
+          "componentIndex": 6,
+          "text": "in that only about 10 of the iceberg is visible at any given time",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 4,
+          "startIndex": 22,
+          "endIndex": 36,
+          "words": [
+            "in",
+            "that",
+            "only",
+            "about",
+            "10",
+            "of",
+            "the",
+            "iceberg",
+            "is",
+            "visible",
+            "at",
+            "any",
+            "given",
+            "time"
+          ]
+        },
+        {
+          "id": "s1-c7",
+          "sentenceIndex": 1,
+          "componentIndex": 7,
+          "text": "and that a large part of it is hidden beneath the surface.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 5,
+          "startIndex": 36,
+          "endIndex": 48,
+          "words": [
+            "and",
+            "that",
+            "a",
+            "large",
+            "part",
+            "of",
+            "it",
+            "is",
+            "hidden",
+            "beneath",
+            "the",
+            "surface."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-2",
+      "sentenceIndex": 2,
+      "text": "Culture has components that are above the surface and visible, and the majority of culture, about 90%, is hidden below the surface.",
+      "isImportant": false,
+      "abstractLevel": 1,
+      "connectiveIndexes": [],
+      "wordCount": 22,
+      "components": [
+        {
+          "id": "s2-c1",
+          "sentenceIndex": 2,
+          "componentIndex": 1,
+          "text": "Culture",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Culture"
+          ]
+        },
+        {
+          "id": "s2-c2",
+          "sentenceIndex": 2,
+          "componentIndex": 2,
+          "text": "has",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "has"
+          ]
+        },
+        {
+          "id": "s2-c3",
+          "sentenceIndex": 2,
+          "componentIndex": 3,
+          "text": "components",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "components"
+          ]
+        },
+        {
+          "id": "s2-c4",
+          "sentenceIndex": 2,
+          "componentIndex": 4,
+          "text": "that are above the surface and visible,",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 3,
+          "endIndex": 10,
+          "modifierTargetStart": 2,
+          "modifierTargetEnd": 3,
+          "modifierTargetIndexes": [
+            2
+          ],
+          "words": [
+            "that",
+            "are",
+            "above",
+            "the",
+            "surface",
+            "and",
+            "visible,"
+          ]
+        },
+        {
+          "id": "s2-c5",
+          "sentenceIndex": 2,
+          "componentIndex": 5,
+          "text": "and the majority of culture, about 90 is hidden below the surface.",
+          "role": "adjective",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 10,
+          "endIndex": 22,
+          "modifierTargetStart": 2,
+          "modifierTargetEnd": 3,
+          "modifierTargetIndexes": [
+            2
+          ],
+          "words": [
+            "and",
+            "the",
+            "majority",
+            "of",
+            "culture,",
+            "about",
+            "90",
+            "is",
+            "hidden",
+            "below",
+            "the",
+            "surface."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-3",
+      "sentenceIndex": 3,
+      "text": "The iceberg analogy of culture is highly mentioned as it illustrates how much of culture is invisible and intangible.",
+      "isImportant": false,
+      "abstractLevel": 2,
+      "connectiveIndexes": [],
+      "wordCount": 19,
+      "components": [
+        {
+          "id": "s3-c1",
+          "sentenceIndex": 3,
+          "componentIndex": 1,
+          "text": "The iceberg analogy of culture",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 5,
+          "words": [
+            "The",
+            "iceberg",
+            "analogy",
+            "of",
+            "culture"
+          ]
+        },
+        {
+          "id": "s3-c2",
+          "sentenceIndex": 3,
+          "componentIndex": 2,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 5,
+          "endIndex": 6,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s3-c3",
+          "sentenceIndex": 3,
+          "componentIndex": 3,
+          "text": "mentioned",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 7,
+          "endIndex": 8,
+          "words": [
+            "mentioned"
+          ]
+        },
+        {
+          "id": "s3-c4",
+          "sentenceIndex": 3,
+          "componentIndex": 4,
+          "text": "as it illustrates how much of culture is invisible and intangible.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 8,
+          "endIndex": 19,
+          "words": [
+            "as",
+            "it",
+            "illustrates",
+            "how",
+            "much",
+            "of",
+            "culture",
+            "is",
+            "invisible",
+            "and",
+            "intangible."
+          ]
+        },
+        {
+          "id": "s3-c5",
+          "sentenceIndex": 3,
+          "componentIndex": 5,
+          "text": "highly",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 6,
+          "endIndex": 7,
+          "words": [
+            "highly"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-4",
+      "sentenceIndex": 4,
+      "text": "It also demonstrates that values and beliefs are deeply set.",
+      "isImportant": false,
+      "abstractLevel": 2,
+      "connectiveIndexes": [
+        1
+      ],
+      "wordCount": 10,
+      "components": [
+        {
+          "id": "s4-c1",
+          "sentenceIndex": 4,
+          "componentIndex": 1,
+          "text": "It",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "It"
+          ]
+        },
+        {
+          "id": "s4-c2",
+          "sentenceIndex": 4,
+          "componentIndex": 2,
+          "text": "also",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "also"
+          ]
+        },
+        {
+          "id": "s4-c3",
+          "sentenceIndex": 4,
+          "componentIndex": 3,
+          "text": "demonstrates",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "demonstrates"
+          ]
+        },
+        {
+          "id": "s4-c4",
+          "sentenceIndex": 4,
+          "componentIndex": 4,
+          "text": "that values and beliefs are set.",
+          "role": "object",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 10,
+          "words": [
+            "that",
+            "values",
+            "and",
+            "beliefs",
+            "are",
+            "set."
+          ]
+        },
+        {
+          "id": "s4-c5",
+          "sentenceIndex": 4,
+          "componentIndex": 5,
+          "text": "deeply",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 8,
+          "endIndex": 9,
+          "words": [
+            "deeply"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-5",
+      "sentenceIndex": 5,
+      "text": "Please keep in mind that the cultural iceberg, like any analogy, is limited.",
+      "isImportant": false,
+      "abstractLevel": 1,
+      "connectiveIndexes": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "wordCount": 13,
+      "components": [
+        {
+          "id": "s5-c1",
+          "sentenceIndex": 5,
+          "componentIndex": 1,
+          "text": "Please keep in mind",
+          "role": "verb",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 4,
+          "words": [
+            "Please",
+            "keep",
+            "in",
+            "mind"
+          ]
+        },
+        {
+          "id": "s5-c2",
+          "sentenceIndex": 5,
+          "componentIndex": 2,
+          "text": "that the cultural iceberg, like any analogy, is limited.",
+          "role": "object",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 4,
+          "endIndex": 13,
+          "words": [
+            "that",
+            "the",
+            "cultural",
+            "iceberg,",
+            "like",
+            "any",
+            "analogy,",
+            "is",
+            "limited."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-6",
+      "sentenceIndex": 6,
+      "text": "For example, the image of the iceberg is static and fixed, while culture is dynamic and complex.",
+      "isImportant": false,
+      "abstractLevel": 2,
+      "connectiveIndexes": [
+        0,
+        1
+      ],
+      "wordCount": 17,
+      "components": [
+        {
+          "id": "s6-c1",
+          "sentenceIndex": 6,
+          "componentIndex": 1,
+          "text": "For example,",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 2,
+          "words": [
+            "For",
+            "example,"
+          ]
+        },
+        {
+          "id": "s6-c2",
+          "sentenceIndex": 6,
+          "componentIndex": 2,
+          "text": "the image of the iceberg",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 7,
+          "words": [
+            "the",
+            "image",
+            "of",
+            "the",
+            "iceberg"
+          ]
+        },
+        {
+          "id": "s6-c3",
+          "sentenceIndex": 6,
+          "componentIndex": 3,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 7,
+          "endIndex": 8,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s6-c4",
+          "sentenceIndex": 6,
+          "componentIndex": 4,
+          "text": "static and fixed,",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 8,
+          "endIndex": 11,
+          "words": [
+            "static",
+            "and",
+            "fixed,"
+          ]
+        },
+        {
+          "id": "s6-c5",
+          "sentenceIndex": 6,
+          "componentIndex": 5,
+          "text": "while culture is dynamic and complex.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 11,
+          "endIndex": 17,
+          "words": [
+            "while",
+            "culture",
+            "is",
+            "dynamic",
+            "and",
+            "complex."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sentence-7",
+      "sentenceIndex": 7,
+      "text": "Culture is not a 'thing' as this image suggests, and the iceberg is used as a means of illustrating a concept.",
+      "isImportant": false,
+      "abstractLevel": 1,
+      "connectiveIndexes": [],
+      "wordCount": 21,
+      "components": [
+        {
+          "id": "s7-c1",
+          "sentenceIndex": 7,
+          "componentIndex": 1,
+          "text": "Culture",
+          "role": "subject",
+          "lane": "major",
+          "order": 1,
+          "startIndex": 0,
+          "endIndex": 1,
+          "words": [
+            "Culture"
+          ]
+        },
+        {
+          "id": "s7-c2",
+          "sentenceIndex": 7,
+          "componentIndex": 2,
+          "text": "is",
+          "role": "verb",
+          "lane": "major",
+          "order": 2,
+          "startIndex": 1,
+          "endIndex": 2,
+          "words": [
+            "is"
+          ]
+        },
+        {
+          "id": "s7-c3",
+          "sentenceIndex": 7,
+          "componentIndex": 3,
+          "text": "not",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 1,
+          "startIndex": 2,
+          "endIndex": 3,
+          "words": [
+            "not"
+          ]
+        },
+        {
+          "id": "s7-c4",
+          "sentenceIndex": 7,
+          "componentIndex": 4,
+          "text": "a 'thing' as this image suggests,",
+          "role": "complement",
+          "lane": "major",
+          "order": 3,
+          "startIndex": 3,
+          "endIndex": 9,
+          "words": [
+            "a",
+            "'thing'",
+            "as",
+            "this",
+            "image",
+            "suggests,"
+          ]
+        },
+        {
+          "id": "s7-c5",
+          "sentenceIndex": 7,
+          "componentIndex": 5,
+          "text": "and the iceberg is used as a means of illustrating a concept.",
+          "role": "adverb",
+          "lane": "minor",
+          "order": 2,
+          "startIndex": 9,
+          "endIndex": 21,
+          "words": [
+            "and",
+            "the",
+            "iceberg",
+            "is",
+            "used",
+            "as",
+            "a",
+            "means",
+            "of",
+            "illustrating",
+            "a",
+            "concept."
+          ]
+        }
+      ]
+    }
+  ]
+}
+-----END WHITEBOARD_PPT_ANALYSIS_JSON-----

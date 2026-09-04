@@ -186,6 +186,12 @@
 
 ```text
 English Visualization Board/
+├─ .agents/
+│  ├─ rules/
+│  │  └─ rules.md
+│  └─ skills/
+│     └─ git-commit/
+│        └─ SKILL.md
 ├─ index.html
 ├─ css/
 │  ├─ style.css
@@ -204,13 +210,15 @@ English Visualization Board/
 └─ README.md
 ```
 
-## 기술 구성
+## 기술 구성 및 에이전트 지침 (`.agents`)
 
 - HTML
 - CSS
 - JavaScript
 - Pretendard 글꼴
 - 브라우저 File System Access API
+- **에이전트 실행 지침 (`.agents/rules/rules.md`)**: 브라우저 렌더링 검증 최소화 및 터미널 정적 검사를 통한 신속 검증(Terminal-Only Fast Verification) 적용
+- **자동 Git 커밋 & 푸시 스킬 (`.agents/skills/git-commit/SKILL.md`)**: 요청 시 `README.md` 자동 반영, 표준 양식 커밋 메시지 생성 및 원격 저장소(`origin main`) 자동 동기화
 
 ## 최근 워크플로 개선 사항
 
