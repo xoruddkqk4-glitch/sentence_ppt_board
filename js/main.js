@@ -81,6 +81,7 @@ const state = {
   hasLoadedAnalysis: false,
   focusedComponentId: null,
   analysisLevelCount: 3,
+  activeConnectiveColor: "yellow",
   connectiveSelectionAnchor: null,
   passageShareMode: "plain",
   draggedOutlineSentenceIndex: null,
@@ -516,8 +517,38 @@ function renderAnalysisView() {
     connectiveLabel.append("연결어 선택");
     const connectiveHelp = document.createElement("span");
     connectiveHelp.className = "connective-help";
-    connectiveHelp.textContent = "클릭: 색상 전환(노랑→빨강→파랑→해제) · Shift+클릭: 범위 선택";
+    connectiveHelp.textContent = "클릭: 색상 지정/전환 · Shift+클릭: 범위 선택";
     connectiveLabel.appendChild(connectiveHelp);
+
+    const colorPicker = document.createElement("div");
+    colorPicker.className = "connective-color-picker";
+    const pickerLabel = document.createElement("span");
+    pickerLabel.className = "connective-color-picker-label";
+    pickerLabel.textContent = "강조 색상:";
+    colorPicker.appendChild(pickerLabel);
+
+    const activeColor = state.activeConnectiveColor || "yellow";
+    const availableColors = [
+      { key: "yellow", label: "노랑" },
+      { key: "red", label: "빨강" },
+      { key: "blue", label: "파랑" }
+    ];
+    availableColors.forEach(({ key, label }) => {
+      const colorBtn = document.createElement("button");
+      colorBtn.type = "button";
+      colorBtn.className = "connective-color-btn";
+      colorBtn.dataset.color = key;
+      colorBtn.classList.toggle("is-active", activeColor === key);
+      colorBtn.textContent = label;
+      colorBtn.setAttribute("aria-pressed", String(activeColor === key));
+      colorBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        state.activeConnectiveColor = key;
+        renderAnalysisView();
+      });
+      colorPicker.appendChild(colorBtn);
+    });
+    connectiveLabel.appendChild(colorPicker);
 
     const words = document.createElement("div");
     words.className = "connective-word-list";
@@ -527,7 +558,7 @@ function renderAnalysisView() {
       wordButton.className = "connective-word";
       const color = getSentenceConnectiveColor(sentence, wordIndex);
       if (color) {
-        wordButton.classList.add("is-selected", `is-selected-${color}`, `is-${color}`);
+        wordButton.classList.add("is-selected", `is-selected-${color}`, `is-${color}`, `color-${color}`);
         wordButton.setAttribute("data-color", color);
       }
       wordButton.textContent = word;
@@ -583,9 +614,10 @@ function updateSentenceConnectiveIndexes(sentenceIndex, wordIndex, useRange) {
   const selected = new Set(getSentenceConnectiveIndexes(sentence));
   const colorsMap = getSentenceConnectiveColorsMap(sentence);
   const anchor = state.connectiveSelectionAnchor;
+  const activeColor = state.activeConnectiveColor || "yellow";
 
   if (useRange && anchor?.sentenceIndex === sentenceIndex) {
-    const targetColor = getSentenceConnectiveColor(sentence, anchor.wordIndex) || "yellow";
+    const targetColor = activeColor;
     const start = Math.min(anchor.wordIndex, wordIndex);
     const end = Math.max(anchor.wordIndex, wordIndex);
     for (let index = start; index <= end; index += 1) {
@@ -596,13 +628,11 @@ function updateSentenceConnectiveIndexes(sentenceIndex, wordIndex, useRange) {
     const currentColor = getSentenceConnectiveColor(sentence, wordIndex);
     let nextColor = null;
     if (!currentColor) {
-      nextColor = "yellow";
-    } else if (currentColor === "yellow") {
-      nextColor = "red";
-    } else if (currentColor === "red") {
-      nextColor = "blue";
-    } else if (currentColor === "blue") {
-      nextColor = null;
+      nextColor = activeColor;
+    } else if (currentColor === activeColor) {
+      nextColor = activeColor === "yellow" ? "red" : activeColor === "red" ? "blue" : null;
+    } else {
+      nextColor = activeColor;
     }
 
     if (nextColor) {
