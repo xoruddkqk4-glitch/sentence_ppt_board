@@ -629,8 +629,12 @@ function updateSentenceConnectiveIndexes(sentenceIndex, wordIndex, useRange) {
     let nextColor = null;
     if (!currentColor) {
       nextColor = activeColor;
-    } else if (currentColor === activeColor) {
-      nextColor = activeColor === "yellow" ? "red" : activeColor === "red" ? "blue" : null;
+    } else if (currentColor === "yellow") {
+      nextColor = "red";
+    } else if (currentColor === "red") {
+      nextColor = "blue";
+    } else if (currentColor === "blue") {
+      nextColor = null;
     } else {
       nextColor = activeColor;
     }
