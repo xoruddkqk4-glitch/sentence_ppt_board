@@ -14,6 +14,7 @@
 .vocabulary-fields { display: grid; grid-template-columns: 2fr 1fr 2fr 5fr; gap: var(--space-3); align-items: end; }
 .vocabulary-fields label { display: grid; gap: 6px; font-size: var(--font-ui-sm); font-weight: 800; }
 .vocabulary-fields input, .vocabulary-fields textarea { width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--color-ink); background: var(--color-bg); }
+.vocabulary-fields textarea { font-family: inherit; resize: vertical; min-height: 42px; line-height: 1.4; }
 .vocabulary-image-field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
 .vocabulary-image-upload { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--color-primary); border-radius: var(--radius-sm); color: var(--color-primary); font-size: var(--font-ui-sm); font-weight: 800; cursor: pointer; }
 .vocabulary-image-upload:hover { background: color-mix(in srgb, var(--color-primary) 8%, transparent); }

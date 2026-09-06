@@ -4018,13 +4018,37 @@ function bindEvents() {
 
   elements.clearButton.addEventListener("click", () => {
     elements.passageInput.value = "";
-    elements.inputMessage.textContent = "";
+    elements.inputMessage.textContent = "지문과 2~7단계 분석 내용이 모두 초기화되었습니다.";
+    state.passageText = "";
     state.sentences = [];
     state.currentSentenceIndex = 0;
+    state.componentSerial = 1;
     state.minorRevealCount = 0;
+    state.minorSlots = [];
+    state.lastModifierClickIndex = null;
+    state.lastModifierComponentId = null;
     state.currentFileName = null;
     state.currentFileHandle = null;
+    state.hasLoadedAnalysis = false;
+    state.focusedComponentId = null;
+    state.analysisLevelCount = 3;
+    state.activeConnectiveColor = "yellow";
+    state.connectiveSelectionAnchor = null;
+    state.passageShareMode = "plain";
+    state.draggedOutlineSentenceIndex = null;
+    state.hiddenPassageLevels = [];
+    state.vocabularyItems = [];
+    state.vocabularyShareFocusRow = null;
+    state.vocabularyShareSelectedItemId = null;
+    state.draggedVocabularyIndex = null;
+    state.outlineFocusSentenceIndex = null;
+    if (state.passageShareFitCache && typeof state.passageShareFitCache.clear === "function") {
+      state.passageShareFitCache.clear();
+    }
+    if (elements.editMessage) elements.editMessage.textContent = "";
+    if (elements.vocabularyMessage) elements.vocabularyMessage.textContent = "";
     updateFileNameDisplay();
+    vocabularyFeature.renderAnalysis();
   });
 
   elements.inputImportButton.addEventListener("click", triggerAnalysisImport);
