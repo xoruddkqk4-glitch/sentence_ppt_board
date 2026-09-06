@@ -21,7 +21,58 @@
     state.vocabularyItems = Array.isArray(state.vocabularyItems) ? state.vocabularyItems.map(makeItem) : [];
     state.vocabularyShareFocusRow = Number.isInteger(state.vocabularyShareFocusRow) ? state.vocabularyShareFocusRow : null;
     state.vocabularyShareSelectedItemId = null;
+    state.vocabularyShareStep = 0;
     state.draggedVocabularyIndex = null;
+
+    function getCardMaxStep(item) {
+      if (!item) return 0;
+      let steps = 0;
+      if (item.meaning && item.meaning.trim()) steps++;
+      if (item.insights && item.insights.trim()) steps++;
+      return steps;
+    }
+
+    function advanceStep(delta) {
+      const items = state.vocabularyItems.filter((item) => item.term.trim() || item.meaning.trim() || item.insights.trim() || item.imageData);
+      if (!items.length) return false;
+      const selectedIndex = items.findIndex((item) => item.id === state.vocabularyShareSelectedItemId);
+      if (selectedIndex < 0) return false;
+
+      const item = items[selectedIndex];
+      const maxStep = getCardMaxStep(item);
+      const currentStep = state.vocabularyShareStep || 0;
+
+      if (delta > 0) {
+        if (currentStep < maxStep) {
+          state.vocabularyShareStep = currentStep + 1;
+        } else {
+          const nextIndex = selectedIndex + 1;
+          if (nextIndex < items.length) {
+            state.vocabularyShareSelectedItemId = items[nextIndex].id;
+            state.vocabularyShareStep = 0;
+          } else {
+            state.vocabularyShareSelectedItemId = items[0].id;
+            state.vocabularyShareStep = 0;
+          }
+        }
+      } else if (delta < 0) {
+        if (currentStep > 0) {
+          state.vocabularyShareStep = currentStep - 1;
+        } else {
+          const prevIndex = selectedIndex - 1;
+          if (prevIndex >= 0) {
+            const prevItem = items[prevIndex];
+            state.vocabularyShareSelectedItemId = prevItem.id;
+            state.vocabularyShareStep = getCardMaxStep(prevItem);
+          } else {
+            const lastItem = items[items.length - 1];
+            state.vocabularyShareSelectedItemId = lastItem.id;
+            state.vocabularyShareStep = getCardMaxStep(lastItem);
+          }
+        }
+      }
+      return true;
+    }
 
     function renderAnalysis() {
       elements.vocabularyList.innerHTML = "";
@@ -149,61 +200,84 @@
         return;
       }
       const selectedItem = state.vocabularyShareSelectedItemId ? items.find((item) => item.id === state.vocabularyShareSelectedItemId) : null;
-      if (state.vocabularyShareSelectedItemId && !selectedItem) state.vocabularyShareSelectedItemId = null;
+      if (state.vocabularyShareSelectedItemId && !selectedItem) {
+        state.vocabularyShareSelectedItemId = null;
+        state.vocabularyShareStep = 0;
+      }
       const selectedIndex = selectedItem ? items.indexOf(selectedItem) : -1;
-      elements.vocabularyShareProgress.hidden = selectedIndex < 0;
-      elements.vocabularyShareProgress.textContent = selectedIndex >= 0 ? `${selectedIndex + 1}/${items.length}` : "";
       const focusItem = state.vocabularyShareFocusRow === null ? null : items[state.vocabularyShareFocusRow * 2];
       if (state.vocabularyShareFocusRow !== null && !focusItem) state.vocabularyShareFocusRow = null;
       const focusItems = focusItem
         ? [items[state.vocabularyShareFocusRow * 2], items[(state.vocabularyShareFocusRow * 2) + 1]].filter(Boolean)
         : null;
-      // 포커스에서는 선택한 행의 왼쪽·오른쪽 카드 두 장을 세로로 보여준다.
+
+      elements.vocabularyShareProgress.hidden = selectedIndex < 0;
+      if (selectedIndex >= 0) {
+        const maxStep = getCardMaxStep(selectedItem);
+        const step = Math.min(state.vocabularyShareStep || 0, maxStep);
+        const stepLabel = maxStep > 0 ? ` (정보 공개 ${step}/${maxStep})` : "";
+        elements.vocabularyShareProgress.textContent = `${selectedIndex + 1}/${items.length}${stepLabel}`;
+      } else {
+        elements.vocabularyShareProgress.textContent = "";
+      }
+
       const visibleItems = selectedItem ? [selectedItem] : focusItems || items;
       const rowCount = selectedItem ? 1 : focusItems ? Math.min(2, focusItems.length) : Math.ceil(items.length / 2);
       const longest = Math.max(...visibleItems.map((item) => `${item.term} ${item.meaning} ${item.insights}`.length), 1);
       const termSize = selectedItem
-        ? Math.max(52, Math.min(132, Math.floor(1900 / Math.max(longest / 14, 1))))
+        ? Math.max(48, Math.min(120, Math.floor(1800 / Math.max(longest / 14, 1))))
         : focusItems
           ? Math.max(42, Math.min(110, Math.floor(1350 / Math.max(longest / 14, 1))))
           : Math.max(18, Math.min(52, Math.floor(800 / Math.max(Math.ceil(items.length / 2), 1) / Math.max(longest / 16, 1))));
+
       elements.vocabularyShareContent.style.setProperty("--vocabulary-term-size", `${termSize}px`);
       elements.vocabularyShareContent.style.setProperty("--vocabulary-columns", selectedItem || focusItems ? "1" : "2");
       elements.vocabularyShareContent.style.setProperty("--vocabulary-rows", String(rowCount));
-      elements.vocabularyShareContent.style.setProperty("--vocabulary-card-padding", `${selectedItem ? 44 : focusItems ? 28 : Math.max(4, Math.min(28, Math.floor(86 / rowCount)))}px`);
+      elements.vocabularyShareContent.style.setProperty("--vocabulary-card-padding", `${selectedItem ? 32 : focusItems ? 28 : Math.max(4, Math.min(28, Math.floor(86 / rowCount)))}px`);
       elements.vocabularyShareContent.classList.toggle("is-focused", Boolean(selectedItem || focusItems));
+
       visibleItems.forEach((item) => {
         const card = document.createElement("article");
         card.className = "vocabulary-share-card";
         if (item.imageData) card.classList.add("has-image");
-        card.innerHTML = `<div class="vocabulary-share-heading"><p class="vocabulary-location">${escapeHtml(item.location || "위치 미입력")}</p><span aria-hidden="true">|</span><h3>${escapeHtml(item.term || "(어휘 미입력)")}</h3></div>
-          ${item.imageData ? `<img class="vocabulary-share-image" src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}">` : ""}
-          ${item.meaning ? `<p class="vocabulary-meaning">${escapeHtml(item.meaning)}</p>` : ""}
-          ${item.insights ? `<p class="vocabulary-insight-text">${escapeHtml(item.insights)}</p>` : ""}`;
+
         if (!selectedItem && !focusItems) {
+          // 전체 보기 모드
           card.classList.add("is-clickable");
           card.tabIndex = 0;
           card.setAttribute("role", "button");
           card.setAttribute("aria-label", `${item.term || "어휘"} 크게 보기`);
+          card.innerHTML = `<div class="vocabulary-share-heading"><p class="vocabulary-location">${escapeHtml(item.location || "위치 미입력")}</p><span aria-hidden="true">|</span><h3>${escapeHtml(item.term || "(어휘 미입력)")}</h3></div>
+            ${item.imageData ? `<img class="vocabulary-share-image" src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}">` : ""}
+            ${item.meaning ? `<p class="vocabulary-meaning">${escapeHtml(item.meaning)}</p>` : ""}
+            ${item.insights ? `<p class="vocabulary-insight-text">${escapeHtml(item.insights)}</p>` : ""}`;
           card.addEventListener("click", () => {
             state.vocabularyShareSelectedItemId = item.id;
+            state.vocabularyShareStep = 0;
             renderShare();
           });
           card.addEventListener("keydown", (event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
               state.vocabularyShareSelectedItemId = item.id;
+              state.vocabularyShareStep = 0;
               renderShare();
             }
           });
-        } else {
+        } else if (focusItems && !selectedItem) {
+          // 행 포커스 모드 (2장 보기)
           card.classList.add("is-clickable", "is-focused-card");
           card.tabIndex = 0;
           card.setAttribute("role", "button");
           card.setAttribute("aria-label", "전체 어휘 보기로 돌아가기");
+          card.innerHTML = `<div class="vocabulary-share-heading"><p class="vocabulary-location">${escapeHtml(item.location || "위치 미입력")}</p><span aria-hidden="true">|</span><h3>${escapeHtml(item.term || "(어휘 미입력)")}</h3></div>
+            ${item.imageData ? `<img class="vocabulary-share-image" src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}">` : ""}
+            ${item.meaning ? `<p class="vocabulary-meaning">${escapeHtml(item.meaning)}</p>` : ""}
+            ${item.insights ? `<p class="vocabulary-insight-text">${escapeHtml(item.insights)}</p>` : ""}`;
           const returnToAllItems = () => {
             state.vocabularyShareFocusRow = null;
             state.vocabularyShareSelectedItemId = null;
+            state.vocabularyShareStep = 0;
             renderShare();
           };
           card.addEventListener("click", returnToAllItems);
@@ -211,6 +285,99 @@
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
               returnToAllItems();
+            }
+          });
+        } else {
+          // 단일 카드 포커스 모드 (단계별 정보 공개 및 전환)
+          card.classList.add("is-clickable", "is-focused-card");
+          card.tabIndex = 0;
+          card.setAttribute("role", "button");
+          card.setAttribute("aria-label", `${item.term || "어휘"} 상세 보기 (클릭 또는 화살표 키로 단계별 공개)`);
+
+          const hasMeaning = Boolean(item.meaning && item.meaning.trim());
+          const hasInsights = Boolean(item.insights && item.insights.trim());
+          const maxStep = getCardMaxStep(item);
+          const step = Math.min(state.vocabularyShareStep || 0, maxStep);
+
+          let meaningVisible = false;
+          let insightsVisible = false;
+
+          if (hasMeaning && hasInsights) {
+            meaningVisible = step >= 1;
+            insightsVisible = step >= 2;
+          } else if (hasMeaning) {
+            meaningVisible = step >= 1;
+          } else if (hasInsights) {
+            insightsVisible = step >= 1;
+          }
+
+          let stepPillsHtml = `<span class="vocab-step-pill is-active">1. 단어·위치</span>`;
+          if (hasMeaning) {
+            const pillClass = meaningVisible ? (step === (hasInsights ? 1 : 1) ? 'is-active' : 'is-done') : '';
+            stepPillsHtml += `<span class="vocab-step-pill ${pillClass}">2. 의미 ${meaningVisible ? '✓' : '🔒'}</span>`;
+          }
+          if (hasInsights) {
+            const insightsStepNum = hasMeaning ? 3 : 2;
+            const pillClass = insightsVisible ? 'is-active' : '';
+            stepPillsHtml += `<span class="vocab-step-pill ${pillClass}">${insightsStepNum}. Word Insights ${insightsVisible ? '✓' : '🔒'}</span>`;
+          }
+
+          const isFirst = selectedIndex === 0 && step === 0;
+          const nextBtnText = step < maxStep ? '정보 공개 ▶' : (selectedIndex < items.length - 1 ? '다음 단어 ▶' : '첫 단어로 ↺');
+
+          card.innerHTML = `
+            <div class="vocab-card-header-bar">
+              <div class="vocab-step-pills">${stepPillsHtml}</div>
+              <button type="button" class="button secondary compact vocab-back-btn">전체 목록 (ESC/0)</button>
+            </div>
+            <div class="vocab-card-body">
+              <div class="vocabulary-share-heading">
+                <p class="vocabulary-location">${escapeHtml(item.location || "위치 미입력")}</p>
+                <span aria-hidden="true">|</span>
+                <h3>${escapeHtml(item.term || "(어휘 미입력)")}</h3>
+              </div>
+              ${item.imageData ? `<img class="vocabulary-share-image" src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}">` : ""}
+              ${hasMeaning ? `<p class="vocabulary-meaning ${meaningVisible ? 'is-revealed' : 'is-hidden'}">${escapeHtml(item.meaning)}</p>` : ""}
+              ${hasInsights ? `<p class="vocabulary-insight-text ${insightsVisible ? 'is-revealed' : 'is-hidden'}">${escapeHtml(item.insights)}</p>` : ""}
+            </div>
+            <div class="vocab-card-footer-bar">
+              <button type="button" class="button secondary compact vocab-nav-btn vocab-prev-btn" ${isFirst ? 'disabled' : ''}>◀ 이전 (←)</button>
+              <span class="vocab-step-guide">💡 클릭 또는 화살표 키(→)로 다음 정보를 순차 공개합니다</span>
+              <button type="button" class="button primary compact vocab-nav-btn vocab-next-btn">${nextBtnText}</button>
+            </div>
+          `;
+
+          card.querySelector(".vocab-back-btn")?.addEventListener("click", (event) => {
+            event.stopPropagation();
+            state.vocabularyShareSelectedItemId = null;
+            state.vocabularyShareStep = 0;
+            renderShare();
+          });
+
+          card.querySelector(".vocab-prev-btn")?.addEventListener("click", (event) => {
+            event.stopPropagation();
+            advanceStep(-1);
+            renderShare();
+          });
+
+          card.querySelector(".vocab-next-btn")?.addEventListener("click", (event) => {
+            event.stopPropagation();
+            advanceStep(1);
+            renderShare();
+          });
+
+          card.addEventListener("click", (event) => {
+            if (event.target.closest("button")) return;
+            advanceStep(1);
+            renderShare();
+          });
+
+          card.addEventListener("keydown", (event) => {
+            if (event.target.closest("button")) return;
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              advanceStep(1);
+              renderShare();
             }
           });
         }
@@ -224,7 +391,6 @@
       let fontSize = Number.parseFloat(getComputedStyle(content).getPropertyValue("--vocabulary-term-size")) || 42;
       const cardsOverflow = () => [...content.querySelectorAll(".vocabulary-share-card")]
         .some((card) => card.scrollHeight > card.clientHeight + 1);
-      // 행마다 카드의 실제 높이를 재서 텍스트·여백을 함께 축소한다.
       while (cardsOverflow() && fontSize > 8) {
         fontSize -= 1;
         content.style.setProperty("--vocabulary-term-size", `${fontSize}px`);
@@ -248,31 +414,36 @@
     function handleShareKey(key) {
       const items = state.vocabularyItems.filter((item) => item.term.trim() || item.meaning.trim() || item.insights.trim() || item.imageData);
       const rowCount = Math.ceil(items.length / 2);
-      if (key === "0") {
+      if (key === "0" || key === "Escape") {
         state.vocabularyShareFocusRow = null;
         state.vocabularyShareSelectedItemId = null;
-      } else if (key === "ArrowRight" || key === "ArrowLeft") {
-        const direction = key === "ArrowRight" ? 1 : -1;
-        const selectedIndex = items.findIndex((item) => item.id === state.vocabularyShareSelectedItemId);
-        if (selectedIndex >= 0) {
-          const targetItem = items[selectedIndex + direction];
-          if (!targetItem) return false;
-          // 카드 하나를 클릭해 연 포커스에서는 한 장씩 이동한다.
-          state.vocabularyShareSelectedItemId = targetItem.id;
+        state.vocabularyShareStep = 0;
+      } else if (key === "ArrowRight" || key === "ArrowDown" || key === " " || key === "Enter") {
+        if (state.vocabularyShareSelectedItemId !== null) {
+          advanceStep(1);
         } else if (state.vocabularyShareFocusRow !== null) {
-          const targetRow = state.vocabularyShareFocusRow + direction;
+          const targetRow = state.vocabularyShareFocusRow + 1;
           if (targetRow < 0 || targetRow >= rowCount || !items[targetRow * 2]) return false;
-          // 숫자 키로 연 행 포커스에서는 두 카드 묶음으로 이동한다.
+          state.vocabularyShareFocusRow = targetRow;
+        } else {
+          return false;
+        }
+      } else if (key === "ArrowLeft" || key === "ArrowUp") {
+        if (state.vocabularyShareSelectedItemId !== null) {
+          advanceStep(-1);
+        } else if (state.vocabularyShareFocusRow !== null) {
+          const targetRow = state.vocabularyShareFocusRow - 1;
+          if (targetRow < 0 || targetRow >= rowCount || !items[targetRow * 2]) return false;
           state.vocabularyShareFocusRow = targetRow;
         } else {
           return false;
         }
       } else if (/^[1-9]$/.test(key)) {
         const row = Number(key) - 1;
-        // 홀수 개일 때 마지막 행에 카드가 한 장만 있어도 숫자 키로 연다.
         if (row >= rowCount || !items[row * 2]) return false;
         state.vocabularyShareSelectedItemId = null;
         state.vocabularyShareFocusRow = row;
+        state.vocabularyShareStep = 0;
       } else {
         return false;
       }

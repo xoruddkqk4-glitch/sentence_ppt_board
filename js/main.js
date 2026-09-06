@@ -4486,18 +4486,11 @@ function showElementDetail(component) {
   const containerDiv = document.createElement("div");
   containerDiv.className = "detail-text-container";
 
-  const words = component.text.trim().split(/\s+/);
-  const lines = [];
-  for (let i = 0; i < words.length; i += 10) {
-    lines.push(words.slice(i, i + 10).join(" "));
-  }
+  const lineDiv = document.createElement("div");
+  lineDiv.className = "detail-text-line";
+  lineDiv.textContent = component.text.trim();
+  containerDiv.appendChild(lineDiv);
 
-  lines.forEach((lineText) => {
-    const lineDiv = document.createElement("div");
-    lineDiv.className = "detail-text-line";
-    lineDiv.textContent = lineText;
-    containerDiv.appendChild(lineDiv);
-  });
   elements.elementDetailText.appendChild(containerDiv);
 
   scheduleDetailFit();

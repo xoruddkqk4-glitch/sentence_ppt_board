@@ -2511,9 +2511,9 @@ input:focus {
 }
 
 .detail-text-line {
-  white-space: nowrap;
+  white-space: nowrap !important;
   text-align: left;
-  line-height: 5.4 !important;
+  line-height: 1.35 !important;
 }
 
 /* 제목/소제목 슬라이드용 PPT 화면 스타일 */

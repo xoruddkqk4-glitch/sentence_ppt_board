@@ -28,7 +28,7 @@
 .vocabulary-share-content.is-focused { align-content: center; }
 .vocabulary-share-card { position: relative; min-width: 0; min-height: 0; overflow: hidden; padding: var(--vocabulary-card-padding, clamp(18px, 2.4vw, 36px)); border: 2px solid var(--color-primary); border-radius: var(--radius-md); background: var(--color-panel); box-shadow: 0 7px 20px rgba(0, 102, 204, .10); }
 .vocabulary-share-card.is-clickable { cursor: zoom-in; }
-.vocabulary-share-card.is-focused-card { cursor: zoom-out; }
+.vocabulary-share-card.is-focused-card { cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; user-select: none; }
 .vocabulary-share-card.is-clickable:hover, .vocabulary-share-card.is-clickable:focus-visible { border-color: #dc2626; outline: 3px solid rgba(220, 38, 38, .22); outline-offset: 2px; }
 .vocabulary-share-heading { display: flex; align-items: baseline; gap: .35em; min-width: 0; color: #111111; }
 .vocabulary-share-card h3 { overflow-wrap: anywhere; margin: 0; color: #dc2626; font-size: var(--vocabulary-term-size, 42px); line-height: 1.15; white-space: pre-wrap; word-break: break-word; }
@@ -39,10 +39,31 @@
 .vocabulary-insight-text span { font-weight: 900; }
 .vocabulary-share-card.has-image .vocabulary-share-heading, .vocabulary-share-card.has-image .vocabulary-meaning, .vocabulary-share-card.has-image .vocabulary-insight-text { max-width: 68%; position: relative; z-index: 1; }
 .vocabulary-share-image { position: absolute; top: 7%; right: 3%; width: 25%; height: 86%; object-fit: contain; border-radius: 8px; }
+
+/* 단일 카드 포커스 단계별 공개 전용 스타일 */
+.vocab-card-header-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px dashed var(--color-border); }
+.vocab-step-pills { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.vocab-step-pill { padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 800; background: var(--color-bg); color: var(--color-muted); border: 1px solid var(--color-border); transition: all 0.2s ease; }
+.vocab-step-pill.is-active { background: var(--color-primary); color: #ffffff; border-color: var(--color-primary); box-shadow: 0 2px 6px rgba(0, 102, 204, .25); }
+.vocab-step-pill.is-done { background: color-mix(in srgb, var(--color-primary) 15%, transparent); color: var(--color-primary); border-color: color-mix(in srgb, var(--color-primary) 30%, transparent); }
+.vocab-card-body { position: relative; width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.vocab-card-footer-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: auto; padding-top: var(--space-3); border-top: 1px dashed var(--color-border); }
+.vocab-step-guide { font-size: 13px; font-weight: 700; color: var(--color-muted); }
+.vocab-nav-btn { font-size: 14px; font-weight: 800; }
+
+.vocabulary-meaning.is-hidden, .vocabulary-insight-text.is-hidden { display: none !important; }
+.vocabulary-meaning.is-revealed, .vocabulary-insight-text.is-revealed { animation: vocabReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes vocabReveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
 .app-shell[data-theme="dark"] .vocabulary-card, .app-shell[data-theme="dark"] .vocabulary-share-card { background: var(--color-dark-panel); border-color: #3b82f6; }
 .app-shell[data-theme="dark"] .vocabulary-fields input, .app-shell[data-theme="dark"] .vocabulary-fields textarea { background: #0f172a; border-color: #475569; color: var(--color-dark-ink); }
 .app-shell[data-theme="dark"] .vocabulary-share-heading, .app-shell[data-theme="dark"] .vocabulary-location { color: #f8fafc; }
 .app-shell[data-theme="dark"] .vocabulary-insight-text { color: #9ca3af; }
 .app-shell[data-theme="dark"] .vocabulary-share-card h3 { color: #f87171; }
 .app-shell[data-theme="dark"] .vocabulary-meaning { color: #60a5fa; }
-@media (max-width: 760px) { .vocabulary-fields { grid-template-columns: 1fr; } .vocabulary-actions { align-items: stretch; flex-direction: column; } }
+.app-shell[data-theme="dark"] .vocab-step-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
+.app-shell[data-theme="dark"] .vocab-step-pill.is-active { background: #3b82f6; color: #ffffff; border-color: #3b82f6; }
+.app-shell[data-theme="dark"] .vocab-step-pill.is-done { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: rgba(59, 130, 246, 0.4); }
+.app-shell[data-theme="dark"] .vocab-card-header-bar, .app-shell[data-theme="dark"] .vocab-card-footer-bar { border-color: #334155; }
+.app-shell[data-theme="dark"] .vocab-step-guide { color: #94a3b8; }
+@media (max-width: 760px) { .vocabulary-fields { grid-template-columns: 1fr; } .vocabulary-actions { align-items: stretch; flex-direction: column; } .vocab-card-footer-bar { flex-direction: column; gap: 8px; text-align: center; } }
