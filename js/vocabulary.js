@@ -90,12 +90,14 @@
           reader.readAsDataURL(file);
         });
         card.querySelector(".vocabulary-image-remove")?.addEventListener("click", () => {
+          if (context.pushHistoryState) context.pushHistoryState();
           item.imageData = "";
           item.imageName = "";
           elements.vocabularyMessage.textContent = "어휘 카드에서 이미지를 삭제했습니다.";
           renderAnalysis();
         });
         card.querySelector(".vocabulary-delete").addEventListener("click", () => {
+          if (context.pushHistoryState) context.pushHistoryState();
           state.vocabularyItems.splice(index, 1);
           renderAnalysis();
         });
@@ -124,6 +126,7 @@
           event.preventDefault();
           const sourceIndex = state.draggedVocabularyIndex;
           if (!Number.isInteger(sourceIndex) || sourceIndex === index) return;
+          if (context.pushHistoryState) context.pushHistoryState();
           const placeAfter = card.classList.contains("is-drop-after");
           let targetIndex = index + (placeAfter ? 1 : 0);
           const [movedItem] = state.vocabularyItems.splice(sourceIndex, 1);
@@ -233,6 +236,7 @@
         elements.vocabularyMessage.textContent = "어휘는 최대 18개까지 입력할 수 있습니다.";
         return;
       }
+      if (context.pushHistoryState) context.pushHistoryState();
       state.vocabularyItems.push(makeItem());
       elements.vocabularyMessage.textContent = "새 어휘 카드를 추가했습니다.";
       renderAnalysis();

@@ -129,11 +129,16 @@ button {
   font-weight: 800;
 }
 
-.top-workflow-button:hover,
+.top-workflow-button:hover:not(:disabled),
 .top-workflow-button.is-current {
   border-color: var(--color-primary);
   background: var(--color-primary);
   color: #ffffff;
+}
+
+.top-workflow-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .top-workflow-divider {

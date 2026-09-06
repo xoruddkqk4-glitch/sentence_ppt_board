@@ -163,10 +163,103 @@ const elements = {
   elementDetailOverlay: document.getElementById("elementDetailOverlay"),
   elementDetailRole: document.getElementById("elementDetailRole"),
   elementDetailText: document.getElementById("elementDetailText"),
-  elementCloseButton: document.getElementById("elementCloseButton")
+  elementCloseButton: document.getElementById("elementCloseButton"),
+  headerUndoButton: document.getElementById("headerUndoButton"),
+  headerRedoButton: document.getElementById("headerRedoButton")
 };
 
-const vocabularyFeature = window.VocabularyFeature.init({ state, elements });
+const undoStack = [];
+const redoStack = [];
+const MAX_HISTORY_SNAPSHOTS = 50;
+
+function getAppStateSnapshot() {
+  return JSON.stringify({
+    passageText: state.passageText,
+    sentences: state.sentences,
+    currentSentenceIndex: state.currentSentenceIndex,
+    componentSerial: state.componentSerial,
+    analysisLevelCount: state.analysisLevelCount,
+    hiddenPassageLevels: state.hiddenPassageLevels,
+    passageShareMode: state.passageShareMode,
+    vocabularyItems: state.vocabularyItems
+  });
+}
+
+function pushHistoryState() {
+  const snapshot = getAppStateSnapshot();
+  if (undoStack.length > 0 && undoStack[undoStack.length - 1] === snapshot) {
+    return;
+  }
+  undoStack.push(snapshot);
+  if (undoStack.length > MAX_HISTORY_SNAPSHOTS) {
+    undoStack.shift();
+  }
+  redoStack.length = 0;
+  updateUndoRedoButtons();
+}
+
+function restoreAppStateSnapshot(snapshotStr) {
+  try {
+    const data = JSON.parse(snapshotStr);
+    state.passageText = data.passageText || "";
+    state.sentences = Array.isArray(data.sentences) ? data.sentences : [];
+    state.currentSentenceIndex = Math.max(0, Math.min(data.currentSentenceIndex || 0, Math.max(0, state.sentences.length - 1)));
+    state.componentSerial = data.componentSerial || 1;
+    state.analysisLevelCount = data.analysisLevelCount || 3;
+    state.hiddenPassageLevels = Array.isArray(data.hiddenPassageLevels) ? data.hiddenPassageLevels : [];
+    state.passageShareMode = data.passageShareMode || "plain";
+    if (vocabularyFeature && typeof vocabularyFeature.normalize === "function") {
+      state.vocabularyItems = vocabularyFeature.normalize(data.vocabularyItems);
+    } else {
+      state.vocabularyItems = Array.isArray(data.vocabularyItems) ? data.vocabularyItems : [];
+    }
+    if (elements.passageInput) {
+      elements.passageInput.value = state.passageText;
+    }
+    render();
+    if (vocabularyFeature && typeof vocabularyFeature.renderAnalysis === "function") {
+      vocabularyFeature.renderAnalysis();
+    }
+    if (state.mode === "vocabulary-share" && vocabularyFeature && typeof vocabularyFeature.renderShare === "function") {
+      vocabularyFeature.renderShare();
+    }
+  } catch (err) {
+    console.warn("Snapshot restore failed:", err);
+  }
+}
+
+function undoState() {
+  if (undoStack.length === 0) return false;
+  const currentSnapshot = getAppStateSnapshot();
+  redoStack.push(currentSnapshot);
+  const previousSnapshot = undoStack.pop();
+  restoreAppStateSnapshot(previousSnapshot);
+  updateUndoRedoButtons();
+  showSaveFeedback("↩️ 이전 작업 상태로 되돌렸습니다. (Undo)");
+  return true;
+}
+
+function redoState() {
+  if (redoStack.length === 0) return false;
+  const currentSnapshot = getAppStateSnapshot();
+  undoStack.push(currentSnapshot);
+  const nextSnapshot = redoStack.pop();
+  restoreAppStateSnapshot(nextSnapshot);
+  updateUndoRedoButtons();
+  showSaveFeedback("↪️ 다시 실행했습니다. (Redo)");
+  return true;
+}
+
+function updateUndoRedoButtons() {
+  if (elements.headerUndoButton) {
+    elements.headerUndoButton.disabled = undoStack.length === 0;
+  }
+  if (elements.headerRedoButton) {
+    elements.headerRedoButton.disabled = redoStack.length === 0;
+  }
+}
+
+const vocabularyFeature = window.VocabularyFeature.init({ state, elements, pushHistoryState });
 
 function splitSentences(text) {
   const normalized = normalizeApostrophes(text).trim();
@@ -1406,11 +1499,86 @@ function adjustEditViewScale() {
 }
 
 function toggleImportantSentence() {
+  pushHistoryState();
   const sentence = getCurrentSentence();
   if (!sentence) {
     return;
   }
   sentence.isImportant = !sentence.isImportant;
+  render();
+}
+
+function updateSentenceText() {
+  pushHistoryState();
+  const sentence = getCurrentSentence();
+  if (!sentence) {
+    return;
+  }
+  const newText = elements.sentenceTextEditor.value.trim();
+  if (!newText) {
+    alert("문장 텍스트를 입력해 주세요.");
+    return;
+  }
+  sentence.text = newText;
+  sentence.wordCount = getPlainWords(newText).length;
+  sentence.components = analyzeSentence(newText, state.currentSentenceIndex);
+  sentence.connectiveIndexes = [];
+  sentence.connectiveColors = {};
+
+  state.passageText = state.sentences.map((s) => s.text).join(" ");
+  elements.passageInput.value = state.passageText;
+
+  render();
+}
+
+function insertNewSentence() {
+  if (state.sentences.length === 0) {
+    return;
+  }
+  pushHistoryState();
+  const insertIndex = state.currentSentenceIndex + 1;
+  const defaultText = "Insert new English sentence here.";
+  const newSentence = {
+    id: `sentence-inserted-${Date.now()}`,
+    text: defaultText,
+    isImportant: false,
+    abstractLevel: 1,
+    connectiveIndexes: [],
+    connectiveColors: {},
+    wordCount: getPlainWords(defaultText).length,
+    components: analyzeSentence(defaultText, insertIndex)
+  };
+
+  state.sentences.splice(insertIndex, 0, newSentence);
+
+  reindexSentences();
+
+  state.currentSentenceIndex = insertIndex;
+  state.minorRevealCount = 0;
+
+  render();
+}
+
+function deleteCurrentSentence() {
+  if (state.sentences.length === 0) {
+    return;
+  }
+  if (state.sentences.length <= 1) {
+    alert("더 이상 문장을 삭제할 수 없습니다. 최소 하나의 문장이 필요합니다.");
+    return;
+  }
+
+  if (!confirm("현재 문장을 정말 삭제하시겠습니까?")) {
+    return;
+  }
+
+  pushHistoryState();
+  state.sentences.splice(state.currentSentenceIndex, 1);
+  reindexSentences();
+
+  state.currentSentenceIndex = Math.max(0, Math.min(state.currentSentenceIndex, state.sentences.length - 1));
+  state.minorRevealCount = 0;
+
   render();
 }
 
@@ -2745,6 +2913,7 @@ function handlePresentationClick(event) {
 }
 
 function moveComponent(componentId, targetLane, targetIndex = null) {
+  pushHistoryState();
   const sentence = getCurrentSentence();
   const component = sentence?.components.find((item) => item.id === componentId);
   if (!sentence || !component) {
@@ -2778,6 +2947,7 @@ function moveComponent(componentId, targetLane, targetIndex = null) {
 }
 
 function splitSelectedWords(componentId, selectedIndexes) {
+  pushHistoryState();
   const sentence = getCurrentSentence();
   const component = sentence?.components.find((item) => item.id === componentId);
   if (!sentence || !component) {
@@ -2844,6 +3014,7 @@ function getNextComponentId(baseId) {
 }
 
 function updateComponentRole(componentId, role) {
+  pushHistoryState();
   state.focusedComponentId = componentId;
   const sentence = getCurrentSentence();
   const component = sentence?.components.find((item) => item.id === componentId);
@@ -2930,6 +3101,7 @@ function getMergeTargetId(lane, draggedComponentId, clientX, clientY) {
 }
 
 function mergeComponents(sourceId, targetId, targetLane) {
+  pushHistoryState();
   const sentence = getCurrentSentence();
   const source = sentence?.components.find((item) => item.id === sourceId);
   const target = sentence?.components.find((item) => item.id === targetId);
@@ -4065,6 +4237,8 @@ function bindEvents() {
   elements.headerPresentButton.addEventListener("click", () => goToWorkflowMode("present"));
   elements.headerAnalysisButton.addEventListener("click", () => goToWorkflowMode("analysis"));
   elements.headerPassageShareButton.addEventListener("click", () => goToWorkflowMode("passage-share"));
+  if (elements.headerUndoButton) elements.headerUndoButton.addEventListener("click", undoState);
+  if (elements.headerRedoButton) elements.headerRedoButton.addEventListener("click", redoState);
   elements.headerSaveTxtButton.addEventListener("click", () => saveAnalysisTxt(false));
   elements.headerSaveAsTxtButton.addEventListener("click", () => saveAnalysisTxt(true));
 
@@ -4133,6 +4307,37 @@ function bindEvents() {
 }
 
 function handleKeyboard(event) {
+  const isCtrlOrCmd = event.ctrlKey || event.metaKey;
+  if (isCtrlOrCmd) {
+    const keyLower = event.key.toLowerCase();
+    if (keyLower === "z") {
+      const activeTag = document.activeElement?.tagName;
+      const isInput = activeTag === "TEXTAREA" || activeTag === "INPUT" || document.activeElement?.isContentEditable;
+      if (!isInput) {
+        event.preventDefault();
+        if (event.shiftKey) {
+          redoState();
+        } else {
+          undoState();
+        }
+        return;
+      } else if (event.shiftKey) {
+        event.preventDefault();
+        redoState();
+        return;
+      }
+    }
+    if (keyLower === "y") {
+      const activeTag = document.activeElement?.tagName;
+      const isInput = activeTag === "TEXTAREA" || activeTag === "INPUT" || document.activeElement?.isContentEditable;
+      if (!isInput) {
+        event.preventDefault();
+        redoState();
+        return;
+      }
+    }
+  }
+
   const activeTag = document.activeElement?.tagName;
   if (activeTag === "TEXTAREA" || activeTag === "INPUT" || activeTag === "SELECT") {
     return;
