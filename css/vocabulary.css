@@ -31,11 +31,11 @@
 .vocabulary-share-card.is-focused-card { cursor: zoom-out; }
 .vocabulary-share-card.is-clickable:hover, .vocabulary-share-card.is-clickable:focus-visible { border-color: #dc2626; outline: 3px solid rgba(220, 38, 38, .22); outline-offset: 2px; }
 .vocabulary-share-heading { display: flex; align-items: baseline; gap: .35em; min-width: 0; color: #111111; }
-.vocabulary-share-card h3 { overflow-wrap: anywhere; margin: 0; color: #dc2626; font-size: var(--vocabulary-term-size, 42px); line-height: 1.15; }
-.vocabulary-meaning, .vocabulary-insight-text { margin: .3em 0 0; font-size: calc(var(--vocabulary-term-size, 42px) * .68); font-weight: 800; line-height: 1.25; }
+.vocabulary-share-card h3 { overflow-wrap: anywhere; margin: 0; color: #dc2626; font-size: var(--vocabulary-term-size, 42px); line-height: 1.15; white-space: pre-wrap; word-break: break-word; }
+.vocabulary-meaning, .vocabulary-insight-text { margin: .3em 0 0; font-size: calc(var(--vocabulary-term-size, 42px) * .68); font-weight: 800; line-height: 1.25; white-space: pre-wrap; word-break: break-word; }
 .vocabulary-meaning { color: #2563eb; }
-.vocabulary-location { margin: 0; color: #111111; font-size: calc(var(--vocabulary-term-size, 42px) * .45); font-weight: 800; white-space: nowrap; }
-.vocabulary-insight-text { color: #6b7280; white-space: pre-wrap; font-size: calc(var(--vocabulary-term-size, 42px) * .51); }
+.vocabulary-location { margin: 0; color: #111111; font-size: calc(var(--vocabulary-term-size, 42px) * .45); font-weight: 800; white-space: pre-wrap; word-break: break-word; }
+.vocabulary-insight-text { color: #6b7280; font-size: calc(var(--vocabulary-term-size, 42px) * .51); }
 .vocabulary-insight-text span { font-weight: 900; }
 .vocabulary-share-card.has-image .vocabulary-share-heading, .vocabulary-share-card.has-image .vocabulary-meaning, .vocabulary-share-card.has-image .vocabulary-insight-text { max-width: 68%; position: relative; z-index: 1; }
 .vocabulary-share-image { position: absolute; top: 7%; right: 3%; width: 25%; height: 86%; object-fit: contain; border-radius: 8px; }

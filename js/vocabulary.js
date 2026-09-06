@@ -35,9 +35,9 @@
         card.innerHTML = `
           <div class="vocabulary-card-header"><span class="vocabulary-drag-handle" draggable="true" title="드래그하여 순서 변경" aria-label="어휘 ${index + 1} 순서 변경">⠿</span><strong>어휘 ${index + 1}</strong><button class="button secondary compact vocabulary-delete" type="button">삭제</button></div>
           <div class="vocabulary-fields">
-            <label>단어·표현<input data-field="term" value="${escapeAttribute(item.term)}" placeholder="예: take part in"></label>
+            <label>단어·표현<textarea data-field="term" rows="1" placeholder="예: take part in (Alt+Enter로 줄바꿈)">${escapeHtml(item.term)}</textarea></label>
             <label>위치<input data-field="location" value="${escapeAttribute(item.location)}" placeholder="예: 2번 문장/3번째 줄"></label>
-            <label>의미<input data-field="meaning" value="${escapeAttribute(item.meaning)}" placeholder="예: ~에 참여하다"></label>
+            <label>의미<textarea data-field="meaning" rows="2" placeholder="예: ~에 참여하다 (Alt+Enter로 줄바꿈)">${escapeHtml(item.meaning)}</textarea></label>
             <label class="vocabulary-insights">Word Insights<textarea data-field="insights" rows="2" placeholder="품사, 어원, 연어, 기억법, 수업 질문 (Alt+Enter로 줄바꿈)">${escapeHtml(item.insights)}</textarea></label>
           </div>
           <div class="vocabulary-image-field">
@@ -49,21 +49,20 @@
           item[event.target.dataset.field] = event.target.value;
           elements.vocabularyMessage.textContent = "어휘 내용이 현재 수업 세션에 저장되었습니다.";
         }));
-        const insightsField = card.querySelector('[data-field="insights"]');
-        if (insightsField) {
-          insightsField.addEventListener("keydown", (event) => {
+        card.querySelectorAll("textarea[data-field]").forEach((textarea) => {
+          textarea.addEventListener("keydown", (event) => {
             if (event.key === "Enter" && event.altKey) {
               event.preventDefault();
-              const start = insightsField.selectionStart;
-              const end = insightsField.selectionEnd;
-              const value = insightsField.value;
-              insightsField.value = value.substring(0, start) + "\n" + value.substring(end);
-              insightsField.selectionStart = insightsField.selectionEnd = start + 1;
-              item.insights = insightsField.value;
+              const start = textarea.selectionStart;
+              const end = textarea.selectionEnd;
+              const value = textarea.value;
+              textarea.value = value.substring(0, start) + "\n" + value.substring(end);
+              textarea.selectionStart = textarea.selectionEnd = start + 1;
+              item[textarea.dataset.field] = textarea.value;
               elements.vocabularyMessage.textContent = "어휘 내용이 현재 수업 세션에 저장되었습니다.";
             }
           });
-        }
+        });
         const imageInput = card.querySelector(".vocabulary-image-input");
         imageInput.addEventListener("change", () => {
           const [file] = imageInput.files;
