@@ -274,7 +274,7 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
 - **수정 내용**: `.agents` 설정 (규칙 `rules.md` 및 `git-commit` 스킬 `SKILL.md`) 프로젝트 적용 및 `README.md` 하단 누적 이력 기록 정책 업데이트
 - **검증 결과**: terminal git status/diff 확인 및 README.md 하단 이력 작성 규격 검증 완료
 
-## [2026-09-08] 어휘 이미지 크기 확대 및 포커스 강조 모달 기능 구현 (Commit ID: 45d4c16)
+## [2026-09-08] 어휘 이미지 크기 확대 및 포커스 강조 모달 기능 구현 (Commit ID: 00410f0)
 - **수정 내용**: 3단계 어휘 공유 화면 단일 카드 포커스 모드 이미지 크기 확대(가로 44%, 세로 92%) 및 이미지 클릭 시 포커스 강조 모달(Lightbox Overlay) 구현
 - **검증 결과**: terminal git status/diff 검증 및 키보드/마우스 이벤트 동작 처리 확인 완료
 
