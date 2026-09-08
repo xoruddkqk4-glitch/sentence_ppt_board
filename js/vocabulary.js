@@ -190,6 +190,56 @@
       });
     }
 
+    function openImageModal(item) {
+      if (!item || !item.imageData) return;
+      document.querySelector(".vocab-image-overlay")?.remove();
+
+      const overlay = document.createElement("div");
+      overlay.className = "vocab-image-overlay";
+      overlay.tabIndex = -1;
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-modal", "true");
+      overlay.setAttribute("aria-label", `${item.term || "어휘"} 참고 이미지 강조 보기`);
+
+      overlay.innerHTML = `
+        <div class="vocab-image-overlay-content" onclick="event.stopPropagation()">
+          <div class="vocab-image-overlay-header">
+            <div class="vocab-image-overlay-title">
+              <span>🖼️ ${escapeHtml(item.term || "(어휘 미입력)")}</span>
+              ${item.location ? `<span class="vocab-image-overlay-location">📍 ${escapeHtml(item.location)}</span>` : ""}
+            </div>
+            <button type="button" class="button secondary compact vocab-image-overlay-close">✕ 닫기 (ESC)</button>
+          </div>
+          <div class="vocab-image-overlay-img-wrapper">
+            <img class="vocab-image-overlay-img" src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}">
+          </div>
+        </div>
+      `;
+
+      const close = () => {
+        overlay.remove();
+        document.removeEventListener("keydown", onKeyDown);
+      };
+
+      const onKeyDown = (event) => {
+        if (event.key === "Escape" || event.key === "0") {
+          event.preventDefault();
+          event.stopPropagation();
+          close();
+        }
+      };
+
+      overlay.querySelector(".vocab-image-overlay-close")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        close();
+      });
+      overlay.addEventListener("click", close);
+      document.addEventListener("keydown", onKeyDown);
+
+      document.body.appendChild(overlay);
+      overlay.focus();
+    }
+
     function renderShare() {
       const items = state.vocabularyItems.filter((item) => item.term.trim() || item.meaning.trim() || item.insights.trim() || item.imageData);
       elements.vocabularyShareContent.innerHTML = "";
@@ -251,12 +301,14 @@
             ${item.imageData ? `<img class="vocabulary-share-image" src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}">` : ""}
             ${item.meaning ? `<p class="vocabulary-meaning">${escapeHtml(item.meaning)}</p>` : ""}
             ${item.insights ? `<p class="vocabulary-insight-text">${escapeHtml(item.insights)}</p>` : ""}`;
-          card.addEventListener("click", () => {
+          card.addEventListener("click", (event) => {
+            if (event.target.closest(".vocabulary-share-image")) return;
             state.vocabularyShareSelectedItemId = item.id;
             state.vocabularyShareStep = 0;
             renderShare();
           });
           card.addEventListener("keydown", (event) => {
+            if (event.target.closest(".vocabulary-share-image")) return;
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
               state.vocabularyShareSelectedItemId = item.id;
@@ -280,8 +332,12 @@
             state.vocabularyShareStep = 0;
             renderShare();
           };
-          card.addEventListener("click", returnToAllItems);
+          card.addEventListener("click", (event) => {
+            if (event.target.closest(".vocabulary-share-image")) return;
+            returnToAllItems();
+          });
           card.addEventListener("keydown", (event) => {
+            if (event.target.closest(".vocabulary-share-image")) return;
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
               returnToAllItems();
@@ -367,13 +423,13 @@
           });
 
           card.addEventListener("click", (event) => {
-            if (event.target.closest("button")) return;
+            if (event.target.closest("button") || event.target.closest(".vocabulary-share-image")) return;
             advanceStep(1);
             renderShare();
           });
 
           card.addEventListener("keydown", (event) => {
-            if (event.target.closest("button")) return;
+            if (event.target.closest("button") || event.target.closest(".vocabulary-share-image")) return;
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
               advanceStep(1);
@@ -381,6 +437,26 @@
             }
           });
         }
+
+        const shareImgEl = card.querySelector(".vocabulary-share-image");
+        if (shareImgEl) {
+          shareImgEl.tabIndex = 0;
+          shareImgEl.setAttribute("role", "button");
+          shareImgEl.setAttribute("aria-label", `${item.term || "어휘"} 참고 이미지 크게 강조 보기`);
+          shareImgEl.title = "클릭하여 이미지 크게 보기";
+          const handleImgActivate = (event) => {
+            event.stopPropagation();
+            event.preventDefault();
+            openImageModal(item);
+          };
+          shareImgEl.addEventListener("click", handleImgActivate);
+          shareImgEl.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              handleImgActivate(event);
+            }
+          });
+        }
+
         elements.vocabularyShareContent.appendChild(card);
       });
       requestAnimationFrame(fitShareToViewport);
@@ -412,6 +488,12 @@
       if (state.mode === "vocabulary-share") renderShare();
     });
     function handleShareKey(key) {
+      if (document.querySelector(".vocab-image-overlay")) {
+        if (key === "0" || key === "Escape") {
+          document.querySelector(".vocab-image-overlay")?.remove();
+          return true;
+        }
+      }
       const items = state.vocabularyItems.filter((item) => item.term.trim() || item.meaning.trim() || item.insights.trim() || item.imageData);
       const rowCount = Math.ceil(items.length / 2);
       if (key === "0" || key === "Escape") {

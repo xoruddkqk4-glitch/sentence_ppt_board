@@ -37,8 +37,55 @@
 .vocabulary-location { margin: 0; color: #111111; font-size: calc(var(--vocabulary-term-size, 42px) * .45); font-weight: 800; white-space: pre-wrap; word-break: break-word; }
 .vocabulary-insight-text { color: #6b7280; font-size: calc(var(--vocabulary-term-size, 42px) * .51); }
 .vocabulary-insight-text span { font-weight: 900; }
-.vocabulary-share-card.has-image .vocabulary-share-heading, .vocabulary-share-card.has-image .vocabulary-meaning, .vocabulary-share-card.has-image .vocabulary-insight-text { max-width: 68%; position: relative; z-index: 1; }
-.vocabulary-share-image { position: absolute; top: 7%; right: 3%; width: 25%; height: 86%; object-fit: contain; border-radius: 8px; }
+.vocabulary-share-card.has-image .vocabulary-share-heading,
+.vocabulary-share-card.has-image .vocabulary-meaning,
+.vocabulary-share-card.has-image .vocabulary-insight-text {
+  max-width: 60%;
+  position: relative;
+  z-index: 1;
+}
+
+/* 단일 카드 포커스 모드에서는 이미지가 가로 44%, 세로 92%로 훨씬 크게 확대 */
+.vocabulary-share-content.is-focused .vocabulary-share-card.has-image .vocabulary-share-heading,
+.vocabulary-share-content.is-focused .vocabulary-share-card.has-image .vocabulary-meaning,
+.vocabulary-share-content.is-focused .vocabulary-share-card.has-image .vocabulary-insight-text,
+.vocabulary-share-card.is-focused-card.has-image .vocabulary-share-heading,
+.vocabulary-share-card.is-focused-card.has-image .vocabulary-meaning,
+.vocabulary-share-card.is-focused-card.has-image .vocabulary-insight-text {
+  max-width: 53%;
+}
+
+.vocabulary-share-image {
+  position: absolute;
+  top: 5%;
+  right: 2%;
+  width: 36%;
+  height: 90%;
+  object-fit: contain;
+  border-radius: 10px;
+  cursor: zoom-in;
+  z-index: 2;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+  border: 2px solid transparent;
+}
+
+.vocabulary-share-content.is-focused .vocabulary-share-image,
+.vocabulary-share-card.is-focused-card .vocabulary-share-image {
+  width: 44%;
+  height: 92%;
+  top: 4%;
+  right: 2%;
+  max-width: 680px;
+}
+
+.vocabulary-share-image:hover,
+.vocabulary-share-image:focus-visible {
+  transform: scale(1.03);
+  border-color: var(--color-primary, #0066cc);
+  box-shadow: 0 10px 28px rgba(0, 102, 204, 0.28);
+  outline: 3px solid rgba(0, 102, 204, 0.35);
+  outline-offset: 2px;
+}
 
 /* 단일 카드 포커스 단계별 공개 전용 스타일 */
 .vocab-card-header-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px dashed var(--color-border); }
@@ -55,6 +102,99 @@
 .vocabulary-meaning.is-revealed, .vocabulary-insight-text.is-revealed { animation: vocabReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes vocabReveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+/* 어휘 이미지 포커스 강조 모달 (Lightbox Overlay) */
+.vocab-image-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 20px;
+  animation: vocabModalFadeIn 0.22s ease-out forwards;
+}
+
+@keyframes vocabModalFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.vocab-image-overlay-content {
+  position: relative;
+  max-width: 92vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-panel, #ffffff);
+  border: 3px solid var(--color-primary, #0066cc);
+  border-radius: 16px;
+  padding: 20px 24px 24px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.vocab-image-overlay-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed var(--color-border, #e2e8f0);
+}
+
+.vocab-image-overlay-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: clamp(20px, 2.2vw, 30px);
+  font-weight: 900;
+  color: #dc2626;
+}
+
+.vocab-image-overlay-location {
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 800;
+  color: var(--color-primary, #0066cc);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+.vocab-image-overlay-img-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-height: calc(85vh - 90px);
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+.vocab-image-overlay-img {
+  max-width: 100%;
+  max-height: calc(85vh - 100px);
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.vocab-image-overlay-close {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 8px 16px;
+}
+
 .app-shell[data-theme="dark"] .vocabulary-card, .app-shell[data-theme="dark"] .vocabulary-share-card { background: var(--color-dark-panel); border-color: #3b82f6; }
 .app-shell[data-theme="dark"] .vocabulary-fields input, .app-shell[data-theme="dark"] .vocabulary-fields textarea { background: #0f172a; border-color: #475569; color: var(--color-dark-ink); }
 .app-shell[data-theme="dark"] .vocabulary-share-heading, .app-shell[data-theme="dark"] .vocabulary-location { color: #f8fafc; }
@@ -66,4 +206,10 @@
 .app-shell[data-theme="dark"] .vocab-step-pill.is-done { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: rgba(59, 130, 246, 0.4); }
 .app-shell[data-theme="dark"] .vocab-card-header-bar, .app-shell[data-theme="dark"] .vocab-card-footer-bar { border-color: #334155; }
 .app-shell[data-theme="dark"] .vocab-step-guide { color: #94a3b8; }
+.app-shell[data-theme="dark"] .vocab-image-overlay-content { background: #1e293b; border-color: #3b82f6; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8); }
+.app-shell[data-theme="dark"] .vocab-image-overlay-header { border-color: #334155; }
+.app-shell[data-theme="dark"] .vocab-image-overlay-title { color: #f87171; }
+.app-shell[data-theme="dark"] .vocab-image-overlay-location { color: #60a5fa; background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.4); }
+.app-shell[data-theme="dark"] .vocab-image-overlay-img-wrapper { background: #0f172a; border-color: #334155; }
 @media (max-width: 760px) { .vocabulary-fields { grid-template-columns: 1fr; } .vocabulary-actions { align-items: stretch; flex-direction: column; } .vocab-card-footer-bar { flex-direction: column; gap: 8px; text-align: center; } }
+
