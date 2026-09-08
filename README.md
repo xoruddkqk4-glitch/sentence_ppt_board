@@ -218,8 +218,8 @@ English Visualization Board/
 - JavaScript
 - Pretendard 글꼴
 - 브라우저 File System Access API
-- **에이전트 실행 지침 (`.agents/rules/rules.md`)**: 브라우저 렌더링 검증 최소화 및 터미널 정적 검사를 통한 신속 검증(Terminal-Only Fast Verification) 적용
-- **자동 Git 커밋 & 푸시 스킬 (`.agents/skills/git-commit/SKILL.md`)**: 요청 시 `README.md` 자동 반영, 표준 양식 커밋 메시지 생성 및 원격 저장소(`origin main`) 자동 동기화
+- **에이전트 실행 지침 (`.agents/rules/rules.md`)**: 브라우저 렌더링 검증 최소화 및 터미널 정적 검사를 통한 신속 검증(Terminal-Only Fast Verification), README.md 하단 누적 기록 규칙 적용
+- **자동 Git 커밋 & 푸시 스킬 (`.agents/skills/git-commit/SKILL.md`)**: 요청 시 `README.md` 자동 반영, 하단 누적 이력 기록, 표준 양식 커밋 메시지 생성 및 원격 저장소(`origin main`) 자동 동기화
 
 ## 최근 워크플로 개선 사항
 
@@ -231,6 +231,7 @@ English Visualization Board/
 - **`.agents` 규칙 및 스킬 적용 (`.agents/rules/rules.md`, `.agents/skills/git-commit/SKILL.md`)**:
   - 브라우저 검증 최소화 및 터미널 정적 검사를 통한 빠른 검증(Terminal-Only Fast Verification) 정책 적용.
   - `/git-commit` 및 `.agents` 적용 요청 시 `README.md` 자동 업데이트 및 커밋 메시지 상세화, 원격 저장소(`origin main`) 자동 동기화 적용.
+  - `README.md` 하단 날짜별 변경 이력 누적 기록 규칙(Date, Commit ID, Modification Details, Verification Results) 반영.
   - `.agents/skills/git-commit/SKILL.md` 내 상대 경로(`[README.md](./README.md)`) 수정 및 프로젝트 루트 최적화.
   - `versions/` 폴더 내 불필요한 예전 아카이브 압축 파일 정리.
 - **1단계 지문 입력 '초기화' 전체 리셋 확장**: 1단계 지문 입력에서 '초기화' 버튼 클릭 시 입력한 지문뿐만 아니라 임시 저장된 2단계(어휘)부터 7단계(지문 공유)까지의 모든 분석 및 설정 정보가 일괄 초기화되도록 개선.
@@ -267,3 +268,8 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
 - 여러 종요소가 같은 anchor 근처에 붙는 문장
 - 형용사어가 여러 단어 또는 종요소를 수식하는 문장
 - 저장한 TXT 파일을 다시 불러오는 흐름
+
+## [2026-09-08] 업데이트 이력 (Commit ID: b117eb7)
+- **수정 내용**: `.agents` 설정 (규칙 `rules.md` 및 `git-commit` 스킬 `SKILL.md`) 프로젝트 적용 및 `README.md` 하단 누적 이력 기록 정책 업데이트
+- **검증 결과**: terminal git status/diff 확인 및 README.md 하단 이력 작성 규격 검증 완료
+
