@@ -278,4 +278,10 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
 - **수정 내용**: 3단계 어휘 공유 화면 단일 카드 포커스 모드 이미지 크기 확대(가로 44%, 세로 92%) 및 이미지 클릭 시 포커스 강조 모달(Lightbox Overlay) 구현
 - **검증 결과**: terminal git status/diff 검증 및 키보드/마우스 이벤트 동작 처리 확인 완료
 
+## [2026-09-11 14:12] TXT 저장/불러오기 기능 안정화 및 Agent 지침 적용 (Commit ID: feefa4b)
+- **수정 내용**:
+  - `.agents` 에이전트 지침 규칙(`.agents/rules/rules.md`) 및 커스텀 스킬(`ask`, `git-commit`, `scratchpad`) 세부 정책 업데이트 및 적용
+  - TXT 저장 및 불러오기 기능 안정화: 어휘 이미지 포함 시 `localStorage` 5MB 용량 초과 예외 처리(`saveCacheSafely`) 적용 및 동일 파일 재선택 불통 현상 해결(파일 선택 input `value` 리셋)
+- **검증 결과**: `node --check js/main.js` 구문 검증 완료 (Exit Code 0)
+
 

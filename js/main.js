@@ -3537,7 +3537,7 @@ async function saveAnalysisTxt(saveAs = false) {
       await writable.close();
 
       // 최신 수정본 캐시 업데이트
-      localStorage.setItem(`sentence_board_file_cache_${state.currentFileName}`, content);
+      saveCacheSafely(`sentence_board_file_cache_${state.currentFileName}`, content);
 
       const saveMsg = `💾 ${state.currentFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`;
       elements.inputMessage.style.color = "var(--color-primary)";
@@ -3597,7 +3597,7 @@ async function saveAnalysisTxt(saveAs = false) {
       await writable.write(blob);
       await writable.close();
 
-      localStorage.setItem(`sentence_board_file_cache_${fileHandle.name}`, content);
+      saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, content);
 
       const saveMsg = `💾 ${fileHandle.name}에 전체 분석 정보를 저장했습니다. (${saveSummary})`;
       elements.inputMessage.style.color = "var(--color-primary)";
@@ -3632,7 +3632,7 @@ async function saveAnalysisTxt(saveAs = false) {
   state.currentFileName = fallbackFileName;
   updateFileNameDisplay();
 
-  localStorage.setItem(`sentence_board_file_cache_${fallbackFileName}`, content);
+  saveCacheSafely(`sentence_board_file_cache_${fallbackFileName}`, content);
   downloadAnalysisTxt(blob, fallbackFileName);
 
   const saveMsg = `⬇️ ${fallbackFileName} 파일을 새로 다운로드했습니다. 기존 파일은 덮어쓰지 않았습니다. (${saveSummary})`;
@@ -3819,7 +3819,7 @@ async function triggerAnalysisImport() {
       const file = await fileHandle.getFile();
       const resultText = await file.text();
 
-      localStorage.setItem(`sentence_board_file_cache_${fileHandle.name}`, resultText);
+      saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, resultText);
       importAnalysisTxt(resultText);
       return;
     } catch (error) {
@@ -3851,14 +3851,31 @@ function handleAnalysisFileSelected(event) {
     try {
       const resultText = String(reader.result || "");
       // 기존 TXT 불러오기로 가져온 최신 데이터를 즉시 로컬 스토리지 캐시에 동기화
-      localStorage.setItem(`sentence_board_file_cache_${file.name}`, resultText);
+      saveCacheSafely(`sentence_board_file_cache_${file.name}`, resultText);
       importAnalysisTxt(resultText);
     } catch (error) {
       alert(`지문을 불러오지 못했습니다: ${error.message}`);
+    } finally {
+      if (event.target) {
+        event.target.value = "";
+      }
     }
   };
-  reader.onerror = () => alert("파일을 읽는 중 오류가 발생했습니다.");
+  reader.onerror = () => {
+    alert("파일을 읽는 중 오류가 발생했습니다.");
+    if (event.target) {
+      event.target.value = "";
+    }
+  };
   reader.readAsText(file, "utf-8");
+}
+
+function saveCacheSafely(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch (error) {
+    console.warn(`[Storage Warning] 로컬 스토리지 캐시 저장에 실패하였습니다 (${key}):`, error);
+  }
 }
 
 function importAnalysisTxt(content) {
