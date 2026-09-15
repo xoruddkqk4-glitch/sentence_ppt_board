@@ -792,16 +792,17 @@ function renderPassageShareView() {
   if (isOutlineMode) {
     for (let level = 1; level <= state.analysisLevelCount; level += 1) {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
-      const lane = document.createElement("section");
-      lane.className = "outline-level-lane";
-      lane.dataset.abstractLevel = String(level);
-      lane.style.setProperty("--outline-color", visual.color);
+      const header = document.createElement("div");
+      header.className = "outline-level-header";
+      header.dataset.abstractLevel = String(level);
+      header.style.gridColumn = String(level);
+      header.style.gridRow = "1";
+      header.style.setProperty("--outline-color", visual.color);
       const title = document.createElement("h3");
       title.className = "outline-level-title";
       title.textContent = `${level}단계`;
-      lane.appendChild(title);
-      outlineLanes.set(level, lane);
-      content.appendChild(lane);
+      header.appendChild(title);
+      content.appendChild(header);
     }
   }
 
@@ -821,6 +822,9 @@ function renderPassageShareView() {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
       sentenceElement.style.setProperty("--outline-color", visual.color);
       sentenceElement.style.setProperty("--outline-card-scale", hiddenLevels.has(level) ? "1" : String(outlineVisibleFontScale));
+      // 개조식 계단식 배치: 단계에 따른 열(Column), 문장 순서에 따른 단독 행(Row, 2행부터)
+      sentenceElement.style.gridColumn = String(level);
+      sentenceElement.style.gridRow = String(originalIndex + 2);
       const rootGroupIndex = outlineRootGroups.bySentence.get(originalIndex);
       if (Number.isInteger(rootGroupIndex)) {
         sentenceElement.classList.add("has-outline-group");
@@ -849,7 +853,7 @@ function renderPassageShareView() {
     }
 
     sentenceElement.appendChild(createConnectiveMarkedText(sentence, isVisualMode || isOutlineMode));
-    (isOutlineMode ? outlineLanes.get(level) : content).appendChild(sentenceElement);
+    content.appendChild(sentenceElement);
     if (!isOutlineMode && originalIndex < state.sentences.length - 1) {
       content.appendChild(document.createTextNode(" "));
     }
@@ -865,49 +869,15 @@ function renderPassageShareView() {
 function applyOutlineHierarchySpacing() {
   const content = elements.passageShareContent;
   if (!content?.classList.contains("outline-share-content")) return;
-  const parentEntries = [...(state.outlineRelationChildren || new Map()).entries()]
-    .sort(([parentA], [parentB]) => Number(state.sentences[parentB].abstractLevel) - Number(state.sentences[parentA].abstractLevel));
   content.querySelectorAll(".passage-outline-sentence").forEach((card) => {
     card.style.marginBottom = "";
-    // 같은 단계의 다음 카드와도 확대된 글자가 겹치지 않게 한다.
   });
-
-  parentEntries.forEach(([parentIndex]) => {
-    const parent = content.querySelector(`[data-sentence-index="${parentIndex}"]`);
-    const lane = parent?.closest(".outline-level-lane");
-    if (!parent || !lane || parent.classList.contains("is-hidden")) return;
-    const laneCards = [...lane.querySelectorAll(".passage-outline-sentence")];
-    const nextSibling = laneCards[laneCards.indexOf(parent) + 1];
-    if (!nextSibling) return;
-    const descendantCards = getOutlineDescendantIndexes(parentIndex)
-      .map((index) => content.querySelector(`[data-sentence-index="${index}"]`))
-      .filter((card) => card && !card.classList.contains("is-hidden"));
-    if (descendantCards.length === 0) return;
-    // 단계 필터로 남은 카드가 최대 1.6배까지 커져도 다음 상위 문장
-    // 블록으로 넘어가지 않도록, 최초 레이아웃에서 그 크기만큼 공간을
-    // 미리 확보한다. transform은 레이아웃 크기에 반영되지 않기 때문이다.
-    const descendantBottom = Math.max(...descendantCards.map(getOutlineReservedBottom));
-    const nextTop = nextSibling.getBoundingClientRect().top;
-    const extraSpace = Math.ceil(descendantBottom + 14 - nextTop);
-    const currentMargin = Number.parseFloat(parent.style.marginBottom) || 0;
-    if (extraSpace > currentMargin) parent.style.marginBottom = `${extraSpace}px`;
-  });
-  applyOutlineRootScaleSpacing(content);
 }
 
 function applyOutlineRootScaleSpacing(content) {
-  const rootCards = [...content.querySelectorAll(".passage-outline-sentence")]
-    .filter((card) => {
-      const sentenceIndex = Number(card.dataset.sentenceIndex);
-      return clamp(1, Number(state.sentences[sentenceIndex]?.abstractLevel) || 1, state.analysisLevelCount) === 1;
-    });
-
-  rootCards.forEach((rootCard, index) => {
-    const nextRootCard = rootCards[index + 1];
-    if (!nextRootCard) return;
-    const extraSpace = Math.ceil(getOutlineReservedBottom(rootCard) + 10 - nextRootCard.getBoundingClientRect().top);
-    const currentMargin = Number.parseFloat(rootCard.style.marginBottom) || 0;
-    if (extraSpace > currentMargin) rootCard.style.marginBottom = `${extraSpace}px`;
+  if (!content) return;
+  content.querySelectorAll(".passage-outline-sentence").forEach((card) => {
+    card.style.marginBottom = "";
   });
 }
 
@@ -1092,87 +1062,9 @@ function drawOutlineGroupBlocks() {
 
 function applyOutlineGroupStartAlignment() {
   const content = elements.passageShareContent;
-  const groups = state.outlineRootGroups;
-  if (!content?.classList.contains("outline-share-content") || !groups?.count) return;
+  if (!content?.classList.contains("outline-share-content")) return;
   const cards = [...content.querySelectorAll(".passage-outline-sentence")];
   cards.forEach((card) => { card.style.marginTop = ""; });
-
-  const parentEntries = [...(state.outlineRelationChildren || new Map()).entries()]
-    .sort(([parentA], [parentB]) => {
-      const levelA = Number(state.sentences[parentA]?.abstractLevel) || 1;
-      const levelB = Number(state.sentences[parentB]?.abstractLevel) || 1;
-      return levelA - levelB;
-    });
-
-  const getMinTopInLane = (card) => {
-    const lane = card.closest(".outline-level-lane");
-    if (!lane) return -Infinity;
-    const laneCards = [...lane.querySelectorAll(".passage-outline-sentence:not(.is-hidden)")];
-    const index = laneCards.indexOf(card);
-    if (index > 0) {
-      const prevSibling = laneCards[index - 1];
-      return prevSibling.getBoundingClientRect().bottom + 2;
-    }
-    return -Infinity;
-  };
-
-  const getMinTopTextOrder = (sentenceIndex) => {
-    if (sentenceIndex <= 0) return -Infinity;
-    for (let index = sentenceIndex - 1; index >= 0; index -= 1) {
-      const prevCard = content.querySelector(`[data-sentence-index="${index}"]`);
-      if (prevCard && !prevCard.classList.contains("is-hidden")) {
-        return prevCard.getBoundingClientRect().top;
-      }
-    }
-    return -Infinity;
-  };
-
-  for (let pass = 0; pass < 3; pass += 1) {
-    parentEntries.forEach(([parentIndex, childIndexes]) => {
-      const parentCard = content.querySelector(`[data-sentence-index="${parentIndex}"]`);
-      const firstChildIndex = childIndexes.find((childIndex) => {
-        const child = content.querySelector(`[data-sentence-index="${childIndex}"]`);
-        return child && !child.classList.contains("is-hidden");
-      });
-      const firstChildCard = Number.isInteger(firstChildIndex)
-        ? content.querySelector(`[data-sentence-index="${firstChildIndex}"]`)
-        : null;
-      if (!parentCard || parentCard.classList.contains("is-hidden") || !firstChildCard) return;
-
-      const parentTop = parentCard.getBoundingClientRect().top;
-      const childTop = firstChildCard.getBoundingClientRect().top;
-      const childMinTop = Math.max(getMinTopInLane(firstChildCard), getMinTopTextOrder(firstChildIndex));
-
-      const targetTop = Math.max(parentTop, childMinTop);
-
-      if (parentTop < targetTop - 0.1) {
-        const parentCurrentMargin = Number.parseFloat(parentCard.style.marginTop) || 0;
-        parentCard.style.marginTop = `${parentCurrentMargin + (targetTop - parentTop)}px`;
-      }
-
-      const updatedChildTop = firstChildCard.getBoundingClientRect().top;
-      const childCorrection = targetTop - updatedChildTop;
-      if (Math.abs(childCorrection) >= 0.1) {
-        const childCurrentMargin = Number.parseFloat(firstChildCard.style.marginTop) || 0;
-        firstChildCard.style.marginTop = `${childCurrentMargin + childCorrection}px`;
-      }
-    });
-  }
-
-  cards.forEach((card) => {
-    if (card.classList.contains("is-hidden")) return;
-    const sIndex = Number(card.dataset.sentenceIndex);
-    if (!Number.isInteger(sIndex)) return;
-
-    const minTopInLane = getMinTopInLane(card);
-    const minTopText = getMinTopTextOrder(sIndex);
-    const minTop = Math.max(minTopInLane, minTopText);
-    const currentTop = card.getBoundingClientRect().top;
-    if (currentTop < minTop - 0.1) {
-      const currentMargin = Number.parseFloat(card.style.marginTop) || 0;
-      card.style.marginTop = `${currentMargin + (minTop - currentTop)}px`;
-    }
-  });
 }
 
 function getOutlineVisibleFontScale(hiddenLevels) {

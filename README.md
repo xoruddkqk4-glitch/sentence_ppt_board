@@ -223,6 +223,10 @@ English Visualization Board/
 
 ## 최근 워크플로 개선 사항
 
+- **7단계 지문 공유 개조식 서술 계단식 단일 행 배치 (Waterfall Grid)**:
+  - **문제 해결**: 이전 개조식 서술에서는 서로 다른 단계의 문장들이 동일한 가로 행(수평 라인)에 나란히 배치되어 가로 행 기준의 순차적 수업 및 판서에 혼란을 초래하던 현상 해결.
+  - **구현 방식**: `.outline-share-content`를 CSS Grid 기반의 1행 1문장 아키텍처로 개편. 1행(`gridRow = 1`)에는 1~N단계 헤더 타이틀(`.outline-level-header`)을 열(Column)별로 배치하고, 2행부터 각 문장 카드를 등장 순서에 따라 독립된 고유 행(`gridRow = originalIndex + 2`)에 단독 배정(가로 열은 문장 추상성 단계 `gridColumn = level`).
+  - **효과**: 가로 어느 행에도 2개 이상의 문장이 나란히 놓이지 않고 **1행 1문장 단독 노출**을 100% 보장하며, 1단계 문장 아래 행에 2단계 문장이, 2단계 문장 아래 행에 3단계 문장이 순차적으로 시작되는 완벽한 계단식(Waterfall) 개조식 시각화 완성.
 - **어휘 공유(3단계) 및 문장 공유(5단계) 문장·단어 높이 고정 (최종 위치 선반영)**:
   - **문제 해결**: 전자칠판 판서 시 처음 화면에 표시된 단어/문장 위에 필기한 뒤 다음 정보(어휘 의미/인사이트, 문장 종요소)를 순차 공개하면, 컨텐츠 높이가 증가하면서 기존 문장 위치가 위로 밀려 올라가 판서 위치와 어긋나던 문제를 해결.
   - **5단계 문장 공유**: 초기 단계(`minorRevealCount = 0`)부터 해당 문장의 전체 종요소 행(`.minor-row`)을 DOM에 사전 배치(Pre-allocated Layout)하고, 미공개 종요소는 `.is-unrevealed` 클래스(`visibility: hidden`, `pointer-events: none`)로 레이아웃 공간은 100% 확보하되 시각적 숨김 처리하여, 주요소 문장이 처음부터 최종 위치에 완벽히 고정되도록 구현. 종요소가 1개, 2개 순차 공개되어도 주요소 및 선행 종요소의 세로 위치가 1픽셀도 흔들리지 않음.
@@ -293,6 +297,14 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
   - 5단계 문장 공유 화면: 초기 단계(`minorRevealCount = 0`)부터 해당 문장의 전체 종요소 행(`.minor-row`)을 DOM에 사전 배치(Pre-allocated Layout)하고, 미공개 종요소는 `.is-unrevealed` 클래스로 높이 공간을 100% 확보하되 시각적 숨김(`visibility: hidden`, `pointer-events: none`) 처리하여 주요소 문장을 최종 위치에 고정 (종요소 순차 공개 시에도 문장 수직 위치 불변).
   - 3단계 어휘 공유 화면: 단일 카드 포커스 모드에서 미공개 정보(의미, Word Insights)의 숨김 방식을 `display: none`에서 공간 선확보 방식(`visibility: hidden`, `opacity: 0`)으로 전환하여 1단계부터 단어 헤딩 위치가 최종 위치로 안정적 고정.
 - **검증 결과**: `node --check js/main.js`, `node --check js/vocabulary.js` 구문 정적 검증 완료 (Exit Code 0)
+
+## [2026-09-15 09:23] 7단계 지문 공유 개조식 서술 계단식 단일 행 배치 (Commit ID: 71df1e7)
+- **수정 내용**:
+  - CSS Grid 네이티브 행 분리: `.outline-share-content`에 `grid-auto-rows: auto`, `align-items: start` 적용, 1행 스티키 헤더(`.outline-level-header`) 스타일 추가, 문장 카드 너비 및 마진 최적화
+  - 문장 순서별 고유 행 배정: `renderPassageShareView()`에서 1행 헤더 타이틀 생성 및 2행부터 각 문장에 고유 `gridRow`(2, 3, 4...)와 단계별 `gridColumn`(1, 2, 3...) 부여
+  - 마진 계산 단순화: 기존의 불안정한 JavaScript 다중 패스 마진 보정 로직(`applyOutlineHierarchySpacing`, `applyOutlineGroupStartAlignment`)을 마진 리셋 로직으로 정리하여 순수 CSS Grid에 의한 네이티브 1행 1문장 배치 보장
+- **검증 결과**: `node --check js/main.js` 구문 정적 검증 완료 (Exit Code 0)
+
 
 
 

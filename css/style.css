@@ -417,7 +417,10 @@ select {
 .passage-outline-sentence {
   position: relative;
   z-index: 1;
-  margin-left: 0;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
   padding-left: 0.75em;
   border-left: 3px solid rgba(0, 102, 204, 0.3);
   color: var(--outline-color, var(--color-ink));
@@ -462,12 +465,21 @@ select {
   column-count: 1 !important;
   display: grid;
   grid-template-columns: repeat(var(--outline-columns, 3), minmax(0, 1fr));
-  align-content: start;
-  gap: clamp(10px, 1.5vw, 22px);
+  grid-auto-rows: auto;
+  align-items: start;
+  gap: clamp(8px, 1.2vw, 16px);
   /* 가독성 하한을 지키기 위해, 긴 지문은 이 영역에서만 세로 스크롤한다. */
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-gutter: stable;
+}
+
+.outline-level-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--color-panel);
+  padding-bottom: var(--space-1);
 }
 
 .outline-level-lane {
