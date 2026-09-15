@@ -467,19 +467,23 @@ select {
   grid-template-columns: repeat(var(--outline-columns, 3), minmax(0, 1fr));
   grid-auto-rows: auto;
   align-items: start;
-  gap: clamp(8px, 1.2vw, 16px);
+  column-gap: clamp(8px, 1.2vw, 16px);
+  row-gap: clamp(6px, 0.8vw, 10px);
   /* 가독성 하한을 지키기 위해, 긴 지문은 이 영역에서만 세로 스크롤한다. */
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-gutter: stable;
+  padding-top: 0 !important;
 }
 
 .outline-level-header {
   position: sticky;
   top: 0;
-  z-index: 5;
-  background: var(--color-panel);
-  padding-bottom: var(--space-1);
+  z-index: 10;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
 }
 
 .outline-level-lane {
@@ -524,13 +528,104 @@ select {
 .app-shell[data-theme="dark"] .outline-descendant-focus { background: var(--color-dark-panel); }
 .app-shell[data-theme="dark"] .outline-focus-card { background: color-mix(in srgb, var(--focus-color) 14%, var(--color-dark-panel)); }
 
-.outline-level-title {
-  margin: 0 0 2px;
-  padding: 0 0 .4em;
-  border-bottom: 3px solid var(--outline-color, var(--color-primary));
-  color: var(--outline-color, var(--color-primary));
-  font-size: clamp(16px, 1.5vw, 24px);
+/* 개조식 서술 단계별 세련된 헤더 카드 */
+.outline-level-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: clamp(9px, 1vw, 13px) clamp(12px, 1.2vw, 16px);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 7%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 20%, #e2e8f0);
+  box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.outline-level-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  border-color: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 36%, #cbd5e1);
+}
+
+.outline-level-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+  background: linear-gradient(90deg, var(--outline-accent-color, var(--outline-color)) 0%, color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 35%, transparent) 100%);
+  border-radius: 0 0 12px 12px;
+}
+
+.outline-level-card.is-hidden-level {
+  opacity: 0.45;
+  filter: grayscale(0.5);
+}
+
+.outline-level-left {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 0.9vw, 12px);
+  min-width: 0;
+}
+
+.outline-level-badge {
+  width: clamp(28px, 2vw, 34px);
+  height: clamp(28px, 2vw, 34px);
+  border-radius: 50%;
+  background: var(--outline-accent-color, var(--outline-color));
+  color: #ffffff;
+  font-size: clamp(13px, 1vw, 15px);
   font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 38%, transparent);
+}
+
+.outline-level-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.outline-level-sub {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 85%, #64748b);
+  line-height: 1;
+}
+
+.outline-level-title {
+  margin: 0;
+  padding: 0;
+  border-bottom: none;
+  color: var(--color-ink);
+  font-size: clamp(15px, 1.3vw, 20px);
+  font-weight: 900;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.outline-level-count {
+  font-size: clamp(11px, 0.85vw, 13px);
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 10%, rgba(255, 255, 255, 0.85));
+  border: 1px solid color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 24%, transparent);
+  color: var(--outline-accent-color, var(--outline-color));
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.2;
 }
 
 .visual-share-content {
@@ -559,6 +654,40 @@ select {
 .app-shell[data-theme="dark"] .passage-share-content {
   border-color: #334155;
   background: var(--color-dark-panel);
+}
+
+.app-shell[data-theme="dark"] .outline-level-header {
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell[data-theme="dark"] .outline-level-header[data-abstract-level="3"] {
+  --outline-accent-color: #94a3b8;
+}
+
+.app-shell[data-theme="dark"] .outline-level-card {
+  background: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 14%, #1e293b);
+  border-color: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 28%, #334155);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.app-shell[data-theme="dark"] .outline-level-card:hover {
+  border-color: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 45%, #475569);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.app-shell[data-theme="dark"] .outline-level-title {
+  color: var(--color-dark-ink);
+}
+
+.app-shell[data-theme="dark"] .outline-level-sub {
+  color: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 75%, #94a3b8);
+}
+
+.app-shell[data-theme="dark"] .outline-level-count {
+  background: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 20%, #0f172a);
+  color: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 85%, #f8fafc);
+  border-color: color-mix(in srgb, var(--outline-accent-color, var(--outline-color)) 35%, transparent);
 }
 
 .app-shell[data-theme="dark"] .passage-share-helper {

@@ -792,16 +792,57 @@ function renderPassageShareView() {
   if (isOutlineMode) {
     for (let level = 1; level <= state.analysisLevelCount; level += 1) {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
+      const isHidden = hiddenLevels.has(level);
+      const sentenceCount = state.sentences.filter(
+        (sentence) => clamp(1, Number(sentence.abstractLevel) || 1, state.analysisLevelCount) === level
+      ).length;
+
+      let accentColor = visual.color;
+      if (level === 3 && state.analysisLevelCount === 3) {
+        accentColor = "#475569";
+      }
+
       const header = document.createElement("div");
       header.className = "outline-level-header";
       header.dataset.abstractLevel = String(level);
       header.style.gridColumn = String(level);
       header.style.gridRow = "1";
       header.style.setProperty("--outline-color", visual.color);
+      header.style.setProperty("--outline-accent-color", accentColor);
+
+      const card = document.createElement("div");
+      card.className = `outline-level-card${isHidden ? " is-hidden-level" : ""}`;
+
+      const left = document.createElement("div");
+      left.className = "outline-level-left";
+
+      const badge = document.createElement("span");
+      badge.className = "outline-level-badge";
+      badge.textContent = String(level);
+      left.appendChild(badge);
+
+      const info = document.createElement("div");
+      info.className = "outline-level-info";
+
+      const sub = document.createElement("span");
+      sub.className = "outline-level-sub";
+      sub.textContent = `LEVEL 0${level}`;
+      info.appendChild(sub);
+
       const title = document.createElement("h3");
       title.className = "outline-level-title";
       title.textContent = `${level}단계`;
-      header.appendChild(title);
+      info.appendChild(title);
+
+      left.appendChild(info);
+      card.appendChild(left);
+
+      const countBadge = document.createElement("span");
+      countBadge.className = "outline-level-count";
+      countBadge.textContent = isHidden ? "숨김" : `${sentenceCount}문장`;
+      card.appendChild(countBadge);
+
+      header.appendChild(card);
       content.appendChild(header);
     }
   }
