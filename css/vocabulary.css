@@ -98,7 +98,11 @@
 .vocab-step-guide { font-size: 13px; font-weight: 700; color: var(--color-muted); }
 .vocab-nav-btn { font-size: 14px; font-weight: 800; }
 
-.vocabulary-meaning.is-hidden, .vocabulary-insight-text.is-hidden { display: none !important; }
+.vocabulary-meaning.is-hidden, .vocabulary-insight-text.is-hidden {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 .vocabulary-meaning.is-revealed, .vocabulary-insight-text.is-revealed { animation: vocabReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes vocabReveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 

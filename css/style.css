@@ -1880,6 +1880,11 @@ input:focus {
   white-space: nowrap;
 }
 
+.minor-row.is-unrevealed {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 .minor-row .present-chip {
   position: absolute;
   left: var(--box-percent, var(--anchor-percent, 50%));

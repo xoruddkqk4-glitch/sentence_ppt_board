@@ -2009,7 +2009,7 @@ function renderPresentView() {
   applySettings();
   renderMajorPresentLane(elements.majorPresentLane, majorComponents, visibleMinorComponents);
   elements.minorAnchorLane.innerHTML = "";
-  renderMinorPresentRows(elements.minorPresentLane, visibleMinorComponents);
+  renderMinorPresentRows(elements.minorPresentLane, minorComponents, state.minorRevealCount);
   renderModifierTargetBrackets(visibleMinorComponents);
   elements.emptyMinorNote.classList.add("hidden");
 
@@ -2084,25 +2084,35 @@ function renderMajorPresentLane(container, components, visibleMinorComponents = 
   });
 }
 
-function renderMinorPresentRows(container, components) {
+function renderMinorPresentRows(container, allComponents, revealCount = allComponents.length) {
   container.innerHTML = "";
   const sentence = getCurrentSentence();
-  const totalRows = sentence ? getComponentsByLane(sentence, "minor").length : components.length;
+  const totalRows = sentence ? getComponentsByLane(sentence, "minor").length : allComponents.length;
 
   const gap = Math.max(4, 12 - totalRows * 1.5);
   container.style.setProperty("--minor-gap", `${gap}px`);
 
-  components.forEach((component, index) => {
+  allComponents.forEach((component, index) => {
+    const isRevealed = index < revealCount;
     const row = document.createElement("div");
     row.className = "minor-row";
-    const hasBracket = isVisibleModifierTarget(component, components);
+    if (!isRevealed) {
+      row.classList.add("is-unrevealed");
+      row.setAttribute("aria-hidden", "true");
+    }
+    const hasBracket = isVisibleModifierTarget(component, allComponents);
     placeMinorRow(row, index, totalRows, hasBracket);
     const chip = createPresentChip(component);
     placeMinorComponentOnGrid(chip, component, index, getMinorAnchorPercent(component));
-    chip.draggable = true;
-    chip.dataset.componentId = component.id;
-    chip.addEventListener("dragstart", handlePresentMinorDragStart);
-    chip.addEventListener("dragend", handlePresentMinorDragEnd);
+    if (isRevealed) {
+      chip.draggable = true;
+      chip.dataset.componentId = component.id;
+      chip.addEventListener("dragstart", handlePresentMinorDragStart);
+      chip.addEventListener("dragend", handlePresentMinorDragEnd);
+    } else {
+      chip.draggable = false;
+      chip.tabIndex = -1;
+    }
     row.appendChild(chip);
     container.appendChild(row);
   });
@@ -3445,7 +3455,7 @@ function updateMinorPositions() {
     return;
   }
 
-  const components = getPresentMinorComponents(sentence).slice(0, state.minorRevealCount);
+  const components = getPresentMinorComponents(sentence);
   const metrics = getMinorLaneMetrics();
   const edgePercent = metrics.width ? (getStageEdgeGuard(metrics) / metrics.width) * 100 : 6;
   const anchorById = new Map();

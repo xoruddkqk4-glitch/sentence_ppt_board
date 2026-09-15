@@ -223,6 +223,10 @@ English Visualization Board/
 
 ## 최근 워크플로 개선 사항
 
+- **어휘 공유(3단계) 및 문장 공유(5단계) 문장·단어 높이 고정 (최종 위치 선반영)**:
+  - **문제 해결**: 전자칠판 판서 시 처음 화면에 표시된 단어/문장 위에 필기한 뒤 다음 정보(어휘 의미/인사이트, 문장 종요소)를 순차 공개하면, 컨텐츠 높이가 증가하면서 기존 문장 위치가 위로 밀려 올라가 판서 위치와 어긋나던 문제를 해결.
+  - **5단계 문장 공유**: 초기 단계(`minorRevealCount = 0`)부터 해당 문장의 전체 종요소 행(`.minor-row`)을 DOM에 사전 배치(Pre-allocated Layout)하고, 미공개 종요소는 `.is-unrevealed` 클래스(`visibility: hidden`, `pointer-events: none`)로 레이아웃 공간은 100% 확보하되 시각적 숨김 처리하여, 주요소 문장이 처음부터 최종 위치에 완벽히 고정되도록 구현. 종요소가 1개, 2개 순차 공개되어도 주요소 및 선행 종요소의 세로 위치가 1픽셀도 흔들리지 않음.
+  - **3단계 어휘 공유**: 단일 카드 포커스 모드에서 미공개 정보(의미, Word Insights)의 숨김 방식을 `display: none`에서 공간 선확보 방식(`visibility: hidden !important; opacity: 0 !important;`)으로 변경하여, 1단계(단어·위치만 표시)부터 의미와 인사이트의 높이가 카드 내부에 예약되어 단어 위치가 고정되도록 최적화.
 - **3단계 어휘 공유 단일 포커스 이미지 크기 확대 및 포커스 강조 모달 탑재**: 단일 어휘 카드 포커스 시 이미지 크기를 가로 44%, 세로 92%(최대 680px)로 획기적으로 확대하여 큰 글씨와 함께 선명하게 보이도록 최적화. 이미지를 클릭하거나 키보드(Enter/Space) 입력 시 유리 질감 글래스모피즘 오버레이 모달(Lightbox Overlay)이 실행되어 이미지를 화면 가득 확대(최대 92vw, 85vh)하고 위치 및 단어 정보와 함께 포커스 강조 표시 제공.
 - **전역 되돌리기(`Ctrl + Z`) 및 다시 실행(`Ctrl + Y` / `Ctrl + Shift + Z`) 히스토리 관리자 추가**:
   - 앱 내 모든 주요 작업(드래그앤드롭 성분 이동, 역할 변경, 성분 분리/병합, 문장 수정/이동/삭제/중요도 토글, 어휘 등록/삭제/순서 변경, 연결어 하이라이트 색상 변경, 초기화 등)에 대해 딥 캡처 스냅샷 기반의 히스토리 스택(`undoStack`, `redoStack`)을 구축.
@@ -283,5 +287,12 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
   - `.agents` 에이전트 지침 규칙(`.agents/rules/rules.md`) 및 커스텀 스킬(`ask`, `git-commit`, `scratchpad`) 세부 정책 업데이트 및 적용
   - TXT 저장 및 불러오기 기능 안정화: 어휘 이미지 포함 시 `localStorage` 5MB 용량 초과 예외 처리(`saveCacheSafely`) 적용 및 동일 파일 재선택 불통 현상 해결(파일 선택 input `value` 리셋)
 - **검증 결과**: `node --check js/main.js` 구문 검증 완료 (Exit Code 0)
+
+## [2026-09-15 09:12] 어휘 및 문장 공유 화면 높이 고정 (최종 위치 선반영) (Commit ID: 96a3d03)
+- **수정 내용**:
+  - 5단계 문장 공유 화면: 초기 단계(`minorRevealCount = 0`)부터 해당 문장의 전체 종요소 행(`.minor-row`)을 DOM에 사전 배치(Pre-allocated Layout)하고, 미공개 종요소는 `.is-unrevealed` 클래스로 높이 공간을 100% 확보하되 시각적 숨김(`visibility: hidden`, `pointer-events: none`) 처리하여 주요소 문장을 최종 위치에 고정 (종요소 순차 공개 시에도 문장 수직 위치 불변).
+  - 3단계 어휘 공유 화면: 단일 카드 포커스 모드에서 미공개 정보(의미, Word Insights)의 숨김 방식을 `display: none`에서 공간 선확보 방식(`visibility: hidden`, `opacity: 0`)으로 전환하여 1단계부터 단어 헤딩 위치가 최종 위치로 안정적 고정.
+- **검증 결과**: `node --check js/main.js`, `node --check js/vocabulary.js` 구문 정적 검증 완료 (Exit Code 0)
+
 
 
