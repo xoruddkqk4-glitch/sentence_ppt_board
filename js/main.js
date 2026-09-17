@@ -87,6 +87,9 @@ const state = {
   draggedOutlineSentenceIndex: null,
   hiddenPassageLevels: [],
   vocabularyItems: [],
+  koreanTopic: "",
+  showKoreanTopicInShare: false,
+  isKoreanTopicRevealed: false,
   saveFeedbackTimer: null,
   outlineFocusSentenceIndex: null,
   passageShareFitCache: new Map()
@@ -143,6 +146,13 @@ const elements = {
   presentFitButton: document.getElementById("presentFitButton"),
   analysisLevelCount: document.getElementById("analysisLevelCount"),
   sentenceAnalysisList: document.getElementById("sentenceAnalysisList"),
+  koreanTopicSection: document.getElementById("koreanTopicSection"),
+  koreanTopicInput: document.getElementById("koreanTopicInput"),
+  koreanTopicShareToggle: document.getElementById("koreanTopicShareToggle"),
+  passageShareTopicBanner: document.getElementById("passageShareTopicBanner"),
+  passageShareTopicCard: document.getElementById("passageShareTopicCard"),
+  passageShareTopicText: document.getElementById("passageShareTopicText"),
+  passageShareTopicHint: document.getElementById("passageShareTopicHint"),
   plainShareModeButton: document.getElementById("plainShareModeButton"),
   visualShareModeButton: document.getElementById("visualShareModeButton"),
   outlineShareModeButton: document.getElementById("outlineShareModeButton"),
@@ -175,6 +185,8 @@ const MAX_HISTORY_SNAPSHOTS = 50;
 function getAppStateSnapshot() {
   return JSON.stringify({
     passageText: state.passageText,
+    koreanTopic: state.koreanTopic,
+    showKoreanTopicInShare: state.showKoreanTopicInShare,
     sentences: state.sentences,
     currentSentenceIndex: state.currentSentenceIndex,
     componentSerial: state.componentSerial,
@@ -202,6 +214,8 @@ function restoreAppStateSnapshot(snapshotStr) {
   try {
     const data = JSON.parse(snapshotStr);
     state.passageText = data.passageText || "";
+    state.koreanTopic = data.koreanTopic || "";
+    state.showKoreanTopicInShare = Boolean(data.showKoreanTopicInShare);
     state.sentences = Array.isArray(data.sentences) ? data.sentences : [];
     state.currentSentenceIndex = Math.max(0, Math.min(data.currentSentenceIndex || 0, Math.max(0, state.sentences.length - 1)));
     state.componentSerial = data.componentSerial || 1;
@@ -488,6 +502,9 @@ function setMode(mode) {
   if (mode === "present" && previousMode !== "present") {
     state.minorRevealCount = 0;
   }
+  if (mode === "passage-share" && previousMode !== "passage-share") {
+    state.isKoreanTopicRevealed = false;
+  }
   elements.app.dataset.mode = mode;
   document.documentElement.classList.toggle("present-lock", mode === "present");
   elements.vocabularyView.classList.toggle("hidden", mode !== "vocabulary");
@@ -559,6 +576,19 @@ function render() {
 function renderAnalysisView() {
   if (!elements.sentenceAnalysisList || !elements.analysisLevelCount) {
     return;
+  }
+
+  if (elements.koreanTopicInput && elements.koreanTopicInput.value !== (state.koreanTopic || "")) {
+    elements.koreanTopicInput.value = state.koreanTopic || "";
+  }
+  if (elements.koreanTopicShareToggle) {
+    const isEnabled = Boolean(state.showKoreanTopicInShare);
+    elements.koreanTopicShareToggle.setAttribute("aria-pressed", String(isEnabled));
+    elements.koreanTopicShareToggle.classList.toggle("is-active", isEnabled);
+    const toggleText = elements.koreanTopicShareToggle.querySelector(".toggle-text");
+    if (toggleText) {
+      toggleText.textContent = isEnabled ? "7단계 표시: ON" : "7단계 표시: OFF";
+    }
   }
 
   const levelCount = clamp(2, Number(state.analysisLevelCount) || 3, 9);
@@ -747,10 +777,50 @@ function updateSentenceConnectiveIndexes(sentenceIndex, wordIndex, useRange) {
   renderAnalysisView();
 }
 
+function renderPassageShareTopicBanner() {
+  if (!elements.passageShareTopicBanner) return;
+
+  const topic = (state.koreanTopic || "").trim();
+  const shouldShow = Boolean(state.showKoreanTopicInShare && topic);
+
+  if (!shouldShow) {
+    elements.passageShareTopicBanner.classList.add("hidden");
+    return;
+  }
+
+  elements.passageShareTopicBanner.classList.remove("hidden");
+  if (elements.passageShareTopicText) {
+    elements.passageShareTopicText.textContent = topic;
+  }
+
+  const isRevealed = Boolean(state.isKoreanTopicRevealed);
+  if (elements.passageShareTopicCard) {
+    elements.passageShareTopicCard.classList.toggle("is-masked", !isRevealed);
+    elements.passageShareTopicCard.classList.toggle("is-revealed", isRevealed);
+    elements.passageShareTopicCard.setAttribute("aria-expanded", String(isRevealed));
+  }
+
+  if (elements.passageShareTopicHint) {
+    const hintIcon = elements.passageShareTopicHint.querySelector(".hint-icon");
+    const hintText = elements.passageShareTopicHint.querySelector(".hint-text");
+    if (hintIcon && hintText) {
+      if (isRevealed) {
+        hintIcon.textContent = "👁️";
+        hintText.textContent = "클릭하여 주제 가리기";
+      } else {
+        hintIcon.textContent = "🔒";
+        hintText.textContent = "클릭하여 주제 확인";
+      }
+    }
+  }
+}
+
 function renderPassageShareView() {
   if (!elements.passageShareContent) {
     return;
   }
+
+  renderPassageShareTopicBanner();
 
   const isVisualMode = state.passageShareMode === "visual";
   const isOutlineMode = state.passageShareMode === "outline";
@@ -3670,7 +3740,8 @@ function getAnalysisSaveSummary(payload) {
   const componentCount = sentences.reduce((count, sentence) => count + (Array.isArray(sentence.components) ? sentence.components.length : 0), 0);
   const abstractLevelCount = sentences.filter((sentence) => Number(sentence.abstractLevel) > 1).length;
   const connectiveCount = sentences.reduce((count, sentence) => count + (Array.isArray(sentence.connectiveIndexes) ? sentence.connectiveIndexes.length : 0), 0);
-  return `어휘 ${vocabularyCount}개 · 문장 성분 ${componentCount}개 · 지문 단계 ${abstractLevelCount}건 · 연결어 ${connectiveCount}개`;
+  const topicSummary = payload.koreanTopic ? " · 주제 포함" : "";
+  return `어휘 ${vocabularyCount}개 · 문장 성분 ${componentCount}개 · 지문 단계 ${abstractLevelCount}건 · 연결어 ${connectiveCount}개${topicSummary}`;
 }
 
 function buildAnalysisPayload() {
@@ -3679,6 +3750,8 @@ function buildAnalysisPayload() {
     app: "sentence-presentation-board",
     savedAt: new Date().toISOString(),
     passageText: state.passageText || state.sentences.map((sentence) => sentence.text).join(" "),
+    koreanTopic: state.koreanTopic || "",
+    showKoreanTopicInShare: Boolean(state.showKoreanTopicInShare),
     currentSentenceIndex: state.currentSentenceIndex,
     componentSerial: state.componentSerial,
     analysisLevelCount: state.analysisLevelCount,
@@ -3830,6 +3903,9 @@ function importAnalysisTxt(content) {
       const payload = parseAnalysisTxt(trimmed);
       const loaded = normalizeImportedAnalysis(payload);
       state.passageText = loaded.passageText;
+      state.koreanTopic = loaded.koreanTopic;
+      state.showKoreanTopicInShare = loaded.showKoreanTopicInShare;
+      state.isKoreanTopicRevealed = false;
       state.sentences = loaded.sentences;
       state.currentSentenceIndex = loaded.currentSentenceIndex;
       state.minorRevealCount = 0;
@@ -3840,6 +3916,9 @@ function importAnalysisTxt(content) {
       state.hiddenPassageLevels = loaded.hiddenPassageLevels;
       state.vocabularyItems = vocabularyFeature.normalize(loaded.vocabularyItems);
       elements.passageInput.value = state.passageText;
+      if (elements.koreanTopicInput) {
+        elements.koreanTopicInput.value = state.koreanTopic;
+      }
       elements.inputMessage.textContent = "저장된 분석 결과를 불러왔습니다. 아래 '2단계-어휘 분석 시작'을 누르시면 적용됩니다.";
       state.hasLoadedAnalysis = true; // 분석 내용 로드 플래그 활성화
     } catch (error) {
@@ -3932,6 +4011,8 @@ function normalizeImportedAnalysis(payload) {
 
   return {
     passageText: String(payload.passageText || sentences.map((sentence) => sentence.text).join(" ")),
+    koreanTopic: typeof payload.koreanTopic === "string" ? payload.koreanTopic : "",
+    showKoreanTopicInShare: Boolean(payload.showKoreanTopicInShare),
     sentences,
     currentSentenceIndex: clamp(0, Number(payload.currentSentenceIndex) || 0, sentences.length - 1),
     componentSerial: Math.max(Number(payload.componentSerial) || 1, countImportedComponents(sentences) + 1),
@@ -4170,6 +4251,10 @@ function bindEvents() {
     state.draggedOutlineSentenceIndex = null;
     state.hiddenPassageLevels = [];
     state.vocabularyItems = [];
+    state.koreanTopic = "";
+    state.showKoreanTopicInShare = false;
+    state.isKoreanTopicRevealed = false;
+    if (elements.koreanTopicInput) elements.koreanTopicInput.value = "";
     state.vocabularyShareFocusRow = null;
     state.vocabularyShareSelectedItemId = null;
     state.draggedVocabularyIndex = null;
@@ -4182,6 +4267,33 @@ function bindEvents() {
     updateFileNameDisplay();
     vocabularyFeature.renderAnalysis();
   });
+
+  if (elements.koreanTopicInput) {
+    elements.koreanTopicInput.addEventListener("input", (e) => {
+      state.koreanTopic = e.target.value;
+    });
+  }
+
+  if (elements.koreanTopicShareToggle) {
+    elements.koreanTopicShareToggle.addEventListener("click", () => {
+      state.showKoreanTopicInShare = !state.showKoreanTopicInShare;
+      renderAnalysisView();
+    });
+  }
+
+  if (elements.passageShareTopicCard) {
+    elements.passageShareTopicCard.addEventListener("click", () => {
+      state.isKoreanTopicRevealed = !state.isKoreanTopicRevealed;
+      renderPassageShareTopicBanner();
+    });
+    elements.passageShareTopicCard.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        state.isKoreanTopicRevealed = !state.isKoreanTopicRevealed;
+        renderPassageShareTopicBanner();
+      }
+    });
+  }
 
   elements.inputImportButton.addEventListener("click", triggerAnalysisImport);
   elements.applySentenceTextButton.addEventListener("click", updateSentenceText);

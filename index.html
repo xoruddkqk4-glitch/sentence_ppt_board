@@ -219,6 +219,24 @@
           </section>
         </div>
 
+        <section id="koreanTopicSection" class="korean-topic-section" aria-label="지문 우리말 주제 입력">
+          <div class="korean-topic-header">
+            <div class="korean-topic-title-group">
+              <span class="korean-topic-badge">💡 우리말 주제</span>
+              <span class="korean-topic-guide">수업 발표용 지문 주제를 입력하고 7단계 노출 여부를 설정하세요.</span>
+            </div>
+            <button type="button" id="koreanTopicShareToggle" class="korean-topic-toggle-btn" aria-pressed="false">
+              <span class="toggle-switch-track">
+                <span class="toggle-switch-thumb"></span>
+              </span>
+              <span class="toggle-text">7단계 표시: OFF</span>
+            </button>
+          </div>
+          <div class="korean-topic-input-wrapper">
+            <input type="text" id="koreanTopicInput" class="korean-topic-input" placeholder="지문의 핵심 우리말 주제를 입력하세요 (예: 언어 습득 과정에서 환경과의 상호작용의 중요성)" autocomplete="off" />
+          </div>
+        </section>
+
         <p class="analysis-helper">문장마다 단계 버튼을 하나 선택하세요. 연결어는 단어를 클릭해 선택하고, 여러 단어 또는 절은 Shift를 누른 채 첫 단어와 마지막 단어를 클릭하세요.</p>
         <div id="sentenceAnalysisList" class="sentence-analysis-list" aria-live="polite"></div>
       </section>
@@ -244,6 +262,25 @@
           </div>
           <div id="passageShareLevelFilters" class="passage-share-level-filters" aria-label="단계별 문장 표시 설정"></div>
         </div>
+
+        <!-- 7단계 상단 고정 우리말 주제 배너 (옵션 바 바로 아래, 사용자 지정 위치) -->
+        <aside id="passageShareTopicBanner" class="passage-share-topic-banner hidden" aria-label="우리말 주제 배너">
+          <div class="passage-share-topic-inner">
+            <div class="topic-label-container">
+              <span class="topic-label-badge">우리말 주제</span>
+            </div>
+            <div id="passageShareTopicCard" class="passage-share-topic-card is-masked" role="button" tabindex="0" aria-label="우리말 주제 가림/공개 토글">
+              <div class="topic-content-wrapper">
+                <span id="passageShareTopicText" class="passage-share-topic-text"></span>
+              </div>
+              <div id="passageShareTopicHint" class="passage-share-topic-hint">
+                <span class="hint-icon">🔒</span>
+                <span class="hint-text">클릭하여 주제 확인</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
         <p id="passageShareHelper" class="passage-share-helper"></p>
         <section id="passageShareContent" class="passage-share-content" aria-live="polite"></section>
       </section>
