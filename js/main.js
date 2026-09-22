@@ -927,12 +927,12 @@ function renderPassageShareView() {
 
     if (isVisualMode) {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
-      sentenceElement.style.setProperty("--abstract-scale", String(visual.scale));
+      sentenceElement.style.setProperty("--abstract-scale", "1");
       sentenceElement.style.setProperty("--abstract-color", visual.color);
     } else if (isOutlineMode) {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
       sentenceElement.style.setProperty("--outline-color", visual.color);
-      sentenceElement.style.setProperty("--outline-card-scale", hiddenLevels.has(level) ? "1" : String(outlineVisibleFontScale));
+      sentenceElement.style.setProperty("--outline-card-scale", "1");
       // 개조식 계단식 배치: 단계에 따른 열(Column), 문장 순서에 따른 단독 행(Row, 2행부터)
       sentenceElement.style.gridColumn = String(level);
       sentenceElement.style.gridRow = String(originalIndex + 2);
@@ -1178,10 +1178,9 @@ function applyOutlineGroupStartAlignment() {
   cards.forEach((card) => { card.style.marginTop = ""; });
 }
 
-function getOutlineVisibleFontScale(hiddenLevels) {
-  const visibleLevelCount = Math.max(1, state.analysisLevelCount - hiddenLevels.size);
-  const hiddenRatio = (state.analysisLevelCount - visibleLevelCount) / state.analysisLevelCount;
-  return Math.min(1.6, 1 + (hiddenRatio * 0.65));
+function getOutlineVisibleFontScale(_hiddenLevels) {
+  // 특정 단계의 문장을 화면에서 안 보이게 해도 남아있는 단계 문장의 글자 크기는 변경되지 않고 1배율(동일 크기)을 유지합니다.
+  return 1;
 }
 
 function renderPassageShareLevelFilters() {
@@ -1234,29 +1233,26 @@ function updatePassageShareLevelVisibility() {
   if (!content) return;
 
   const hiddenLevels = new Set(state.hiddenPassageLevels);
-  const outlineVisibleFontScale = getOutlineVisibleFontScale(hiddenLevels);
   content.querySelectorAll("[data-abstract-level]").forEach((sentenceElement) => {
     const level = Number(sentenceElement.dataset.abstractLevel);
     const isHidden = hiddenLevels.has(level);
     sentenceElement.classList.toggle("is-hidden", isHidden);
     sentenceElement.setAttribute("aria-hidden", String(isHidden));
     if (sentenceElement.classList.contains("passage-outline-sentence")) {
-      sentenceElement.style.setProperty("--outline-card-scale", isHidden ? "1" : String(outlineVisibleFontScale));
+      sentenceElement.style.setProperty("--outline-card-scale", "1");
     }
   });
-  // 단계 필터는 표시와 글자 확대만 바꾼다. 이 시점에 트리 간격이나
-  // 배경 블록 좌표를 다시 계산하면 숨긴 단계에 따라 1단계 위치까지
-  // 달라지므로, 전체 개조식 화면을 만들 때 확정한 좌표를 그대로 쓴다.
+  // 단계 필터는 표시 여부만 토글하며, 남아있는 단계 문장의 글자 크기는 변경되지 않고 유지됩니다.
 }
 
 function getAbstractLevelVisualStyle(level, levelCount) {
   if (levelCount <= 1) return { scale: 1, color: "#111827" };
   const ratio = (level - 1) / (levelCount - 1);
   if (ratio === 0) return { scale: 1, color: "#dc2626" };
-  if (ratio === 1) return { scale: 0.55, color: "#111827" };
-  if (levelCount === 3 && level === 2) return { scale: 0.78, color: "#2563eb" };
+  if (ratio === 1) return { scale: 1, color: "#111827" };
+  if (levelCount === 3 && level === 2) return { scale: 1, color: "#2563eb" };
   const hue = Math.round(260 - ratio * 190);
-  return { scale: Math.round((1 - ratio * 0.45) * 100) / 100, color: `hsl(${hue} 70% 40%)` };
+  return { scale: 1, color: `hsl(${hue} 70% 40%)` };
 }
 
 function createConnectiveMarkedText(sentence, showConnectiveHighlight) {
@@ -1292,7 +1288,7 @@ function getPassageShareFitCacheKey(content, availableHeight) {
     .join("\u0001");
   return [
     state.passageShareMode,
-    state.hiddenPassageLevels.join(","),
+    state.passageShareMode === "outline" ? "" : state.hiddenPassageLevels.join(","),
     document.fullscreenElement === elements.passageShareView ? "fullscreen" : "window",
     Math.round(content.clientWidth),
     Math.round(availableHeight),

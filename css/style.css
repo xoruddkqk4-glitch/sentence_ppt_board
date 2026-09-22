@@ -823,7 +823,7 @@ select {
 .passage-visual-sentence {
   display: inline;
   color: var(--abstract-color);
-  font-size: calc(var(--passage-font-size) * var(--abstract-scale));
+  font-size: var(--passage-font-size);
   font-weight: 800;
 }
 
@@ -841,10 +841,7 @@ select {
   font-weight: 800;
   line-height: 1.55;
   cursor: grab;
-  transform: scale(var(--outline-card-scale, 1));
-  /* 단계 필터에서 확대되어도 각 카드의 시작 위치는 움직이지 않는다. */
-  transform-origin: left top;
-  transition: opacity 120ms ease, background-color 120ms ease, outline-color 120ms ease, transform 160ms ease;
+  transition: opacity 120ms ease, background-color 120ms ease, outline-color 120ms ease;
 }
 
 .passage-outline-sentence.has-outgoing-relations {
