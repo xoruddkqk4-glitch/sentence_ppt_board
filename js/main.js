@@ -153,6 +153,10 @@ const elements = {
   passageShareTopicCard: document.getElementById("passageShareTopicCard"),
   passageShareTopicText: document.getElementById("passageShareTopicText"),
   passageShareTopicHint: document.getElementById("passageShareTopicHint"),
+  passageShareTopicMaskButton: document.getElementById("passageShareTopicMaskButton"),
+  passageShareTopicModal: document.getElementById("passageShareTopicModal"),
+  passageShareTopicModalText: document.getElementById("passageShareTopicModalText"),
+  passageShareTopicModalClose: document.getElementById("passageShareTopicModalClose"),
   plainShareModeButton: document.getElementById("plainShareModeButton"),
   visualShareModeButton: document.getElementById("visualShareModeButton"),
   outlineShareModeButton: document.getElementById("outlineShareModeButton"),
@@ -505,6 +509,9 @@ function setMode(mode) {
   if (mode === "passage-share" && previousMode !== "passage-share") {
     state.isKoreanTopicRevealed = false;
   }
+  if (mode !== "passage-share") {
+    hidePassageShareTopicModal();
+  }
   elements.app.dataset.mode = mode;
   document.documentElement.classList.toggle("present-lock", mode === "present");
   elements.vocabularyView.classList.toggle("hidden", mode !== "vocabulary");
@@ -785,6 +792,7 @@ function renderPassageShareTopicBanner() {
 
   if (!shouldShow) {
     elements.passageShareTopicBanner.classList.add("hidden");
+    hidePassageShareTopicModal();
     return;
   }
 
@@ -800,19 +808,87 @@ function renderPassageShareTopicBanner() {
     elements.passageShareTopicCard.setAttribute("aria-expanded", String(isRevealed));
   }
 
+  if (elements.passageShareTopicMaskButton) {
+    elements.passageShareTopicMaskButton.classList.toggle("hidden", !isRevealed);
+  }
+
   if (elements.passageShareTopicHint) {
     const hintIcon = elements.passageShareTopicHint.querySelector(".hint-icon");
     const hintText = elements.passageShareTopicHint.querySelector(".hint-text");
     if (hintIcon && hintText) {
       if (isRevealed) {
-        hintIcon.textContent = "👁️";
-        hintText.textContent = "클릭하여 주제 가리기";
+        hintIcon.textContent = "🔍";
+        hintText.textContent = "클릭하여 크게 보기 (T)";
       } else {
         hintIcon.textContent = "🔒";
         hintText.textContent = "클릭하여 주제 확인";
       }
     }
   }
+}
+
+function showPassageShareTopicModal() {
+  const topic = (state.koreanTopic || "").trim();
+  if (!state.showKoreanTopicInShare || !topic || !elements.passageShareTopicModal || !elements.passageShareTopicModalText) return;
+
+  state.isKoreanTopicRevealed = true;
+  renderPassageShareTopicBanner();
+
+  elements.passageShareTopicModalText.textContent = topic;
+  elements.passageShareTopicModal.classList.remove("hidden");
+  scheduleTopicModalFit();
+}
+
+function hidePassageShareTopicModal() {
+  if (!elements.passageShareTopicModal) return;
+  elements.passageShareTopicModal.classList.add("hidden");
+}
+
+function togglePassageShareTopicModal() {
+  if (!elements.passageShareTopicModal) return;
+  if (elements.passageShareTopicModal.classList.contains("hidden")) {
+    showPassageShareTopicModal();
+  } else {
+    hidePassageShareTopicModal();
+  }
+}
+
+function scheduleTopicModalFit() {
+  let pass = 0;
+  const runPass = () => {
+    adjustTopicModalFontSize();
+    pass += 1;
+    if (pass < 5) {
+      requestAnimationFrame(runPass);
+    }
+  };
+  requestAnimationFrame(runPass);
+}
+
+function adjustTopicModalFontSize() {
+  if (!elements.passageShareTopicModal || elements.passageShareTopicModal.classList.contains("hidden")) {
+    return;
+  }
+  const textEl = elements.passageShareTopicModalText;
+  if (!textEl) return;
+
+  textEl.style.removeProperty("font-size");
+
+  const maxWidth = Math.max(300, window.innerWidth * 0.82);
+  const maxHeight = Math.max(180, window.innerHeight * 0.52);
+
+  const bounds = textEl.getBoundingClientRect();
+  if (!bounds.width || !bounds.height) return;
+
+  const style = window.getComputedStyle(textEl);
+  const currentSize = parseFloat(style.fontSize) || 48;
+
+  const widthRatio = maxWidth / bounds.width;
+  const heightRatio = maxHeight / bounds.height;
+  const ratio = Math.min(widthRatio, heightRatio);
+
+  const targetSize = Math.max(24, Math.min(96, Math.floor(currentSize * ratio * 0.95)));
+  textEl.style.setProperty("font-size", `${targetSize}px`, "important");
 }
 
 function renderPassageShareView() {
@@ -4279,15 +4355,21 @@ function bindEvents() {
 
   if (elements.passageShareTopicCard) {
     elements.passageShareTopicCard.addEventListener("click", () => {
-      state.isKoreanTopicRevealed = !state.isKoreanTopicRevealed;
-      renderPassageShareTopicBanner();
+      showPassageShareTopicModal();
     });
     elements.passageShareTopicCard.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        state.isKoreanTopicRevealed = !state.isKoreanTopicRevealed;
-        renderPassageShareTopicBanner();
+        showPassageShareTopicModal();
       }
+    });
+  }
+
+  if (elements.passageShareTopicMaskButton) {
+    elements.passageShareTopicMaskButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      state.isKoreanTopicRevealed = false;
+      renderPassageShareTopicBanner();
     });
   }
 
@@ -4364,6 +4446,7 @@ function bindEvents() {
     schedulePresentationFit();
     schedulePassageShareFit();
     scheduleDetailFit();
+    scheduleTopicModalFit();
     adjustEditViewScale();
   });
   elements.elementCloseButton.addEventListener("click", hideElementDetail);
@@ -4372,6 +4455,16 @@ function bindEvents() {
       hideElementDetail();
     }
   });
+  if (elements.passageShareTopicModalClose) {
+    elements.passageShareTopicModalClose.addEventListener("click", hidePassageShareTopicModal);
+  }
+  if (elements.passageShareTopicModal) {
+    elements.passageShareTopicModal.addEventListener("click", (event) => {
+      if (event.target === elements.passageShareTopicModal) {
+        hidePassageShareTopicModal();
+      }
+    });
+  }
 }
 
 function handleKeyboard(event) {
@@ -4434,6 +4527,20 @@ function handleKeyboard(event) {
   }
 
   if (state.mode === "passage-share") {
+    if (elements.passageShareTopicModal && !elements.passageShareTopicModal.classList.contains("hidden")) {
+      if (event.key === "Escape" || event.key === "t" || event.key === "T") {
+        event.preventDefault();
+        hidePassageShareTopicModal();
+        return;
+      }
+    }
+
+    if (event.key === "t" || event.key === "T") {
+      event.preventDefault();
+      togglePassageShareTopicModal();
+      return;
+    }
+
     if (event.key === "f" || event.key === "F") {
       event.preventDefault();
       togglePassageShareFullscreen();

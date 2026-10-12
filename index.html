@@ -269,13 +269,16 @@
             <div class="topic-label-container">
               <span class="topic-label-badge">우리말 주제</span>
             </div>
-            <div id="passageShareTopicCard" class="passage-share-topic-card is-masked" role="button" tabindex="0" aria-label="우리말 주제 가림/공개 토글">
+            <div id="passageShareTopicCard" class="passage-share-topic-card is-masked" role="button" tabindex="0" aria-label="우리말 주제 대형 모달 확인">
               <div class="topic-content-wrapper">
                 <span id="passageShareTopicText" class="passage-share-topic-text"></span>
               </div>
-              <div id="passageShareTopicHint" class="passage-share-topic-hint">
-                <span class="hint-icon">🔒</span>
-                <span class="hint-text">클릭하여 주제 확인</span>
+              <div class="topic-action-group">
+                <button type="button" id="passageShareTopicMaskButton" class="topic-mask-toggle-button hidden" aria-label="주제 가리기" title="주제 가리기">🔒 가리기</button>
+                <div id="passageShareTopicHint" class="passage-share-topic-hint">
+                  <span class="hint-icon">🔒</span>
+                  <span class="hint-text">클릭하여 주제 확인</span>
+                </div>
               </div>
             </div>
           </div>
@@ -283,6 +286,19 @@
 
         <p id="passageShareHelper" class="passage-share-helper"></p>
         <section id="passageShareContent" class="passage-share-content" aria-live="polite"></section>
+
+        <!-- 7단계 우리말 주제 대형 모달 (Classroom Big Modal) -->
+        <div id="passageShareTopicModal" class="passage-share-topic-modal hidden" role="dialog" aria-modal="true" aria-label="우리말 주제 대형 모달">
+          <div class="passage-share-topic-modal-content">
+            <button class="topic-modal-close-button" type="button" id="passageShareTopicModalClose" aria-label="닫기">끄기 (ESC)</button>
+            <div class="topic-modal-header">
+              <span class="topic-modal-badge">💡 우리말 핵심 주제</span>
+            </div>
+            <div class="topic-modal-body">
+              <h2 id="passageShareTopicModalText" class="topic-modal-text"></h2>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
 
