@@ -1211,54 +1211,55 @@ textarea::placeholder {
   width: 100%;
 }
 
+/* 숨겨진 문장 카드: 카드는 제자리에 그대로 남아있으며, 본래 문장 크기만큼의 빈 공간을 100% 보존합니다 */
 .passage-outline-sentence.is-sentence-hidden {
-  visibility: hidden;
+  visibility: visible !important;
+  opacity: 1 !important;
   pointer-events: auto !important;
   cursor: pointer;
-  border: 2px dashed rgba(148, 163, 184, 0.35);
-  background: transparent;
-  min-height: 2.2em;
-}
-
-.passage-outline-sentence.is-sentence-hidden .outline-sentence-header,
-.passage-outline-sentence.is-sentence-hidden .outline-sentence-body {
-  visibility: hidden;
-}
-
-.outline-sentence-hidden-placeholder {
-  display: none;
-  position: absolute;
-  left: 0.75em;
-  top: 50%;
-  transform: translateY(-50%);
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: var(--radius-pill);
-  background: rgba(248, 250, 252, 0.95);
-  border: 1px dashed #94a3b8;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 800;
-  visibility: visible;
-  pointer-events: auto;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  user-select: none;
+  border: 2px dashed rgba(148, 163, 184, 0.45);
+  background: rgba(248, 250, 252, 0.4);
+  border-radius: var(--radius-sm);
   transition: all 150ms ease;
-  z-index: 2;
 }
 
-.passage-outline-sentence.is-sentence-hidden:hover .outline-sentence-hidden-placeholder,
-.passage-outline-sentence.is-sentence-hidden:active .outline-sentence-hidden-placeholder {
-  display: inline-flex;
+.passage-outline-sentence.is-sentence-hidden:hover {
+  background: rgba(241, 245, 249, 0.7);
   border-color: var(--color-primary);
-  color: var(--color-primary);
-  background: #eff6ff;
 }
 
-.outline-sentence-hidden-placeholder .placeholder-action {
-  font-size: 11px;
-  opacity: 0.8;
+/* 토글 버튼 영역은 숨겨진 상태에서도 항상 선명하게 유지 & 클릭 가능 */
+.passage-outline-sentence.is-sentence-hidden .outline-sentence-header {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* 꺼진 상태(숨김)의 토글 버튼 디자인: 차분한 그레이/오프 톤 */
+.outline-sentence-toggle-btn.is-off {
+  background: #f1f5f9;
+  border: 1.5px dashed #94a3b8;
+  color: #64748b;
+  box-shadow: none;
+}
+
+.outline-sentence-toggle-btn.is-off:hover {
+  background: #e2e8f0;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.outline-sentence-toggle-btn.is-off .toggle-action-hint {
+  color: #0284c7;
+}
+
+/* 오직 본문 텍스트만 visibility: hidden 처리!
+   브라우저 엔진이 본래 문장 텍스트의 줄 수와 높이를 100% 그대로 유지하므로,
+   다른 어떤 문장도 이 빈 공간을 침범하지 않고 완전한 여백이 보존됩니다! */
+.passage-outline-sentence.is-sentence-hidden .outline-sentence-body {
+  visibility: hidden !important;
+  pointer-events: none;
 }
 
 .passage-outline-sentence.has-outgoing-relations {
@@ -1569,15 +1570,29 @@ textarea::placeholder {
   outline-color: #38bdf8;
 }
 
-.app-shell[data-theme="dark"] .outline-sentence-hidden-placeholder {
+.app-shell[data-theme="dark"] .passage-outline-sentence.is-sentence-hidden {
+  background: rgba(30, 41, 59, 0.4);
+  border-color: #475569;
+}
+
+.app-shell[data-theme="dark"] .passage-outline-sentence.is-sentence-hidden:hover {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: #38bdf8;
+}
+
+.app-shell[data-theme="dark"] .outline-sentence-toggle-btn.is-off {
   background: #1e293b;
   border-color: #475569;
   color: #94a3b8;
 }
 
-.app-shell[data-theme="dark"] .passage-outline-sentence.is-sentence-hidden:hover .outline-sentence-hidden-placeholder {
-  background: #1e3a5f;
+.app-shell[data-theme="dark"] .outline-sentence-toggle-btn.is-off:hover {
+  background: #334155;
   border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.app-shell[data-theme="dark"] .outline-sentence-toggle-btn.is-off .toggle-action-hint {
   color: #38bdf8;
 }
 

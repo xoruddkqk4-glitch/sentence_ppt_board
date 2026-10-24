@@ -1022,9 +1022,10 @@ function renderPassageShareView() {
 
     const isHiddenByLevel = hiddenLevels.has(level);
     const isHiddenBySentence = isOutlineMode && hiddenSentences.has(originalIndex);
-    const isHidden = isHiddenByLevel || isHiddenBySentence;
-    sentenceElement.classList.toggle("is-hidden", isHidden);
-    sentenceElement.setAttribute("aria-hidden", String(isHidden));
+    // 개조식 모드에서는 단계 숨김일 때만 카드 전체를 is-hidden 처리하며, 문장 단위 숨김은 카드를 항상 유지하고 본문만 투명 처리함
+    const isElementHidden = isOutlineMode ? isHiddenByLevel : (isHiddenByLevel || isHiddenBySentence);
+    sentenceElement.classList.toggle("is-hidden", isElementHidden);
+    sentenceElement.setAttribute("aria-hidden", String(isElementHidden || isHiddenBySentence));
     if (isOutlineMode) {
       sentenceElement.classList.toggle("is-sentence-hidden", isHiddenBySentence);
       sentenceElement.classList.toggle("is-selected", selectedSentences.has(originalIndex));
@@ -1074,13 +1075,14 @@ function renderPassageShareView() {
       sentenceElement.addEventListener("dragleave", handleOutlineSentenceDragLeave);
       sentenceElement.addEventListener("drop", handleOutlineSentenceDrop);
 
-      // 개조식 문장 앞 제어 버튼: 단일 원클릭 숨기기/보여주기 버튼
+      // 개조식 문장 앞 제어 버튼: 단일 원클릭 숨기기/보여주기 버튼 (숨김 상태여도 항상 표시 & 꺼진 상태로 유지)
       const headerEl = document.createElement("div");
       headerEl.className = "outline-sentence-header";
 
       const toggleBtn = document.createElement("button");
       toggleBtn.type = "button";
       toggleBtn.className = "outline-sentence-toggle-btn";
+      toggleBtn.classList.toggle("is-off", isHiddenBySentence);
       toggleBtn.title = isHiddenBySentence
         ? `문장 ${originalIndex + 1} 다시 보이기 (클릭)`
         : `문장 ${originalIndex + 1} 숨기기 (클릭)`;
@@ -1088,7 +1090,7 @@ function renderPassageShareView() {
       toggleBtn.innerHTML = `
         <span class="toggle-icon">${isHiddenBySentence ? "🙈" : "👁️"}</span>
         <span class="toggle-label">문장 ${originalIndex + 1}</span>
-        <span class="toggle-action-hint">${isHiddenBySentence ? "보이기" : "숨기기"}</span>
+        <span class="toggle-action-hint">${isHiddenBySentence ? "꺼짐" : "숨기기"}</span>
       `;
       toggleBtn.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -1102,21 +1104,6 @@ function renderPassageShareView() {
       bodyEl.className = "outline-sentence-body";
       bodyEl.appendChild(createConnectiveMarkedText(sentence, true));
       sentenceElement.appendChild(bodyEl);
-
-      // 교사용 숨김 자리 표시자 (터치/클릭하여 복원)
-      const placeholderEl = document.createElement("div");
-      placeholderEl.className = "outline-sentence-hidden-placeholder";
-      placeholderEl.title = "클릭하여 문장 보이기";
-      placeholderEl.innerHTML = `
-        <span class="placeholder-icon">🔒</span>
-        <span class="placeholder-text">${originalIndex + 1}번 문장 숨김</span>
-        <span class="placeholder-action">(클릭하여 표시)</span>
-      `;
-      placeholderEl.addEventListener("click", (event) => {
-        event.stopPropagation();
-        toggleOutlineSentenceHidden(originalIndex);
-      });
-      sentenceElement.appendChild(placeholderEl);
     } else {
       sentenceElement.appendChild(createConnectiveMarkedText(sentence, false));
     }
