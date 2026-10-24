@@ -86,6 +86,9 @@ const state = {
   passageShareMode: "plain",
   draggedOutlineSentenceIndex: null,
   hiddenPassageLevels: [],
+  hiddenPassageSentenceIndexes: [],
+  selectedOutlineSentenceIndexes: [],
+  lastOutlineSentenceClickIndex: null,
   vocabularyItems: [],
   koreanTopic: "",
   showKoreanTopicInShare: false,
@@ -163,6 +166,13 @@ const elements = {
   passageShareFullscreenButton: document.getElementById("passageShareFullscreenButton"),
   passageShareHelper: document.getElementById("passageShareHelper"),
   passageShareLevelFilters: document.getElementById("passageShareLevelFilters"),
+  passageShareSentenceBar: document.getElementById("passageShareSentenceBar"),
+  outlineSelectAllBtn: document.getElementById("outlineSelectAllBtn"),
+  outlineDeselectAllBtn: document.getElementById("outlineDeselectAllBtn"),
+  outlineHideSelectedBtn: document.getElementById("outlineHideSelectedBtn"),
+  outlineShowSelectedBtn: document.getElementById("outlineShowSelectedBtn"),
+  outlineShowAllBtn: document.getElementById("outlineShowAllBtn"),
+  outlineSentenceStatusBadge: document.getElementById("outlineSentenceStatusBadge"),
   passageShareContent: document.getElementById("passageShareContent"),
   presentFirstSentenceButton: document.getElementById("presentFirstSentenceButton"),
   presentLastSentenceButton: document.getElementById("presentLastSentenceButton"),
@@ -196,6 +206,7 @@ function getAppStateSnapshot() {
     componentSerial: state.componentSerial,
     analysisLevelCount: state.analysisLevelCount,
     hiddenPassageLevels: state.hiddenPassageLevels,
+    hiddenPassageSentenceIndexes: state.hiddenPassageSentenceIndexes,
     passageShareMode: state.passageShareMode,
     vocabularyItems: state.vocabularyItems
   });
@@ -225,6 +236,7 @@ function restoreAppStateSnapshot(snapshotStr) {
     state.componentSerial = data.componentSerial || 1;
     state.analysisLevelCount = data.analysisLevelCount || 3;
     state.hiddenPassageLevels = Array.isArray(data.hiddenPassageLevels) ? data.hiddenPassageLevels : [];
+    state.hiddenPassageSentenceIndexes = Array.isArray(data.hiddenPassageSentenceIndexes) ? data.hiddenPassageSentenceIndexes : [];
     state.passageShareMode = data.passageShareMode || "plain";
     if (vocabularyFeature && typeof vocabularyFeature.normalize === "function") {
       state.vocabularyItems = vocabularyFeature.normalize(data.vocabularyItems);
@@ -925,6 +937,15 @@ function renderPassageShareView() {
   content.style.setProperty("--outline-columns", String(state.analysisLevelCount));
 
   const hiddenLevels = new Set(state.hiddenPassageLevels);
+  const hiddenSentences = new Set(state.hiddenPassageSentenceIndexes || []);
+  const selectedSentences = new Set(state.selectedOutlineSentenceIndexes || []);
+
+  if (elements.passageShareSentenceBar) {
+    elements.passageShareSentenceBar.classList.toggle("hidden", !isOutlineMode);
+    if (isOutlineMode) {
+      updateOutlineSentenceSelectionVisuals();
+    }
+  }
   const outlineVisibleFontScale = isOutlineMode ? getOutlineVisibleFontScale(hiddenLevels) : 1;
   const outlineLanes = new Map();
   const outlineChildrenByParent = isOutlineMode ? getOutlineDirectChildren(state.sentences) : new Map();
@@ -998,13 +1019,22 @@ function renderPassageShareView() {
     const sentenceElement = document.createElement(isOutlineMode ? "div" : "span");
     sentenceElement.className = isVisualMode ? "passage-visual-sentence" : isOutlineMode ? "passage-outline-sentence" : "passage-plain-sentence";
     sentenceElement.dataset.abstractLevel = String(level);
-    sentenceElement.classList.toggle("is-hidden", hiddenLevels.has(level));
-    sentenceElement.setAttribute("aria-hidden", String(hiddenLevels.has(level)));
+
+    const isHiddenByLevel = hiddenLevels.has(level);
+    const isHiddenBySentence = isOutlineMode && hiddenSentences.has(originalIndex);
+    const isHidden = isHiddenByLevel || isHiddenBySentence;
+    sentenceElement.classList.toggle("is-hidden", isHidden);
+    sentenceElement.setAttribute("aria-hidden", String(isHidden));
+    if (isOutlineMode) {
+      sentenceElement.classList.toggle("is-sentence-hidden", isHiddenBySentence);
+      sentenceElement.classList.toggle("is-selected", selectedSentences.has(originalIndex));
+    }
 
     if (isVisualMode) {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
       sentenceElement.style.setProperty("--abstract-scale", "1");
       sentenceElement.style.setProperty("--abstract-color", visual.color);
+      sentenceElement.appendChild(createConnectiveMarkedText(sentence, true));
     } else if (isOutlineMode) {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
       sentenceElement.style.setProperty("--outline-color", visual.color);
@@ -1029,17 +1059,82 @@ function renderPassageShareView() {
         sentenceElement.style.setProperty("--relation-color", visual.color);
       }
       sentenceElement.classList.add("is-outline-focus-trigger");
-      sentenceElement.title = "클릭하여 이 문장과 하위 단계 문장 크게 보기";
-      sentenceElement.addEventListener("click", () => showOutlineDescendantFocus(originalIndex));
+      sentenceElement.title = isHiddenBySentence ? "클릭하여 문장 다시 표시" : "클릭하여 이 문장과 하위 단계 문장 크게 보기";
+      sentenceElement.addEventListener("click", () => {
+        if (state.hiddenPassageSentenceIndexes?.includes(originalIndex)) {
+          toggleOutlineSentenceHidden(originalIndex);
+          return;
+        }
+        showOutlineDescendantFocus(originalIndex);
+      });
       sentenceElement.draggable = true;
       sentenceElement.addEventListener("dragstart", handleOutlineSentenceDragStart);
       sentenceElement.addEventListener("dragend", handleOutlineSentenceDragEnd);
       sentenceElement.addEventListener("dragover", handleOutlineSentenceDragOver);
       sentenceElement.addEventListener("dragleave", handleOutlineSentenceDragLeave);
       sentenceElement.addEventListener("drop", handleOutlineSentenceDrop);
+
+      // 개조식 상단 헤더: 체크박스 & 문장 번호, 눈 아이콘
+      const headerEl = document.createElement("div");
+      headerEl.className = "outline-sentence-header";
+
+      const selectLabel = document.createElement("label");
+      selectLabel.className = "outline-sentence-select-label";
+      selectLabel.title = `문장 ${originalIndex + 1} 선택 (Shift+클릭으로 연속 선택)`;
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "outline-sentence-checkbox";
+      checkbox.checked = selectedSentences.has(originalIndex);
+      checkbox.addEventListener("click", (event) => {
+        event.stopPropagation();
+        handleOutlineSentenceSelect(event, originalIndex, checkbox.checked);
+      });
+
+      const numBadge = document.createElement("span");
+      numBadge.className = "outline-sentence-number";
+      numBadge.textContent = `문장 ${originalIndex + 1}`;
+
+      selectLabel.appendChild(checkbox);
+      selectLabel.appendChild(numBadge);
+      headerEl.appendChild(selectLabel);
+
+      const toggleEyeBtn = document.createElement("button");
+      toggleEyeBtn.type = "button";
+      toggleEyeBtn.className = "outline-sentence-eye-btn";
+      toggleEyeBtn.title = isHiddenBySentence ? "이 문장 다시 표시" : "이 문장 숨기기";
+      toggleEyeBtn.textContent = isHiddenBySentence ? "🙈" : "👁️";
+      toggleEyeBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleOutlineSentenceHidden(originalIndex);
+      });
+      headerEl.appendChild(toggleEyeBtn);
+
+      sentenceElement.appendChild(headerEl);
+
+      const bodyEl = document.createElement("div");
+      bodyEl.className = "outline-sentence-body";
+      bodyEl.appendChild(createConnectiveMarkedText(sentence, true));
+      sentenceElement.appendChild(bodyEl);
+
+      // 교사용 숨김 자리 표시자 (터치/클릭하여 복원)
+      const placeholderEl = document.createElement("div");
+      placeholderEl.className = "outline-sentence-hidden-placeholder";
+      placeholderEl.title = "클릭하여 문장 보이기";
+      placeholderEl.innerHTML = `
+        <span class="placeholder-icon">🔒</span>
+        <span class="placeholder-text">${originalIndex + 1}번 문장 숨김</span>
+        <span class="placeholder-action">(클릭하여 표시)</span>
+      `;
+      placeholderEl.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleOutlineSentenceHidden(originalIndex);
+      });
+      sentenceElement.appendChild(placeholderEl);
+    } else {
+      sentenceElement.appendChild(createConnectiveMarkedText(sentence, false));
     }
 
-    sentenceElement.appendChild(createConnectiveMarkedText(sentence, isVisualMode || isOutlineMode));
     content.appendChild(sentenceElement);
     if (!isOutlineMode && originalIndex < state.sentences.length - 1) {
       content.appendChild(document.createTextNode(" "));
@@ -1298,10 +1393,113 @@ function togglePassageShareLevel(level) {
 }
 
 function showAllPassageShareLevels() {
-  if (state.hiddenPassageLevels.length === 0) return;
+  const hasHiddenLevels = state.hiddenPassageLevels.length > 0;
+  const hasHiddenSentences = (state.hiddenPassageSentenceIndexes || []).length > 0;
+  if (!hasHiddenLevels && !hasHiddenSentences) return;
   state.hiddenPassageLevels = [];
+  state.hiddenPassageSentenceIndexes = [];
   renderPassageShareLevelFilters();
-  updatePassageShareLevelVisibility();
+  if (state.passageShareMode === "outline") {
+    renderPassageShareView();
+  } else {
+    updatePassageShareLevelVisibility();
+  }
+}
+
+function handleOutlineSentenceSelect(event, currentIndex, checked) {
+  let selected = new Set(state.selectedOutlineSentenceIndexes || []);
+  const checkboxes = document.querySelectorAll(".outline-sentence-checkbox");
+  const checkboxMap = new Map();
+  checkboxes.forEach((cb) => {
+    const idx = Number(cb.closest(".passage-outline-sentence")?.dataset.sentenceIndex);
+    if (Number.isInteger(idx)) checkboxMap.set(idx, cb);
+  });
+
+  if (event.shiftKey && state.lastOutlineSentenceClickIndex !== null) {
+    const from = Math.min(state.lastOutlineSentenceClickIndex, currentIndex);
+    const to = Math.max(state.lastOutlineSentenceClickIndex, currentIndex);
+    for (let i = from; i <= to; i += 1) {
+      if (checked) {
+        selected.add(i);
+      } else {
+        selected.delete(i);
+      }
+      const cb = checkboxMap.get(i);
+      if (cb) cb.checked = checked;
+    }
+  } else {
+    if (checked) {
+      selected.add(currentIndex);
+    } else {
+      selected.delete(currentIndex);
+    }
+  }
+  state.lastOutlineSentenceClickIndex = currentIndex;
+  state.selectedOutlineSentenceIndexes = [...selected].sort((a, b) => a - b);
+  updateOutlineSentenceSelectionVisuals();
+}
+
+function updateOutlineSentenceSelectionVisuals() {
+  const selectedCount = (state.selectedOutlineSentenceIndexes || []).length;
+  const hiddenCount = (state.hiddenPassageSentenceIndexes || []).length;
+  if (elements.outlineSentenceStatusBadge) {
+    elements.outlineSentenceStatusBadge.textContent = `선택 ${selectedCount}개 · 숨김 ${hiddenCount}개`;
+  }
+  const selectedSet = new Set(state.selectedOutlineSentenceIndexes || []);
+  document.querySelectorAll(".passage-outline-sentence").forEach((card) => {
+    const idx = Number(card.dataset.sentenceIndex);
+    const isSelected = selectedSet.has(idx);
+    card.classList.toggle("is-selected", isSelected);
+    const cb = card.querySelector(".outline-sentence-checkbox");
+    if (cb) cb.checked = isSelected;
+  });
+}
+
+function toggleOutlineSentenceHidden(sentenceIndex) {
+  const hidden = new Set(state.hiddenPassageSentenceIndexes || []);
+  if (hidden.has(sentenceIndex)) {
+    hidden.delete(sentenceIndex);
+  } else {
+    hidden.add(sentenceIndex);
+  }
+  state.hiddenPassageSentenceIndexes = [...hidden].sort((a, b) => a - b);
+  renderPassageShareView();
+}
+
+function hideSelectedOutlineSentences() {
+  if (!state.selectedOutlineSentenceIndexes || state.selectedOutlineSentenceIndexes.length === 0) return;
+  const hidden = new Set(state.hiddenPassageSentenceIndexes || []);
+  state.selectedOutlineSentenceIndexes.forEach((idx) => hidden.add(idx));
+  state.hiddenPassageSentenceIndexes = [...hidden].sort((a, b) => a - b);
+  renderPassageShareView();
+}
+
+function showSelectedOutlineSentences() {
+  if (!state.selectedOutlineSentenceIndexes || state.selectedOutlineSentenceIndexes.length === 0) return;
+  const hidden = new Set(state.hiddenPassageSentenceIndexes || []);
+  state.selectedOutlineSentenceIndexes.forEach((idx) => hidden.delete(idx));
+  state.hiddenPassageSentenceIndexes = [...hidden].sort((a, b) => a - b);
+  renderPassageShareView();
+}
+
+function showAllOutlineSentences() {
+  if (!state.hiddenPassageSentenceIndexes || state.hiddenPassageSentenceIndexes.length === 0) return;
+  state.hiddenPassageSentenceIndexes = [];
+  renderPassageShareView();
+}
+
+function toggleSelectAllOutlineSentences() {
+  if (state.selectedOutlineSentenceIndexes.length === state.sentences.length) {
+    state.selectedOutlineSentenceIndexes = [];
+  } else {
+    state.selectedOutlineSentenceIndexes = state.sentences.map((_, i) => i);
+  }
+  updateOutlineSentenceSelectionVisuals();
+}
+
+function deselectAllOutlineSentences() {
+  state.selectedOutlineSentenceIndexes = [];
+  updateOutlineSentenceSelectionVisuals();
 }
 
 function updatePassageShareLevelVisibility() {
@@ -1465,6 +1663,10 @@ function fitPassageShare(forceRecalculate = false) {
 }
 
 function handleOutlineSentenceDragStart(event) {
+  if (event.target.closest(".outline-sentence-select-label") || event.target.closest(".outline-sentence-eye-btn") || event.target.closest(".outline-sentence-hidden-placeholder")) {
+    event.preventDefault();
+    return;
+  }
   const sentenceIndex = Number(event.currentTarget.dataset.sentenceIndex);
   if (!Number.isInteger(sentenceIndex)) return;
   state.draggedOutlineSentenceIndex = sentenceIndex;
@@ -1499,9 +1701,20 @@ function handleOutlineSentenceDrop(event) {
   if (!Number.isInteger(sourceIndex) || !Number.isInteger(targetIndex) || sourceIndex === targetIndex) return;
 
   const currentSentence = getCurrentSentence();
+  const hiddenSentenceRefs = new Set((state.hiddenPassageSentenceIndexes || []).map((idx) => state.sentences[idx]).filter(Boolean));
+  const selectedSentenceRefs = new Set((state.selectedOutlineSentenceIndexes || []).map((idx) => state.sentences[idx]).filter(Boolean));
+
   const [movedSentence] = state.sentences.splice(sourceIndex, 1);
   state.sentences.splice(targetIndex, 0, movedSentence);
   reindexSentences();
+
+  state.hiddenPassageSentenceIndexes = state.sentences
+    .map((s, idx) => (hiddenSentenceRefs.has(s) ? idx : null))
+    .filter((idx) => idx !== null);
+  state.selectedOutlineSentenceIndexes = state.sentences
+    .map((s, idx) => (selectedSentenceRefs.has(s) ? idx : null))
+    .filter((idx) => idx !== null);
+
   state.currentSentenceIndex = Math.max(0, state.sentences.indexOf(currentSentence));
   renderPassageShareView();
 }
@@ -3830,6 +4043,7 @@ function buildAnalysisPayload() {
     settings: { ...state.settings },
     passageShareMode: state.passageShareMode,
     hiddenPassageLevels: [...state.hiddenPassageLevels],
+    hiddenPassageSentenceIndexes: [...(state.hiddenPassageSentenceIndexes || [])],
     vocabularyItems: state.vocabularyItems.map((item) => ({
       id: item.id,
       term: item.term,
@@ -3986,6 +4200,7 @@ function importAnalysisTxt(content) {
       state.settings = { ...state.settings, ...loaded.settings };
       state.passageShareMode = loaded.passageShareMode;
       state.hiddenPassageLevels = loaded.hiddenPassageLevels;
+      state.hiddenPassageSentenceIndexes = Array.isArray(loaded.hiddenPassageSentenceIndexes) ? loaded.hiddenPassageSentenceIndexes : [];
       state.vocabularyItems = vocabularyFeature.normalize(loaded.vocabularyItems);
       elements.passageInput.value = state.passageText;
       if (elements.koreanTopicInput) {
@@ -4093,6 +4308,9 @@ function normalizeImportedAnalysis(payload) {
     passageShareMode: ["plain", "visual", "outline"].includes(payload.passageShareMode) ? payload.passageShareMode : "plain",
     hiddenPassageLevels: Array.isArray(payload.hiddenPassageLevels)
       ? payload.hiddenPassageLevels.map((level) => Number(level)).filter((level) => Number.isInteger(level) && level > 0)
+      : [],
+    hiddenPassageSentenceIndexes: Array.isArray(payload.hiddenPassageSentenceIndexes)
+      ? payload.hiddenPassageSentenceIndexes.map((idx) => Number(idx)).filter((idx) => Number.isInteger(idx) && idx >= 0)
       : [],
     vocabularyItems: Array.isArray(payload.vocabularyItems) ? payload.vocabularyItems : []
   };
@@ -4322,6 +4540,9 @@ function bindEvents() {
     state.passageShareMode = "plain";
     state.draggedOutlineSentenceIndex = null;
     state.hiddenPassageLevels = [];
+    state.hiddenPassageSentenceIndexes = [];
+    state.selectedOutlineSentenceIndexes = [];
+    state.lastOutlineSentenceClickIndex = null;
     state.vocabularyItems = [];
     state.koreanTopic = "";
     state.showKoreanTopicInShare = false;
@@ -4405,6 +4626,11 @@ function bindEvents() {
     renderPassageShareView();
   });
   elements.passageShareFullscreenButton.addEventListener("click", togglePassageShareFullscreen);
+  elements.outlineSelectAllBtn?.addEventListener("click", toggleSelectAllOutlineSentences);
+  elements.outlineDeselectAllBtn?.addEventListener("click", deselectAllOutlineSentences);
+  elements.outlineHideSelectedBtn?.addEventListener("click", hideSelectedOutlineSentences);
+  elements.outlineShowSelectedBtn?.addEventListener("click", showSelectedOutlineSentences);
+  elements.outlineShowAllBtn?.addEventListener("click", showAllOutlineSentences);
   elements.analysisLevelCount.addEventListener("change", () => {
     state.analysisLevelCount = clamp(2, Number(elements.analysisLevelCount.value) || 3, 9);
     state.sentences.forEach((sentence) => {
@@ -4572,6 +4798,21 @@ function handleKeyboard(event) {
     if (event.key === "0") {
       event.preventDefault();
       showAllPassageShareLevels();
+      return;
+    }
+
+    if ((event.key === "h" || event.key === "H") && state.passageShareMode === "outline") {
+      event.preventDefault();
+      if (state.selectedOutlineSentenceIndexes && state.selectedOutlineSentenceIndexes.length > 0) {
+        const anyVisible = state.selectedOutlineSentenceIndexes.some(
+          (idx) => !(state.hiddenPassageSentenceIndexes || []).includes(idx)
+        );
+        if (anyVisible) {
+          hideSelectedOutlineSentences();
+        } else {
+          showSelectedOutlineSentences();
+        }
+      }
       return;
     }
 

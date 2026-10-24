@@ -11,10 +11,9 @@
 ## 2. Terminal-Based Error Verification (터미널 기반 정적 오류 검증)
 - After making code changes, perform quick static verification via terminal commands instead of browser checks.
 - Runs fast type checking or linting depending on the project setup:
+  - Vanilla JS / Web project (현재 프로젝트): Run `node --check js/main.js` (또는 `node -c js/main.js`, `node -c js/<수정된 파일>.js`)
   - TypeScript project: Run `npx tsc --noEmit` (or `npm run type-check`)
   - Next.js / React project: Run `npm run lint`
-  - Vanilla JS / Node.js project: Run `node -c app.js` (또는 `node --check <file>.js`)
-  - Python project: Run `python -m py_compile <file>.py`
 - If non-critical lint warnings occur, do not get stuck in an endless fixing loop; report them briefly and conclude.
 - Do NOT run heavy dev servers, build commands (`npm run build`), or long-running test suites unless explicitly requested.
 

@@ -14,7 +14,7 @@ description: Triggered by '/apply', '/action apply', or explicit requests to app
 1. **계획서 기반 정확한 구현 (Plan-Driven Execution)**:
    - 가장 최근에 작성된 계획서(`implementation_plan.md` 또는 최근 질의응답에서 합의된 구현 계획)의 내용을 정확히 확인하고 순서대로 소스 코드를 수정합니다.
 2. **터미널 고속 검증 준수 (Rule 2)**:
-   - 코드 변경 후 브라우저나 스크린샷 검증을 띄우지 않고, 터미널 기반 정적 검증(`python -m py_compile`, `node -c` 등)을 즉시 수행합니다.
+   - 코드 변경 후 브라우저나 스크린샷 검증을 띄우지 않고, 터미널 기반 정적 구문 검증(`node --check js/main.js` 또는 `node -c js/<수정된 파일>.js`)을 즉시 수행합니다.
 3. **자동 커밋 금지 준수 (Rule 3 & 4)**:
    - 코드 적용과 터미널 검증까지만 완료하고 대기합니다. Git 커밋 및 푸시는 사용자가 명시적으로 `/git-commit` 명령어를 입력할 때까지 실행하지 않습니다.
 
@@ -27,8 +27,8 @@ description: Triggered by '/apply', '/action apply', or explicit requests to app
 2. **코드 변경 단계별 적용**:
    - `replace_file_content`, `multi_replace_file_content`, `write_to_file` 등의 도구를 사용하여 계획서에 명시된 파일들을 차례대로 정확하게 수정합니다.
 3. **터미널 정적 오류 검증**:
-   - 수정된 언어에 맞추어 빠른 정적 검증을 실행합니다:
-     - Python: `python -m py_compile <수정된 파일>`
-     - JavaScript: `node -c <수정된 파일>`
+   - 본 프로젝트(Vanilla JS 웹 앱) 환경에 맞추어 빠른 정적 구문 검사를 실행합니다:
+     - 메인 스크립트: `node --check js/main.js` (또는 `node -c js/main.js`)
+     - 특정 수정 스크립트: `node -c js/<수정된 파일>.js`
 4. **결과 보고**:
    - 반영된 파일 목록, 주요 변경 내용, 정적 검증 통과 결과를 사용자에게 명확하고 간결하게 보고합니다.

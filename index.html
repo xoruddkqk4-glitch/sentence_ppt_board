@@ -254,13 +254,29 @@
           </section>
         </div>
         <div class="passage-share-options-panel">
-          <div class="passage-share-controls" role="group" aria-label="지문 시각화 방식">
-            <button class="button secondary passage-share-mode-button" type="button" id="plainShareModeButton" aria-pressed="true">원본</button>
-            <button class="button secondary passage-share-mode-button" type="button" id="visualShareModeButton" aria-pressed="false">줄글식 서술</button>
-            <button class="button secondary passage-share-mode-button" type="button" id="outlineShareModeButton" aria-pressed="false">개조식 서술</button>
-            <button class="button secondary" type="button" id="passageShareFullscreenButton">전체화면 (F)</button>
+          <div class="passage-share-options-row">
+            <div class="passage-share-controls" role="group" aria-label="지문 시각화 방식">
+              <button class="button secondary passage-share-mode-button" type="button" id="plainShareModeButton" aria-pressed="true">원본</button>
+              <button class="button secondary passage-share-mode-button" type="button" id="visualShareModeButton" aria-pressed="false">줄글식 서술</button>
+              <button class="button secondary passage-share-mode-button" type="button" id="outlineShareModeButton" aria-pressed="false">개조식 서술</button>
+              <button class="button secondary" type="button" id="passageShareFullscreenButton">전체화면 (F)</button>
+            </div>
+            <div id="passageShareLevelFilters" class="passage-share-level-filters" aria-label="단계별 문장 표시 설정"></div>
           </div>
-          <div id="passageShareLevelFilters" class="passage-share-level-filters" aria-label="단계별 문장 표시 설정"></div>
+          <div id="passageShareSentenceBar" class="passage-share-sentence-bar hidden" aria-label="개조식 문장 단위 선택 및 숨김">
+            <div class="sentence-bar-left">
+              <span class="sentence-bar-label">문장 선택 :</span>
+              <button type="button" id="outlineSelectAllBtn" class="button secondary compact sentence-action-btn">전체 선택</button>
+              <button type="button" id="outlineDeselectAllBtn" class="button secondary compact sentence-action-btn">선택 해제</button>
+              <span class="sentence-bar-divider">|</span>
+              <button type="button" id="outlineHideSelectedBtn" class="button secondary compact sentence-action-btn action-hide" title="단축키 H">선택 숨기기 (H)</button>
+              <button type="button" id="outlineShowSelectedBtn" class="button secondary compact sentence-action-btn action-show">선택 표시</button>
+              <button type="button" id="outlineShowAllBtn" class="button secondary compact sentence-action-btn">모두 보이기 (0)</button>
+            </div>
+            <div class="sentence-bar-right">
+              <span id="outlineSentenceStatusBadge" class="outline-sentence-status-badge">선택 0개 · 숨김 0개</span>
+            </div>
+          </div>
         </div>
 
         <!-- 7단계 상단 고정 우리말 주제 배너 (옵션 바 바로 아래, 사용자 지정 위치) -->
