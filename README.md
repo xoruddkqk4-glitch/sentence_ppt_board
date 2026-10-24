@@ -422,3 +422,26 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
   - `node --check js/main.js`: PASS (구문 이상 없음)
   - `impeccable doctor .`: PASS (드리프트 0건)
   - `impeccable detect .`: PASS (정적 디자인 규격 유지)
+
+## [2026-10-24 23:10] 7단계 개조식 서술 1열 전등 스위치 토글 개편, 인라인 상태 갱신을 통한 스크롤 튐 방지 및 하위 포커스 뷰 색상 구분 최적화 (Commit ID: 6fefd38)
+- **수정 내용**:
+  - **7단계 개조식 서술 1열 독립 스위치 열 도입 & 미니멀 전등 스위치 토글 디자인**:
+    - 문장 카드 내부의 복잡한 버튼을 제거하고, 행 맨 앞(1열)에 새로운 열을 추가하여 전등 스위치 모양의 ON/OFF 미니멀 토글(`.outline-light-switch`) 배치
+    - 번잡한 "문장 N" 번호 텍스트 및 "ON/OFF" 문구를 완전히 배제하고, 세련된 슬라이더 스위치 트랙/노브(`.switch-track`, `.switch-thumb`) 적용
+    - 스위치 셀(`.outline-sentence-switch-cell`)에 `align-self: stretch; height: 100%;`와 `display: flex; align-items: center; justify-content: center;`를 적용하여 셀 내 가로·세로 완벽한 정중앙 정렬 구현
+    - 1열 헤더의 경우, 좁은 열 너비로 인한 세로 줄바꿈을 방지하기 위해 '스위치' 텍스트를 제거하고 💡 아이콘만 크기 `clamp(20px, 1.8vw, 26px)`로 카드 정중앙에 깔끔하게 배치
+  - **스위치 셀까지 그룹 배경색 자연스러운 확장**:
+    - 스위치 셀의 불투명 흰색 배경과 오른쪽 구분선 테두리를 제거하고 `background: transparent;`로 처리
+    - 개조식 서술의 트리 그룹 배경 블록(`.outline-group-block`)이 `left: 0; right: 0;`으로 1열 스위치 셀 영역까지 끊김 없이 덮여 통일감 있는 카드 블록 완성
+  - **문장 숨김 시 스크롤 상단 튐(Jump) 현상 원천 차단 (인라인 DOM 갱신)**:
+    - 스위치 클릭 시 전체 화면을 재렌더링(`content.innerHTML = ""`)하여 브라우저의 `scrollTop`이 0으로 초기화되던 치명적인 문제 해결
+    - DOM에서 해당 스위치와 문장 카드를 찾아 클래스(`.is-on`/`.is-off`, `.is-sentence-hidden`)만 즉시 토글하는 인라인(In-place) 상태 갱신 구현
+    - 문장 카드는 `visibility: hidden; opacity: 0; pointer-events: none;`으로 원래 높이와 여백을 100% 보존하므로, 스크롤을 내린 상태에서 문장을 숨기거나 켜도 화면이 위로 튀지 않고 스크롤 위치가 1px도 흔들림 없이 고정됨
+    - 전체 렌더링이 필요한 상황에서도 렌더링 전 `scrollTop`을 저장하여 복원하는 이중 안전장치 적용
+  - **하위 단계 포커스 뷰: 텍스트 태그 제거 및 박스 배경색 구분**:
+    - `showOutlineDescendantFocus`에서 `⭐ 선택한 문장 N` 텍스트 태그를 제거
+    - 선택된 루트 문장 카드(`.outline-focus-sentence.is-focus-root`) 전체를 해당 단계 고유의 명확한 테마 배경색(`color-mix(...)`), 굵은 경계선(`border: 2px solid var(--focus-color)`), 상단 강조선(`border-top-width: 3.5px`)으로 감싸 텍스트 없이 색상만으로 선택 문장임을 직관적으로 강조
+- **검증 결과**:
+  - `node --check js/main.js`: PASS (구문 이상 없음)
+  - `impeccable doctor .`: PASS (드리프트 0건)
+  - `impeccable detect .`: PASS (정적 디자인 규격 유지, 안티패턴 0건)

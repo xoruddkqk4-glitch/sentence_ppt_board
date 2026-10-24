@@ -927,6 +927,7 @@ function renderPassageShareView() {
       : "원문 보기입니다. 원하는 시각화 방식을 선택하면 단계와 연결어 강조가 적용됩니다.";
 
   const content = elements.passageShareContent;
+  const savedScrollTop = content ? content.scrollTop : 0;
   content.innerHTML = "";
   // 보기 전환 시 이전 보기의 계산 크기와 캐시된 inline 값을 남기지 않는다.
   content.style.removeProperty("height");
@@ -957,6 +958,19 @@ function renderPassageShareView() {
   });
   state.outlineRelationChildren = outlineChildrenByParent;
   if (isOutlineMode) {
+    // 0. 행 맨 앞(1열): 전등 스위치 모양의 ON/OFF 토글 열 헤더
+    const switchHeader = document.createElement("div");
+    switchHeader.className = "outline-switch-col-header";
+    switchHeader.style.gridColumn = "1";
+    switchHeader.style.gridRow = "1";
+    switchHeader.innerHTML = `
+      <div class="outline-switch-header-card" title="문장별 표시/숨김 스위치" aria-label="문장별 표시/숨김 스위치">
+        <span class="switch-header-icon">💡</span>
+      </div>
+    `;
+    content.appendChild(switchHeader);
+
+    // 1. 단계별 헤더 카드 (1열은 스위치 열이므로 2열부터 N+1열까지 배치)
     for (let level = 1; level <= state.analysisLevelCount; level += 1) {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
       const isHidden = hiddenLevels.has(level);
@@ -972,7 +986,7 @@ function renderPassageShareView() {
       const header = document.createElement("div");
       header.className = "outline-level-header";
       header.dataset.abstractLevel = String(level);
-      header.style.gridColumn = String(level);
+      header.style.gridColumn = String(level + 1);
       header.style.gridRow = "1";
       header.style.setProperty("--outline-color", visual.color);
       header.style.setProperty("--outline-accent-color", accentColor);
@@ -1016,13 +1030,45 @@ function renderPassageShareView() {
 
   state.sentences.forEach((sentence, originalIndex) => {
     const level = clamp(1, Number(sentence.abstractLevel) || 1, state.analysisLevelCount);
+    const rowIndex = originalIndex + 2;
+
+    const isHiddenByLevel = hiddenLevels.has(level);
+    const isHiddenBySentence = isOutlineMode && hiddenSentences.has(originalIndex);
+
+    // 개조식 모드: 행 맨 앞(1열)에 새로운 열을 추가하여 전등 스위치 모양의 ON/OFF 토글 배치
+    if (isOutlineMode) {
+      const switchCell = document.createElement("div");
+      switchCell.className = "outline-sentence-switch-cell";
+      switchCell.dataset.sentenceIndex = String(originalIndex);
+      switchCell.style.gridColumn = "1";
+      switchCell.style.gridRow = String(rowIndex);
+
+      const lightSwitch = document.createElement("button");
+      lightSwitch.type = "button";
+      lightSwitch.className = `outline-light-switch ${isHiddenBySentence ? "is-off" : "is-on"}`;
+      lightSwitch.title = isHiddenBySentence
+        ? `문장 ${originalIndex + 1} 켜기 (클릭하여 보이기)`
+        : `문장 ${originalIndex + 1} 끄기 (클릭하여 숨기기)`;
+      lightSwitch.setAttribute("aria-label", `문장 ${originalIndex + 1} 전등 스위치 ${isHiddenBySentence ? "꺼짐" : "켜짐"}`);
+      lightSwitch.setAttribute("aria-pressed", String(!isHiddenBySentence));
+      lightSwitch.innerHTML = `
+        <span class="switch-track">
+          <span class="switch-thumb"></span>
+        </span>
+      `;
+      lightSwitch.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleOutlineSentenceHidden(originalIndex);
+      });
+      switchCell.appendChild(lightSwitch);
+      content.appendChild(switchCell);
+    }
+
     const sentenceElement = document.createElement(isOutlineMode ? "div" : "span");
     sentenceElement.className = isVisualMode ? "passage-visual-sentence" : isOutlineMode ? "passage-outline-sentence" : "passage-plain-sentence";
     sentenceElement.dataset.abstractLevel = String(level);
 
-    const isHiddenByLevel = hiddenLevels.has(level);
-    const isHiddenBySentence = isOutlineMode && hiddenSentences.has(originalIndex);
-    // 개조식 모드에서는 단계 숨김일 때만 카드 전체를 is-hidden 처리하며, 문장 단위 숨김은 카드를 항상 유지하고 본문만 투명 처리함
+    // 개조식 모드에서는 단계 숨김일 때만 카드 전체를 is-hidden 처리하며, 문장 단위 숨김은 카드를 투명 처리하여 빈 여백을 100% 보존함
     const isElementHidden = isOutlineMode ? isHiddenByLevel : (isHiddenByLevel || isHiddenBySentence);
     sentenceElement.classList.toggle("is-hidden", isElementHidden);
     sentenceElement.setAttribute("aria-hidden", String(isElementHidden || isHiddenBySentence));
@@ -1040,9 +1086,9 @@ function renderPassageShareView() {
       const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
       sentenceElement.style.setProperty("--outline-color", visual.color);
       sentenceElement.style.setProperty("--outline-card-scale", "1");
-      // 개조식 계단식 배치: 단계에 따른 열(Column), 문장 순서에 따른 단독 행(Row, 2행부터)
-      sentenceElement.style.gridColumn = String(level);
-      sentenceElement.style.gridRow = String(originalIndex + 2);
+      // 1열은 전등 스위치 열이므로 문장 열은 level + 1, 행은 rowIndex (2행부터)
+      sentenceElement.style.gridColumn = String(level + 1);
+      sentenceElement.style.gridRow = String(rowIndex);
       const rootGroupIndex = outlineRootGroups.bySentence.get(originalIndex);
       if (Number.isInteger(rootGroupIndex)) {
         sentenceElement.classList.add("has-outline-group");
@@ -1060,13 +1106,11 @@ function renderPassageShareView() {
         sentenceElement.style.setProperty("--relation-color", visual.color);
       }
       sentenceElement.classList.add("is-outline-focus-trigger");
-      sentenceElement.title = isHiddenBySentence ? "클릭하여 문장 다시 표시" : "클릭하여 이 문장과 하위 단계 문장 크게 보기";
+      sentenceElement.title = "클릭하여 이 문장과 하위 단계 문장 크게 보기";
       sentenceElement.addEventListener("click", () => {
-        if (state.hiddenPassageSentenceIndexes?.includes(originalIndex)) {
-          toggleOutlineSentenceHidden(originalIndex);
-          return;
+        if (!state.hiddenPassageSentenceIndexes?.includes(originalIndex)) {
+          showOutlineDescendantFocus(originalIndex);
         }
-        showOutlineDescendantFocus(originalIndex);
       });
       sentenceElement.draggable = true;
       sentenceElement.addEventListener("dragstart", handleOutlineSentenceDragStart);
@@ -1075,31 +1119,7 @@ function renderPassageShareView() {
       sentenceElement.addEventListener("dragleave", handleOutlineSentenceDragLeave);
       sentenceElement.addEventListener("drop", handleOutlineSentenceDrop);
 
-      // 개조식 문장 앞 제어 버튼: 단일 원클릭 숨기기/보여주기 버튼 (숨김 상태여도 항상 표시 & 꺼진 상태로 유지)
-      const headerEl = document.createElement("div");
-      headerEl.className = "outline-sentence-header";
-
-      const toggleBtn = document.createElement("button");
-      toggleBtn.type = "button";
-      toggleBtn.className = "outline-sentence-toggle-btn";
-      toggleBtn.classList.toggle("is-off", isHiddenBySentence);
-      toggleBtn.title = isHiddenBySentence
-        ? `문장 ${originalIndex + 1} 다시 보이기 (클릭)`
-        : `문장 ${originalIndex + 1} 숨기기 (클릭)`;
-      toggleBtn.setAttribute("aria-label", `문장 ${originalIndex + 1} ${isHiddenBySentence ? "보이기" : "숨기기"}`);
-      toggleBtn.innerHTML = `
-        <span class="toggle-icon">${isHiddenBySentence ? "🙈" : "👁️"}</span>
-        <span class="toggle-label">문장 ${originalIndex + 1}</span>
-        <span class="toggle-action-hint">${isHiddenBySentence ? "꺼짐" : "숨기기"}</span>
-      `;
-      toggleBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        toggleOutlineSentenceHidden(originalIndex);
-      });
-      headerEl.appendChild(toggleBtn);
-
-      sentenceElement.appendChild(headerEl);
-
+      // 문장 본문 (문장 카드 내부의 번거로운 버튼은 제거하고 1열의 전등 스위치로 통합)
       const bodyEl = document.createElement("div");
       bodyEl.className = "outline-sentence-body";
       bodyEl.appendChild(createConnectiveMarkedText(sentence, true));
@@ -1120,6 +1140,9 @@ function renderPassageShareView() {
     updateOutlineSentenceSelectionVisuals();
   }
   schedulePassageShareFit(true);
+  if (savedScrollTop > 0 && content) {
+    content.scrollTop = savedScrollTop;
+  }
 }
 
 function applyOutlineHierarchySpacing() {
@@ -1162,45 +1185,118 @@ function showOutlineDescendantFocus(parentIndex) {
   if (!content?.classList.contains("outline-share-content")) return;
   content.querySelector(".outline-descendant-focus")?.remove();
   state.outlineFocusSentenceIndex = parentIndex;
-  const focusIndexes = [parentIndex, ...getOutlineDescendantIndexes(parentIndex)];
-  const focusLevels = [...new Set(focusIndexes.map((index) => clamp(1, Number(state.sentences[index].abstractLevel) || 1, state.analysisLevelCount)))].sort((a, b) => a - b);
-  const rootLevel = focusLevels[0];
+
+  // 선택한 문장과 그 하위 단계 문장 인덱스 추출 (문장 원래 순서대로 정렬)
+  const focusIndexes = [parentIndex, ...getOutlineDescendantIndexes(parentIndex)].sort((a, b) => a - b);
   const overlay = document.createElement("section");
   overlay.className = "outline-descendant-focus";
+
+  const headerWrap = document.createElement("div");
+  headerWrap.className = "outline-descendant-focus-header";
+
+  const titleInfo = document.createElement("div");
+  titleInfo.className = "outline-focus-title-info";
+  const title = document.createElement("h3");
+  title.textContent = "선택한 문장과 하위 단계 문장";
+  const subtitle = document.createElement("p");
+  subtitle.textContent = "개조식 서술의 단계별 계단식(Waterfall) 배치 방식으로 하위 문장 구조를 확대 표시합니다.";
+  titleInfo.append(title, subtitle);
+
   const closeButton = document.createElement("button");
   closeButton.type = "button";
   closeButton.className = "button secondary compact outline-focus-close";
-  closeButton.textContent = "전체 개조식 보기";
+  closeButton.textContent = "전체 개조식 보기 (닫기)";
   closeButton.addEventListener("click", closeOutlineDescendantFocus);
-  const title = document.createElement("h3");
-  title.textContent = "선택한 문장과 하위 단계 문장";
-  const lanes = document.createElement("div");
-  lanes.className = "outline-focus-lanes";
-  lanes.style.setProperty("--focus-lane-count", String(focusLevels.length));
-  focusLevels.forEach((level) => {
+
+  headerWrap.append(titleInfo, closeButton);
+  overlay.appendChild(headerWrap);
+
+  const grid = document.createElement("div");
+  grid.className = "outline-focus-waterfall-grid";
+  grid.style.setProperty("--outline-columns", String(state.analysisLevelCount));
+
+  // 1. Image 2와 100% 동일한 단계별 헤더 카드 렌더링 (1단계부터 N단계까지 고정 열 배치)
+  for (let level = 1; level <= state.analysisLevelCount; level += 1) {
     const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
-    const lane = document.createElement("section");
-    lane.className = "outline-focus-lane";
-    lane.style.setProperty("--focus-color", visual.color);
-    const laneTitle = document.createElement("h4");
-    laneTitle.textContent = `${level}단계`;
-    lane.appendChild(laneTitle);
-    focusIndexes
-      .filter((index) => clamp(1, Number(state.sentences[index].abstractLevel) || 1, state.analysisLevelCount) === level)
-      .forEach((index) => {
-        const sentence = state.sentences[index];
-        const card = document.createElement("article");
-        card.className = "outline-focus-card";
-        card.style.setProperty("--focus-color", visual.color);
-        card.style.setProperty("--focus-scale", String(Math.max(.68, 1 - ((level - rootLevel) * .14))));
-        const text = document.createElement("p");
-        text.appendChild(createConnectiveMarkedText(sentence, true));
-        card.appendChild(text);
-        lane.appendChild(card);
-      });
-    lanes.appendChild(lane);
+    const countInFocus = focusIndexes.filter(
+      (idx) => clamp(1, Number(state.sentences[idx].abstractLevel) || 1, state.analysisLevelCount) === level
+    ).length;
+
+    let accentColor = visual.color;
+    if (level === 3 && state.analysisLevelCount === 3) {
+      accentColor = "#475569";
+    }
+
+    const colHeader = document.createElement("div");
+    colHeader.className = "outline-level-header";
+    colHeader.style.gridColumn = String(level);
+    colHeader.style.gridRow = "1";
+    colHeader.style.setProperty("--outline-color", visual.color);
+    colHeader.style.setProperty("--outline-accent-color", accentColor);
+
+    const card = document.createElement("div");
+    card.className = "outline-level-card";
+
+    const left = document.createElement("div");
+    left.className = "outline-level-left";
+
+    const badge = document.createElement("span");
+    badge.className = "outline-level-badge";
+    badge.textContent = String(level);
+    left.appendChild(badge);
+
+    const info = document.createElement("div");
+    info.className = "outline-level-info";
+
+    const sub = document.createElement("span");
+    sub.className = "outline-level-sub";
+    sub.textContent = `LEVEL 0${level}`;
+    info.appendChild(sub);
+
+    const titleEl = document.createElement("h3");
+    titleEl.className = "outline-level-title";
+    titleEl.textContent = `${level}단계`;
+    info.appendChild(titleEl);
+
+    left.appendChild(info);
+    card.appendChild(left);
+
+    const countBadge = document.createElement("span");
+    countBadge.className = "outline-level-count";
+    countBadge.textContent = `${countInFocus}문장`;
+    card.appendChild(countBadge);
+
+    colHeader.appendChild(card);
+    grid.appendChild(colHeader);
+  }
+
+  // 2. 문장 카드 배치: focusIndexes 순서대로 각 문장의 실제 단계 열 및 단독 행에 계단식 배치
+  focusIndexes.forEach((sentenceIndex, seqIndex) => {
+    const sentence = state.sentences[sentenceIndex];
+    const level = clamp(1, Number(sentence.abstractLevel) || 1, state.analysisLevelCount);
+    const visual = getAbstractLevelVisualStyle(level, state.analysisLevelCount);
+    const rowIndex = seqIndex + 2;
+
+    const card = document.createElement("article");
+    card.className = "passage-outline-sentence outline-focus-sentence";
+    if (sentenceIndex === parentIndex) {
+      card.classList.add("is-focus-root");
+    }
+    card.style.gridColumn = String(level);
+    card.style.gridRow = String(rowIndex);
+    card.style.setProperty("--focus-color", visual.color);
+    card.style.setProperty("--outline-color", visual.color);
+
+
+    const bodyEl = document.createElement("div");
+    bodyEl.className = "outline-sentence-body";
+    bodyEl.appendChild(createConnectiveMarkedText(sentence, true));
+    card.appendChild(bodyEl);
+
+    grid.appendChild(card);
   });
-  overlay.append(closeButton, title, lanes);
+
+  overlay.appendChild(grid);
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) closeOutlineDescendantFocus();
   });
@@ -1425,12 +1521,41 @@ function updateOutlineSentenceSelectionVisuals() {
 
 function toggleOutlineSentenceHidden(sentenceIndex) {
   const hidden = new Set(state.hiddenPassageSentenceIndexes || []);
-  if (hidden.has(sentenceIndex)) {
-    hidden.delete(sentenceIndex);
-  } else {
+  const isNowHidden = !hidden.has(sentenceIndex);
+  if (isNowHidden) {
     hidden.add(sentenceIndex);
+  } else {
+    hidden.delete(sentenceIndex);
   }
   state.hiddenPassageSentenceIndexes = [...hidden].sort((a, b) => a - b);
+
+  const content = elements.passageShareContent;
+  if (content?.classList.contains("outline-share-content")) {
+    const switchCell = content.querySelector(`.outline-sentence-switch-cell[data-sentence-index="${sentenceIndex}"]`);
+    const switchBtn = switchCell?.querySelector(".outline-light-switch");
+    const sentenceCard = content.querySelector(`.passage-outline-sentence[data-sentence-index="${sentenceIndex}"]`);
+    if (switchBtn && sentenceCard) {
+      if (isNowHidden) {
+        switchBtn.classList.remove("is-on");
+        switchBtn.classList.add("is-off");
+        switchBtn.setAttribute("aria-pressed", "false");
+        switchBtn.setAttribute("aria-label", `문장 ${sentenceIndex + 1} 전등 스위치 꺼짐`);
+        switchBtn.title = `문장 ${sentenceIndex + 1} 켜기 (클릭하여 보이기)`;
+        sentenceCard.classList.add("is-sentence-hidden");
+        sentenceCard.setAttribute("aria-hidden", "true");
+      } else {
+        switchBtn.classList.remove("is-off");
+        switchBtn.classList.add("is-on");
+        switchBtn.setAttribute("aria-pressed", "true");
+        switchBtn.setAttribute("aria-label", `문장 ${sentenceIndex + 1} 전등 스위치 켜짐`);
+        switchBtn.title = `문장 ${sentenceIndex + 1} 끄기 (클릭하여 숨기기)`;
+        sentenceCard.classList.remove("is-sentence-hidden");
+        sentenceCard.setAttribute("aria-hidden", "false");
+      }
+      updateOutlineSentenceSelectionVisuals();
+      return;
+    }
+  }
   renderPassageShareView();
 }
 
@@ -1439,6 +1564,28 @@ function hideSelectedOutlineSentences() {
   const hidden = new Set(state.hiddenPassageSentenceIndexes || []);
   state.selectedOutlineSentenceIndexes.forEach((idx) => hidden.add(idx));
   state.hiddenPassageSentenceIndexes = [...hidden].sort((a, b) => a - b);
+
+  const content = elements.passageShareContent;
+  if (content?.classList.contains("outline-share-content")) {
+    state.selectedOutlineSentenceIndexes.forEach((sentenceIndex) => {
+      const switchCell = content.querySelector(`.outline-sentence-switch-cell[data-sentence-index="${sentenceIndex}"]`);
+      const switchBtn = switchCell?.querySelector(".outline-light-switch");
+      const sentenceCard = content.querySelector(`.passage-outline-sentence[data-sentence-index="${sentenceIndex}"]`);
+      if (switchBtn) {
+        switchBtn.classList.remove("is-on");
+        switchBtn.classList.add("is-off");
+        switchBtn.setAttribute("aria-pressed", "false");
+        switchBtn.setAttribute("aria-label", `문장 ${sentenceIndex + 1} 전등 스위치 꺼짐`);
+        switchBtn.title = `문장 ${sentenceIndex + 1} 켜기 (클릭하여 보이기)`;
+      }
+      if (sentenceCard) {
+        sentenceCard.classList.add("is-sentence-hidden");
+        sentenceCard.setAttribute("aria-hidden", "true");
+      }
+    });
+    updateOutlineSentenceSelectionVisuals();
+    return;
+  }
   renderPassageShareView();
 }
 
@@ -1447,12 +1594,53 @@ function showSelectedOutlineSentences() {
   const hidden = new Set(state.hiddenPassageSentenceIndexes || []);
   state.selectedOutlineSentenceIndexes.forEach((idx) => hidden.delete(idx));
   state.hiddenPassageSentenceIndexes = [...hidden].sort((a, b) => a - b);
+
+  const content = elements.passageShareContent;
+  if (content?.classList.contains("outline-share-content")) {
+    state.selectedOutlineSentenceIndexes.forEach((sentenceIndex) => {
+      const switchCell = content.querySelector(`.outline-sentence-switch-cell[data-sentence-index="${sentenceIndex}"]`);
+      const switchBtn = switchCell?.querySelector(".outline-light-switch");
+      const sentenceCard = content.querySelector(`.passage-outline-sentence[data-sentence-index="${sentenceIndex}"]`);
+      if (switchBtn) {
+        switchBtn.classList.remove("is-off");
+        switchBtn.classList.add("is-on");
+        switchBtn.setAttribute("aria-pressed", "true");
+        switchBtn.setAttribute("aria-label", `문장 ${sentenceIndex + 1} 전등 스위치 켜짐`);
+        switchBtn.title = `문장 ${sentenceIndex + 1} 끄기 (클릭하여 숨기기)`;
+      }
+      if (sentenceCard) {
+        sentenceCard.classList.remove("is-sentence-hidden");
+        sentenceCard.setAttribute("aria-hidden", "false");
+      }
+    });
+    updateOutlineSentenceSelectionVisuals();
+    return;
+  }
   renderPassageShareView();
 }
 
 function showAllOutlineSentences() {
   if (!state.hiddenPassageSentenceIndexes || state.hiddenPassageSentenceIndexes.length === 0) return;
   state.hiddenPassageSentenceIndexes = [];
+  const content = elements.passageShareContent;
+  if (content?.classList.contains("outline-share-content")) {
+    content.querySelectorAll(".outline-light-switch.is-off").forEach((btn) => {
+      btn.classList.remove("is-off");
+      btn.classList.add("is-on");
+      btn.setAttribute("aria-pressed", "true");
+      const idx = btn.closest(".outline-sentence-switch-cell")?.dataset.sentenceIndex;
+      if (idx !== undefined) {
+        btn.setAttribute("aria-label", `문장 ${Number(idx) + 1} 전등 스위치 켜짐`);
+        btn.title = `문장 ${Number(idx) + 1} 끄기 (클릭하여 숨기기)`;
+      }
+    });
+    content.querySelectorAll(".passage-outline-sentence.is-sentence-hidden").forEach((card) => {
+      card.classList.remove("is-sentence-hidden");
+      card.setAttribute("aria-hidden", "false");
+    });
+    updateOutlineSentenceSelectionVisuals();
+    return;
+  }
   renderPassageShareView();
 }
 
