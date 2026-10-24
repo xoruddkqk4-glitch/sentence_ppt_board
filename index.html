@@ -36,21 +36,21 @@
     <p id="saveStatus" class="save-status" role="status" aria-live="polite"></p>
 
     <main>
-      <section id="vocabularyView" class="view vocabulary-view hidden" aria-labelledby="vocabularyTitle">
+      <div id="vocabularyView" class="view vocabulary-view hidden" aria-labelledby="vocabularyTitle">
         <div class="toolbar stage-toolbar">
           <div class="stage-toolbar-title"><h2 id="vocabularyTitle" class="stage-heading">2단계-어휘 분석</h2></div>
-          <section class="stage-context-panel"><div><h3>수업 핵심 어휘</h3><p>어렵거나 중요한 단어·표현을 골라 위치, 의미, Word Insights를 기록하세요.</p></div></section>
+          <div class="stage-context-panel"><div><h3>수업 핵심 어휘</h3><p>어렵거나 중요한 단어·표현을 골라 위치, 의미, Word Insights를 기록하세요.</p></div></div>
         </div>
         <div class="vocabulary-actions"><p id="vocabularyMessage" class="message" aria-live="polite"></p><button id="addVocabularyButton" class="button primary" type="button">+ 어휘 추가</button></div>
         <div id="vocabularyList" class="vocabulary-list" aria-live="polite"></div>
-      </section>
+      </div>
 
       <section id="vocabularyShareView" class="view vocabulary-share-view hidden" aria-labelledby="vocabularyShareTitle">
         <div class="toolbar stage-toolbar">
           <div class="stage-toolbar-title"><h2 id="vocabularyShareTitle" class="stage-heading">3단계-어휘 공유</h2><span id="vocabularyShareProgress" class="vocabulary-share-progress" hidden aria-live="polite"></span></div>
-          <section class="stage-context-panel"><div><h3>핵심 어휘 한눈에 보기</h3><p><kbd>0</kbd>: 전체 보기 · <kbd>1</kbd>~<kbd>9</kbd>: 행 보기 · <kbd>←</kbd>/<kbd>→</kbd> 또는 <kbd>클릭</kbd>: 단일 카드의 정보 순차 공개 및 어휘 이동</p></div></section>
+          <div class="stage-context-panel"><div><h3>핵심 어휘 한눈에 보기</h3><p><kbd>0</kbd>: 전체 보기 · <kbd>1</kbd>~<kbd>9</kbd>: 행 보기 · <kbd>←</kbd>/<kbd>→</kbd> 또는 <kbd>클릭</kbd>: 단일 카드의 정보 순차 공개 및 어휘 이동</p></div></div>
         </div>
-        <section id="vocabularyShareContent" class="vocabulary-share-content" aria-live="polite"></section>
+        <div id="vocabularyShareContent" class="vocabulary-share-content" aria-live="polite"></div>
       </section>
 
       <section id="inputView" class="view input-view" aria-labelledby="inputTitle">
@@ -58,12 +58,12 @@
           <div class="stage-toolbar-title">
             <h2 id="inputTitle" class="stage-heading">1단계-지문 입력</h2>
           </div>
-          <section class="stage-context-panel">
+          <div class="stage-context-panel">
             <div>
               <h3>지문 입력</h3>
               <p>영어 지문을 붙여넣고 문장 분석을 시작하세요.</p>
             </div>
-          </section>
+          </div>
         </div>
         <div class="input-layout">
           <div class="intro-panel">
@@ -99,13 +99,13 @@
           <div class="stage-toolbar-title">
             <h2 id="editTitle" class="stage-heading">4단계-문장 분석</h2>
           </div>
-          <section class="stage-context-panel edit-context-panel">
+          <div class="stage-context-panel edit-context-panel">
             <div>
               <h3>문장 성분 수정</h3>
               <p>성분 묶음을 드래그하여 분석 결과를 보완하세요.</p>
             </div>
             <p id="editMessage" class="message toolbar-message" aria-live="polite"></p>
-          </section>
+          </div>
         </div>
 
         <div class="sentence-meta">
@@ -117,7 +117,7 @@
               <button class="button secondary compact" type="button" id="deleteSentenceButton" style="color: var(--color-warning); border-color: var(--color-warning);">- 문장 삭제</button>
             </div>
           </div>
-          <div class="sentence-edit-panel">
+          <div class="sentence-editor-area">
             <label for="sentenceTextEditor" class="sr-only">현재 문장 텍스트 수정</label>
             <textarea id="sentenceTextEditor" rows="2" class="sentence-editor-textarea" placeholder="현재 문장을 수정하려면 입력해 주세요."></textarea>
             <div class="editor-action-row">
@@ -160,7 +160,7 @@
             <h2 class="stage-heading">5단계-문장 공유</h2>
             <span id="presentProgress" class="progress-badge">0 / 0</span>
           </div>
-          <section class="stage-context-panel present-context-panel">
+          <div class="stage-context-panel present-context-panel">
           <div class="color-legend" aria-label="문장 성분 색상 범례">
             <span><i class="legend-dot role-subject"></i>주어</span>
             <span><i class="legend-dot role-verb"></i>동사</span>
@@ -175,7 +175,7 @@
               <span class="shortcut-badge-present" style="font-size: 11px; opacity: 0.8; font-weight: 700; color: inherit; margin-top: 2px;">단축키: F</span>
             </div>
           </div>
-          </section>
+          </div>
         </div>
 
         <h2 id="presentTitle" class="sr-only">학생 문장 공유 화면</h2>
@@ -207,7 +207,7 @@
           <div class="stage-toolbar-title">
             <h2 id="analysisTitle" class="stage-heading">6단계-지문 분석</h2>
           </div>
-          <section class="stage-context-panel analysis-intro-panel">
+          <div class="stage-context-panel analysis-intro-panel">
             <div>
               <h3>추상성 단계 설정</h3>
               <p>교사가 각 문장의 의미적 추상성에 맞춰 단계를 직접 지정합니다.</p>
@@ -216,10 +216,10 @@
               <span>단계 개수</span>
               <select id="analysisLevelCount" aria-label="추상성 단계 개수"></select>
             </label>
-          </section>
+          </div>
         </div>
 
-        <section id="koreanTopicSection" class="korean-topic-section" aria-label="지문 우리말 주제 입력">
+        <div id="koreanTopicSection" class="korean-topic-section" aria-label="지문 우리말 주제 입력">
           <div class="korean-topic-header">
             <div class="korean-topic-title-group">
               <span class="korean-topic-badge">💡 우리말 주제</span>
@@ -235,7 +235,7 @@
           <div class="korean-topic-input-wrapper">
             <input type="text" id="koreanTopicInput" class="korean-topic-input" placeholder="지문의 핵심 우리말 주제를 입력하세요 (예: 언어 습득 과정에서 환경과의 상호작용의 중요성)" autocomplete="off" />
           </div>
-        </section>
+        </div>
 
         <p class="analysis-helper">문장마다 단계 버튼을 하나 선택하세요. 연결어는 단어를 클릭해 선택하고, 여러 단어 또는 절은 Shift를 누른 채 첫 단어와 마지막 단어를 클릭하세요.</p>
         <div id="sentenceAnalysisList" class="sentence-analysis-list" aria-live="polite"></div>
@@ -246,12 +246,12 @@
           <div class="stage-toolbar-title">
             <h2 id="passageShareTitle" class="stage-heading">7단계-지문 공유</h2>
           </div>
-          <section class="stage-context-panel passage-share-context-panel">
+          <div class="stage-context-panel passage-share-context-panel">
             <div>
               <h3>지문 시각화</h3>
               <p>원하는 방식으로 전체 지문을 공유하세요.</p>
             </div>
-          </section>
+          </div>
         </div>
         <div class="passage-share-options-panel">
           <div class="passage-share-options-row">
@@ -263,18 +263,14 @@
             </div>
             <div id="passageShareLevelFilters" class="passage-share-level-filters" aria-label="단계별 문장 표시 설정"></div>
           </div>
-          <div id="passageShareSentenceBar" class="passage-share-sentence-bar hidden" aria-label="개조식 문장 단위 선택 및 숨김">
+          <div id="passageShareSentenceBar" class="passage-share-sentence-bar hidden" aria-label="개조식 문장 숨김 제어">
             <div class="sentence-bar-left">
-              <span class="sentence-bar-label">문장 선택 :</span>
-              <button type="button" id="outlineSelectAllBtn" class="button secondary compact sentence-action-btn">전체 선택</button>
-              <button type="button" id="outlineDeselectAllBtn" class="button secondary compact sentence-action-btn">선택 해제</button>
-              <span class="sentence-bar-divider">|</span>
-              <button type="button" id="outlineHideSelectedBtn" class="button secondary compact sentence-action-btn action-hide" title="단축키 H">선택 숨기기 (H)</button>
-              <button type="button" id="outlineShowSelectedBtn" class="button secondary compact sentence-action-btn action-show">선택 표시</button>
-              <button type="button" id="outlineShowAllBtn" class="button secondary compact sentence-action-btn">모두 보이기 (0)</button>
+              <span class="sentence-bar-label">문장 제어 :</span>
+              <span class="sentence-bar-guide">각 문장 카드의 <strong>[👁️ 문장 N]</strong> 버튼을 누르면 해당 문장을 숨기거나 다시 볼 수 있습니다.</span>
+              <button type="button" id="outlineShowAllBtn" class="button secondary compact sentence-action-btn" title="단축키: 0">모두 보이기 (0)</button>
             </div>
             <div class="sentence-bar-right">
-              <span id="outlineSentenceStatusBadge" class="outline-sentence-status-badge">선택 0개 · 숨김 0개</span>
+              <span id="outlineSentenceStatusBadge" class="outline-sentence-status-badge">숨김 없음</span>
             </div>
           </div>
         </div>
@@ -285,7 +281,7 @@
             <div class="topic-label-container">
               <span class="topic-label-badge">우리말 주제</span>
             </div>
-            <div id="passageShareTopicCard" class="passage-share-topic-card is-masked" role="button" tabindex="0" aria-label="우리말 주제 대형 모달 확인">
+            <div id="passageShareTopicCard" class="passage-share-topic-area is-masked" role="button" tabindex="0" aria-label="우리말 주제 대형 모달 확인">
               <div class="topic-content-wrapper">
                 <span id="passageShareTopicText" class="passage-share-topic-text"></span>
               </div>
@@ -301,7 +297,7 @@
         </aside>
 
         <p id="passageShareHelper" class="passage-share-helper"></p>
-        <section id="passageShareContent" class="passage-share-content" aria-live="polite"></section>
+        <div id="passageShareContent" class="passage-share-content" aria-live="polite"></div>
 
         <!-- 7단계 우리말 주제 대형 모달 (Classroom Big Modal) -->
         <div id="passageShareTopicModal" class="passage-share-topic-modal hidden" role="dialog" aria-modal="true" aria-label="우리말 주제 대형 모달">

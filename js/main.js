@@ -1074,41 +1074,27 @@ function renderPassageShareView() {
       sentenceElement.addEventListener("dragleave", handleOutlineSentenceDragLeave);
       sentenceElement.addEventListener("drop", handleOutlineSentenceDrop);
 
-      // 개조식 상단 헤더: 체크박스 & 문장 번호, 눈 아이콘
+      // 개조식 문장 앞 제어 버튼: 단일 원클릭 숨기기/보여주기 버튼
       const headerEl = document.createElement("div");
       headerEl.className = "outline-sentence-header";
 
-      const selectLabel = document.createElement("label");
-      selectLabel.className = "outline-sentence-select-label";
-      selectLabel.title = `문장 ${originalIndex + 1} 선택 (Shift+클릭으로 연속 선택)`;
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.className = "outline-sentence-checkbox";
-      checkbox.checked = selectedSentences.has(originalIndex);
-      checkbox.addEventListener("click", (event) => {
-        event.stopPropagation();
-        handleOutlineSentenceSelect(event, originalIndex, checkbox.checked);
-      });
-
-      const numBadge = document.createElement("span");
-      numBadge.className = "outline-sentence-number";
-      numBadge.textContent = `문장 ${originalIndex + 1}`;
-
-      selectLabel.appendChild(checkbox);
-      selectLabel.appendChild(numBadge);
-      headerEl.appendChild(selectLabel);
-
-      const toggleEyeBtn = document.createElement("button");
-      toggleEyeBtn.type = "button";
-      toggleEyeBtn.className = "outline-sentence-eye-btn";
-      toggleEyeBtn.title = isHiddenBySentence ? "이 문장 다시 표시" : "이 문장 숨기기";
-      toggleEyeBtn.textContent = isHiddenBySentence ? "🙈" : "👁️";
-      toggleEyeBtn.addEventListener("click", (event) => {
+      const toggleBtn = document.createElement("button");
+      toggleBtn.type = "button";
+      toggleBtn.className = "outline-sentence-toggle-btn";
+      toggleBtn.title = isHiddenBySentence
+        ? `문장 ${originalIndex + 1} 다시 보이기 (클릭)`
+        : `문장 ${originalIndex + 1} 숨기기 (클릭)`;
+      toggleBtn.setAttribute("aria-label", `문장 ${originalIndex + 1} ${isHiddenBySentence ? "보이기" : "숨기기"}`);
+      toggleBtn.innerHTML = `
+        <span class="toggle-icon">${isHiddenBySentence ? "🙈" : "👁️"}</span>
+        <span class="toggle-label">문장 ${originalIndex + 1}</span>
+        <span class="toggle-action-hint">${isHiddenBySentence ? "보이기" : "숨기기"}</span>
+      `;
+      toggleBtn.addEventListener("click", (event) => {
         event.stopPropagation();
         toggleOutlineSentenceHidden(originalIndex);
       });
-      headerEl.appendChild(toggleEyeBtn);
+      headerEl.appendChild(toggleBtn);
 
       sentenceElement.appendChild(headerEl);
 
@@ -1144,6 +1130,7 @@ function renderPassageShareView() {
   if (isOutlineMode) {
     applyOutlineHierarchySpacing();
     applyOutlineGroupStartAlignment();
+    updateOutlineSentenceSelectionVisuals();
   }
   schedulePassageShareFit(true);
 }
@@ -1440,19 +1427,13 @@ function handleOutlineSentenceSelect(event, currentIndex, checked) {
 }
 
 function updateOutlineSentenceSelectionVisuals() {
-  const selectedCount = (state.selectedOutlineSentenceIndexes || []).length;
   const hiddenCount = (state.hiddenPassageSentenceIndexes || []).length;
   if (elements.outlineSentenceStatusBadge) {
-    elements.outlineSentenceStatusBadge.textContent = `선택 ${selectedCount}개 · 숨김 ${hiddenCount}개`;
+    elements.outlineSentenceStatusBadge.textContent = hiddenCount > 0 ? `숨김 ${hiddenCount}개` : "숨김 없음";
   }
-  const selectedSet = new Set(state.selectedOutlineSentenceIndexes || []);
-  document.querySelectorAll(".passage-outline-sentence").forEach((card) => {
-    const idx = Number(card.dataset.sentenceIndex);
-    const isSelected = selectedSet.has(idx);
-    card.classList.toggle("is-selected", isSelected);
-    const cb = card.querySelector(".outline-sentence-checkbox");
-    if (cb) cb.checked = isSelected;
-  });
+  if (elements.outlineShowAllBtn) {
+    elements.outlineShowAllBtn.disabled = hiddenCount === 0;
+  }
 }
 
 function toggleOutlineSentenceHidden(sentenceIndex) {
@@ -1663,7 +1644,7 @@ function fitPassageShare(forceRecalculate = false) {
 }
 
 function handleOutlineSentenceDragStart(event) {
-  if (event.target.closest(".outline-sentence-select-label") || event.target.closest(".outline-sentence-eye-btn") || event.target.closest(".outline-sentence-hidden-placeholder")) {
+  if (event.target.closest(".outline-sentence-toggle-btn") || event.target.closest(".outline-sentence-hidden-placeholder")) {
     event.preventDefault();
     return;
   }

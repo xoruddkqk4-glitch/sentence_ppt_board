@@ -26,7 +26,7 @@
 .vocabulary-image-preview .vocabulary-image-remove { margin-left: auto; }
 .vocabulary-share-content { height: calc(100vh - 180px); min-height: 360px; display: grid; grid-template-columns: repeat(var(--vocabulary-columns, 2), minmax(0, 1fr)); grid-template-rows: repeat(var(--vocabulary-rows, 9), minmax(0, 1fr)); align-content: stretch; gap: clamp(8px, 1vw, 16px); overflow: hidden; }
 .vocabulary-share-content.is-focused { align-content: center; }
-.vocabulary-share-card { position: relative; min-width: 0; min-height: 0; overflow: hidden; padding: var(--vocabulary-card-padding, clamp(18px, 2.4vw, 36px)); border: 2px solid var(--color-primary); border-radius: var(--radius-md); background: var(--color-panel); box-shadow: 0 7px 20px rgba(0, 102, 204, .10); }
+.vocabulary-share-card { position: relative; min-width: 0; min-height: 0; overflow: hidden; padding: var(--vocabulary-card-padding, clamp(18px, 2.4vw, 36px)); border: 2px solid var(--color-primary); border-radius: var(--radius-md); background: var(--color-panel); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); }
 .vocabulary-share-card.is-clickable { cursor: zoom-in; }
 .vocabulary-share-card.is-focused-card { cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; user-select: none; }
 .vocabulary-share-card.is-clickable:hover, .vocabulary-share-card.is-clickable:focus-visible { border-color: #dc2626; outline: 3px solid rgba(220, 38, 38, .22); outline-offset: 2px; }
@@ -82,7 +82,7 @@
 .vocabulary-share-image:focus-visible {
   transform: scale(1.03);
   border-color: var(--color-primary, #0066cc);
-  box-shadow: 0 10px 28px rgba(0, 102, 204, 0.28);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
   outline: 3px solid rgba(0, 102, 204, 0.35);
   outline-offset: 2px;
 }
@@ -91,7 +91,7 @@
 .vocab-card-header-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px dashed var(--color-border); }
 .vocab-step-pills { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .vocab-step-pill { padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 800; background: var(--color-bg); color: var(--color-muted); border: 1px solid var(--color-border); transition: all 0.2s ease; }
-.vocab-step-pill.is-active { background: var(--color-primary); color: #ffffff; border-color: var(--color-primary); box-shadow: 0 2px 6px rgba(0, 102, 204, .25); }
+.vocab-step-pill.is-active { background: var(--color-primary); color: #ffffff; border-color: var(--color-primary); box-shadow: 0 2px 6px rgba(0, 0, 0, .15); }
 .vocab-step-pill.is-done { background: color-mix(in srgb, var(--color-primary) 15%, transparent); color: var(--color-primary); border-color: color-mix(in srgb, var(--color-primary) 30%, transparent); }
 .vocab-card-body { position: relative; width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: center; }
 .vocab-card-footer-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: auto; padding-top: var(--space-3); border-top: 1px dashed var(--color-border); }
