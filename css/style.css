@@ -255,6 +255,18 @@ button {
   color: #ffffff;
 }
 
+.project-manage-button.rename {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.project-manage-button.rename:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: #f0f9ff;
+  color: var(--color-primary);
+}
+
 .project-manage-button.delete-all {
   border-color: #fdba74;
   background: #fff7ed;
@@ -267,7 +279,8 @@ button {
   color: #ffffff;
 }
 
-.app-shell[data-theme="dark"] .project-nav-button {
+.app-shell[data-theme="dark"] .project-nav-button,
+.app-shell[data-theme="dark"] .project-manage-button.rename {
   border-color: #334155;
   background: #1e293b;
   color: var(--color-dark-ink);
@@ -307,6 +320,33 @@ button {
   background: #1e3a8a;
   color: #bfdbfe;
   border-color: #3b82f6;
+}
+
+.passage-title-input {
+  min-width: 240px;
+  max-width: 380px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: #ffffff;
+  color: var(--color-ink);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.passage-title-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.18);
+}
+
+.app-shell[data-theme="dark"] .passage-title-input {
+  border-color: #334155;
+  background: #1e293b;
+  color: var(--color-dark-ink);
 }
 
 .stage-heading {

@@ -18,6 +18,7 @@
         <button class="project-nav-button" type="button" id="prevPassageButton" title="프로젝트 내 이전 지문으로 이동">◀ 프로젝트 내 이전 지문</button>
         <select id="passageProjectSelect" class="project-passage-select" aria-label="프로젝트 내 지문 목록"></select>
         <button class="project-nav-button" type="button" id="nextPassageButton" title="프로젝트 내 다음 지문으로 이동">프로젝트 내 다음 지문 ▶</button>
+        <button class="project-manage-button rename" type="button" id="renamePassageButton" title="현재 지문 이름 수정">✏️ 지문 이름 변경</button>
       </div>
       <p id="saveStatus" class="save-status" role="status" aria-live="polite"></p>
       <div class="project-passage-manage-group">
@@ -93,6 +94,7 @@
               <div class="passage-title-group">
                 <label for="passageInput">수업 지문</label>
                 <span id="inputPassageBadge" class="passage-index-badge">지문 1 / 1</span>
+                <input id="passageTitleInput" class="passage-title-input" type="text" placeholder="지문 이름 입력 (비워두면 본문 첫 줄 자동 표시)" aria-label="현재 지문 이름" />
                 <span id="fileNameDisplay" class="file-name-badge hidden"></span>
               </div>
             </div>

@@ -63,6 +63,7 @@ const RECENT_PICKER_HANDLE_KEY = "recent-file";
 const state = {
   passages: [],
   currentPassageIndex: 0,
+  passageTitle: "",
   passageText: "",
   sentences: [],
   currentSentenceIndex: 0,
@@ -106,10 +107,12 @@ const elements = {
   prevPassageButton: document.getElementById("prevPassageButton"),
   nextPassageButton: document.getElementById("nextPassageButton"),
   passageProjectSelect: document.getElementById("passageProjectSelect"),
+  renamePassageButton: document.getElementById("renamePassageButton"),
   addPassageButton: document.getElementById("addPassageButton"),
   deletePassageButton: document.getElementById("deletePassageButton"),
   deleteAllPassagesButton: document.getElementById("deleteAllPassagesButton"),
   inputPassageBadge: document.getElementById("inputPassageBadge"),
+  passageTitleInput: document.getElementById("passageTitleInput"),
   saveStatus: document.getElementById("saveStatus"),
   vocabularyView: document.getElementById("vocabularyView"),
   vocabularyShareView: document.getElementById("vocabularyShareView"),
@@ -208,6 +211,7 @@ const MAX_HISTORY_SNAPSHOTS = 50;
 
 function createEmptyPassageEntry() {
   return {
+    passageTitle: "",
     passageText: "",
     koreanTopic: "",
     showKoreanTopicInShare: false,
@@ -226,7 +230,11 @@ function extractActivePassageEntry() {
   const rawPassageText = state.mode === "input" && elements.passageInput
     ? elements.passageInput.value
     : (state.passageText || state.sentences.map((s) => s.text).join(" "));
+  const rawPassageTitle = state.mode === "input" && elements.passageTitleInput
+    ? elements.passageTitleInput.value.trim()
+    : (state.passageTitle || "");
   return JSON.parse(JSON.stringify({
+    passageTitle: rawPassageTitle,
     passageText: rawPassageText,
     koreanTopic: state.koreanTopic || "",
     showKoreanTopicInShare: Boolean(state.showKoreanTopicInShare),
@@ -254,19 +262,24 @@ function syncActivePassageToProject() {
   state.passages[state.currentPassageIndex] = extractActivePassageEntry();
 }
 
-function applyPassageEntryToActiveState(entry) {
+function applyPassageEntryToActiveState(entry, options = {}) {
+  const { preserveViewMenu = false } = options;
   const data = entry ? JSON.parse(JSON.stringify(entry)) : createEmptyPassageEntry();
+  state.passageTitle = String(data.passageTitle || "").trim();
   state.passageText = data.passageText || "";
   state.koreanTopic = data.koreanTopic || "";
   state.showKoreanTopicInShare = Boolean(data.showKoreanTopicInShare);
   state.isKoreanTopicRevealed = false;
+  hidePassageShareTopicModal();
   state.sentences = Array.isArray(data.sentences) ? data.sentences : [];
   state.currentSentenceIndex = Math.max(0, Math.min(data.currentSentenceIndex || 0, Math.max(0, state.sentences.length - 1)));
   state.componentSerial = data.componentSerial || 1;
   state.analysisLevelCount = clamp(2, Number(data.analysisLevelCount) || 3, 9);
   state.hiddenPassageLevels = Array.isArray(data.hiddenPassageLevels) ? data.hiddenPassageLevels : [];
   state.hiddenPassageSentenceIndexes = Array.isArray(data.hiddenPassageSentenceIndexes) ? data.hiddenPassageSentenceIndexes : [];
-  state.passageShareMode = ["plain", "visual", "outline"].includes(data.passageShareMode) ? data.passageShareMode : "plain";
+  if (!preserveViewMenu) {
+    state.passageShareMode = ["plain", "visual", "outline"].includes(data.passageShareMode) ? data.passageShareMode : "plain";
+  }
   if (vocabularyFeature && typeof vocabularyFeature.normalize === "function") {
     state.vocabularyItems = vocabularyFeature.normalize(data.vocabularyItems);
   } else {
@@ -289,6 +302,9 @@ function applyPassageEntryToActiveState(entry) {
   if (state.passageShareFitCache && typeof state.passageShareFitCache.clear === "function") {
     state.passageShareFitCache.clear();
   }
+  if (elements.passageTitleInput) {
+    elements.passageTitleInput.value = state.passageTitle;
+  }
   if (elements.passageInput) {
     elements.passageInput.value = state.passageText;
   }
@@ -298,22 +314,56 @@ function applyPassageEntryToActiveState(entry) {
 }
 
 function getPassageOptionLabel(entry, index, total) {
+  const customTitle = String(entry?.passageTitle || "").replace(/\s+/g, " ").trim();
   const rawText = String(entry?.passageText || entry?.sentences?.[0]?.text || "")
     .replace(/^\/\/|\/\/$/g, "")
     .replace(/^\/|\/$/g, "")
     .replace(/\s+/g, " ")
     .trim();
-  const topic = String(entry?.koreanTopic || "").replace(/\s+/g, " ").trim();
   const prefix = `지문 ${index + 1} / ${total}`;
-  if (topic) {
-    const shortTopic = topic.length > 22 ? `${topic.slice(0, 22)}…` : topic;
-    return `${prefix} — [${shortTopic}]`;
+  if (customTitle) {
+    const shortCustom = customTitle.length > 32 ? `${customTitle.slice(0, 32)}…` : customTitle;
+    return `${prefix} — ${shortCustom}`;
   }
   if (rawText) {
     const shortText = rawText.length > 28 ? `${rawText.slice(0, 28)}…` : rawText;
     return `${prefix} — ${shortText}`;
   }
   return `${prefix} (빈 지문)`;
+}
+
+function renameCurrentProjectPassage() {
+  ensureProjectPassagesInitialized();
+  const currentNum = state.currentPassageIndex + 1;
+  const total = state.passages.length;
+  const currentTitle = state.mode === "input" && elements.passageTitleInput
+    ? elements.passageTitleInput.value.trim()
+    : (state.passageTitle || "");
+  const nextTitle = prompt(
+    `지문 ${currentNum} / ${total}의 이름을 입력하세요.\n(비워두면 지문 첫 문장이 자동으로 표시됩니다)`,
+    currentTitle
+  );
+  if (nextTitle === null) {
+    return;
+  }
+
+  const trimmedTitle = nextTitle.replace(/\s+/g, " ").trim();
+  if (trimmedTitle === currentTitle) {
+    return;
+  }
+
+  pushHistoryState();
+  state.passageTitle = trimmedTitle;
+  if (elements.passageTitleInput) {
+    elements.passageTitleInput.value = trimmedTitle;
+  }
+  syncActivePassageToProject();
+  updateProjectPassageBar();
+  showSaveFeedback(
+    trimmedTitle
+      ? `✏️ 지문 ${currentNum}번의 이름을 '${trimmedTitle}'(으)로 변경했습니다.`
+      : `✏️ 지문 ${currentNum}번의 사용자 지정 이름을 해제했습니다.`
+  );
 }
 
 function updateProjectPassageBar() {
@@ -359,7 +409,8 @@ function goToProjectPassage(targetIndex) {
 
   state.currentPassageIndex = targetIndex;
   state.hasLoadedAnalysis = false;
-  applyPassageEntryToActiveState(state.passages[targetIndex]);
+  applyPassageEntryToActiveState(state.passages[targetIndex], { preserveViewMenu: true });
+  state.passages[targetIndex].passageShareMode = state.passageShareMode;
 
   if (elements.inputMessage) elements.inputMessage.textContent = "";
   if (elements.editMessage) elements.editMessage.textContent = "";
@@ -487,6 +538,7 @@ function getAppStateSnapshot() {
   return JSON.stringify({
     passages: state.passages,
     currentPassageIndex: state.currentPassageIndex,
+    passageTitle: state.passageTitle,
     passageText: state.passageText,
     koreanTopic: state.koreanTopic,
     showKoreanTopicInShare: state.showKoreanTopicInShare,
@@ -4450,9 +4502,10 @@ function buildAnalysisText() {
   ];
 
   passages.forEach((passage, pIdx) => {
-    if (passages.length > 1) {
+    if (passages.length > 1 || passage.passageTitle) {
       lines.push("");
-      lines.push(`=== [프로젝트 지문 ${pIdx + 1} / ${passages.length}] ===`);
+      const titleSuffix = passage.passageTitle ? ` — ${passage.passageTitle}` : "";
+      lines.push(`=== [프로젝트 지문 ${pIdx + 1} / ${passages.length}${titleSuffix}] ===`);
     }
     (Array.isArray(passage.sentences) ? passage.sentences : []).forEach((sentence) => {
       lines.push("");
@@ -4526,6 +4579,7 @@ function serializeSinglePassagePayload(passageEntry, passageIndex = 0) {
 
   return {
     passageIndex: passageIndex + 1,
+    passageTitle: String(passageEntry.passageTitle || "").trim(),
     passageText: passageEntry.passageText || rawSentences.map((sentence) => sentence.text).join(" "),
     koreanTopic: passageEntry.koreanTopic || "",
     showKoreanTopicInShare: Boolean(passageEntry.showKoreanTopicInShare),
@@ -4588,6 +4642,7 @@ function buildAnalysisPayload() {
     savedAt: new Date().toISOString(),
     currentPassageIndex: activeIndex,
     passages: serializedPassages,
+    passageTitle: activePassage.passageTitle,
     passageText: activePassage.passageText,
     koreanTopic: activePassage.koreanTopic,
     showKoreanTopicInShare: activePassage.showKoreanTopicInShare,
@@ -4829,6 +4884,7 @@ function normalizeSinglePassageData(rawPassage, allowEmpty = false) {
   }
 
   return {
+    passageTitle: typeof rawPassage?.passageTitle === "string" ? rawPassage.passageTitle.trim() : "",
     passageText: String(rawPassage?.passageText || sentences.map((sentence) => sentence.text).join(" ")),
     koreanTopic: typeof rawPassage?.koreanTopic === "string" ? rawPassage.koreanTopic : "",
     showKoreanTopicInShare: Boolean(rawPassage?.showKoreanTopicInShare),
@@ -5121,12 +5177,20 @@ function bindEvents() {
     });
   }
 
+  if (elements.passageTitleInput) {
+    elements.passageTitleInput.addEventListener("input", (e) => {
+      state.passageTitle = e.target.value.trim();
+      updateProjectPassageBar();
+    });
+  }
+
   elements.prevPassageButton?.addEventListener("click", () => {
     goToProjectPassage(state.currentPassageIndex - 1);
   });
   elements.nextPassageButton?.addEventListener("click", () => {
     goToProjectPassage(state.currentPassageIndex + 1);
   });
+  elements.renamePassageButton?.addEventListener("click", renameCurrentProjectPassage);
   elements.passageProjectSelect?.addEventListener("change", (event) => {
     const idx = Number(event.target.value);
     if (Number.isInteger(idx)) {
