@@ -61,6 +61,8 @@ const PICKER_HANDLE_STORE = "handles";
 const RECENT_PICKER_HANDLE_KEY = "recent-file";
 
 const state = {
+  passages: [],
+  currentPassageIndex: 0,
   passageText: "",
   sentences: [],
   currentSentenceIndex: 0,
@@ -100,6 +102,14 @@ const state = {
 
 const elements = {
   app: document.getElementById("app"),
+  projectPassageBar: document.getElementById("projectPassageBar"),
+  prevPassageButton: document.getElementById("prevPassageButton"),
+  nextPassageButton: document.getElementById("nextPassageButton"),
+  passageProjectSelect: document.getElementById("passageProjectSelect"),
+  addPassageButton: document.getElementById("addPassageButton"),
+  deletePassageButton: document.getElementById("deletePassageButton"),
+  deleteAllPassagesButton: document.getElementById("deleteAllPassagesButton"),
+  inputPassageBadge: document.getElementById("inputPassageBadge"),
   saveStatus: document.getElementById("saveStatus"),
   vocabularyView: document.getElementById("vocabularyView"),
   vocabularyShareView: document.getElementById("vocabularyShareView"),
@@ -196,8 +206,287 @@ const undoStack = [];
 const redoStack = [];
 const MAX_HISTORY_SNAPSHOTS = 50;
 
+function createEmptyPassageEntry() {
+  return {
+    passageText: "",
+    koreanTopic: "",
+    showKoreanTopicInShare: false,
+    sentences: [],
+    currentSentenceIndex: 0,
+    componentSerial: 1,
+    analysisLevelCount: 3,
+    passageShareMode: "plain",
+    hiddenPassageLevels: [],
+    hiddenPassageSentenceIndexes: [],
+    vocabularyItems: []
+  };
+}
+
+function extractActivePassageEntry() {
+  const rawPassageText = state.mode === "input" && elements.passageInput
+    ? elements.passageInput.value
+    : (state.passageText || state.sentences.map((s) => s.text).join(" "));
+  return JSON.parse(JSON.stringify({
+    passageText: rawPassageText,
+    koreanTopic: state.koreanTopic || "",
+    showKoreanTopicInShare: Boolean(state.showKoreanTopicInShare),
+    sentences: state.sentences || [],
+    currentSentenceIndex: state.currentSentenceIndex || 0,
+    componentSerial: state.componentSerial || 1,
+    analysisLevelCount: state.analysisLevelCount || 3,
+    passageShareMode: state.passageShareMode || "plain",
+    hiddenPassageLevels: state.hiddenPassageLevels || [],
+    hiddenPassageSentenceIndexes: state.hiddenPassageSentenceIndexes || [],
+    vocabularyItems: state.vocabularyItems || []
+  }));
+}
+
+function ensureProjectPassagesInitialized() {
+  if (!Array.isArray(state.passages) || state.passages.length === 0) {
+    state.passages = [extractActivePassageEntry()];
+    state.currentPassageIndex = 0;
+  }
+  state.currentPassageIndex = Math.max(0, Math.min(Number(state.currentPassageIndex) || 0, state.passages.length - 1));
+}
+
+function syncActivePassageToProject() {
+  ensureProjectPassagesInitialized();
+  state.passages[state.currentPassageIndex] = extractActivePassageEntry();
+}
+
+function applyPassageEntryToActiveState(entry) {
+  const data = entry ? JSON.parse(JSON.stringify(entry)) : createEmptyPassageEntry();
+  state.passageText = data.passageText || "";
+  state.koreanTopic = data.koreanTopic || "";
+  state.showKoreanTopicInShare = Boolean(data.showKoreanTopicInShare);
+  state.isKoreanTopicRevealed = false;
+  state.sentences = Array.isArray(data.sentences) ? data.sentences : [];
+  state.currentSentenceIndex = Math.max(0, Math.min(data.currentSentenceIndex || 0, Math.max(0, state.sentences.length - 1)));
+  state.componentSerial = data.componentSerial || 1;
+  state.analysisLevelCount = clamp(2, Number(data.analysisLevelCount) || 3, 9);
+  state.hiddenPassageLevels = Array.isArray(data.hiddenPassageLevels) ? data.hiddenPassageLevels : [];
+  state.hiddenPassageSentenceIndexes = Array.isArray(data.hiddenPassageSentenceIndexes) ? data.hiddenPassageSentenceIndexes : [];
+  state.passageShareMode = ["plain", "visual", "outline"].includes(data.passageShareMode) ? data.passageShareMode : "plain";
+  if (vocabularyFeature && typeof vocabularyFeature.normalize === "function") {
+    state.vocabularyItems = vocabularyFeature.normalize(data.vocabularyItems);
+  } else {
+    state.vocabularyItems = Array.isArray(data.vocabularyItems) ? data.vocabularyItems : [];
+  }
+  state.minorRevealCount = 0;
+  state.minorSlots = [];
+  state.lastModifierClickIndex = null;
+  state.lastModifierComponentId = null;
+  state.focusedComponentId = null;
+  state.connectiveSelectionAnchor = null;
+  state.draggedOutlineSentenceIndex = null;
+  state.selectedOutlineSentenceIndexes = [];
+  state.lastOutlineSentenceClickIndex = null;
+  state.vocabularyShareFocusRow = null;
+  state.vocabularyShareSelectedItemId = null;
+  state.vocabularyShareStep = 0;
+  state.draggedVocabularyIndex = null;
+  state.outlineFocusSentenceIndex = null;
+  if (state.passageShareFitCache && typeof state.passageShareFitCache.clear === "function") {
+    state.passageShareFitCache.clear();
+  }
+  if (elements.passageInput) {
+    elements.passageInput.value = state.passageText;
+  }
+  if (elements.koreanTopicInput) {
+    elements.koreanTopicInput.value = state.koreanTopic;
+  }
+}
+
+function getPassageOptionLabel(entry, index, total) {
+  const rawText = String(entry?.passageText || entry?.sentences?.[0]?.text || "")
+    .replace(/^\/\/|\/\/$/g, "")
+    .replace(/^\/|\/$/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const topic = String(entry?.koreanTopic || "").replace(/\s+/g, " ").trim();
+  const prefix = `지문 ${index + 1} / ${total}`;
+  if (topic) {
+    const shortTopic = topic.length > 22 ? `${topic.slice(0, 22)}…` : topic;
+    return `${prefix} — [${shortTopic}]`;
+  }
+  if (rawText) {
+    const shortText = rawText.length > 28 ? `${rawText.slice(0, 28)}…` : rawText;
+    return `${prefix} — ${shortText}`;
+  }
+  return `${prefix} (빈 지문)`;
+}
+
+function updateProjectPassageBar() {
+  ensureProjectPassagesInitialized();
+  const total = state.passages.length;
+  const current = state.currentPassageIndex;
+
+  if (elements.prevPassageButton) {
+    elements.prevPassageButton.disabled = current <= 0;
+  }
+  if (elements.nextPassageButton) {
+    elements.nextPassageButton.disabled = current >= total - 1;
+  }
+  if (elements.deletePassageButton) {
+    elements.deletePassageButton.disabled = total <= 1;
+  }
+  if (elements.inputPassageBadge) {
+    elements.inputPassageBadge.textContent = `지문 ${current + 1} / ${total}`;
+  }
+  if (elements.passageProjectSelect) {
+    const activeEntry = extractActivePassageEntry();
+    elements.passageProjectSelect.innerHTML = "";
+    state.passages.forEach((entry, idx) => {
+      const option = document.createElement("option");
+      option.value = String(idx);
+      option.textContent = getPassageOptionLabel(idx === current ? activeEntry : entry, idx, total);
+      option.selected = idx === current;
+      elements.passageProjectSelect.appendChild(option);
+    });
+  }
+}
+
+function goToProjectPassage(targetIndex) {
+  ensureProjectPassagesInitialized();
+  if (targetIndex < 0 || targetIndex >= state.passages.length || targetIndex === state.currentPassageIndex) {
+    updateProjectPassageBar();
+    return;
+  }
+
+  pushHistoryState();
+  applyPendingEdits();
+  syncActivePassageToProject();
+
+  state.currentPassageIndex = targetIndex;
+  state.hasLoadedAnalysis = false;
+  applyPassageEntryToActiveState(state.passages[targetIndex]);
+
+  if (elements.inputMessage) elements.inputMessage.textContent = "";
+  if (elements.editMessage) elements.editMessage.textContent = "";
+  if (elements.vocabularyMessage) elements.vocabularyMessage.textContent = "";
+
+  const sentenceRequiredModes = new Set(["edit", "present", "analysis", "passage-share"]);
+  if (sentenceRequiredModes.has(state.mode) && state.sentences.length === 0) {
+    setMode("input");
+  } else {
+    render();
+    if (vocabularyFeature && typeof vocabularyFeature.renderAnalysis === "function") {
+      vocabularyFeature.renderAnalysis();
+    }
+    if (state.mode === "vocabulary-share" && vocabularyFeature && typeof vocabularyFeature.renderShare === "function") {
+      vocabularyFeature.renderShare();
+    }
+  }
+
+  updateProjectPassageBar();
+  showSaveFeedback(`📄 프로젝트 지문 ${targetIndex + 1} / ${state.passages.length}(으)로 이동했습니다.`);
+}
+
+function addProjectPassage() {
+  ensureProjectPassagesInitialized();
+  pushHistoryState();
+  applyPendingEdits();
+  syncActivePassageToProject();
+
+  const newEntry = createEmptyPassageEntry();
+  state.passages.push(newEntry);
+  state.currentPassageIndex = state.passages.length - 1;
+  state.hasLoadedAnalysis = false;
+  applyPassageEntryToActiveState(newEntry);
+
+  if (elements.inputMessage) {
+    elements.inputMessage.style.color = "var(--color-primary)";
+    elements.inputMessage.textContent = `➕ 프로젝트에 새 지문(지문 ${state.currentPassageIndex + 1} / ${state.passages.length})이 추가되었습니다. 지문을 입력하거나 TXT를 불러오세요.`;
+  }
+  if (elements.editMessage) elements.editMessage.textContent = "";
+  if (elements.vocabularyMessage) elements.vocabularyMessage.textContent = "";
+
+  setMode("input");
+  if (vocabularyFeature && typeof vocabularyFeature.renderAnalysis === "function") {
+    vocabularyFeature.renderAnalysis();
+  }
+  updateProjectPassageBar();
+  elements.passageInput?.focus();
+  showSaveFeedback(`➕ 프로젝트에 지문 ${state.currentPassageIndex + 1} / ${state.passages.length}을(를) 추가했습니다.`);
+}
+
+function deleteCurrentProjectPassage() {
+  ensureProjectPassagesInitialized();
+  if (state.passages.length <= 1) {
+    alert("프로젝트에는 최소 1개의 지문이 필요합니다. 지문 내용을 비우려면 1단계의 '초기화' 버튼을 눌러 주세요.");
+    return;
+  }
+
+  const removingNumber = state.currentPassageIndex + 1;
+  if (!confirm(`프로젝트에서 현재 지문(지문 ${removingNumber} / ${state.passages.length})을 삭제하시겠습니까?`)) {
+    return;
+  }
+
+  pushHistoryState();
+  state.passages.splice(state.currentPassageIndex, 1);
+  state.currentPassageIndex = Math.max(0, Math.min(state.currentPassageIndex, state.passages.length - 1));
+  state.hasLoadedAnalysis = false;
+  applyPassageEntryToActiveState(state.passages[state.currentPassageIndex]);
+
+  if (elements.inputMessage) elements.inputMessage.textContent = "";
+  if (elements.editMessage) elements.editMessage.textContent = "";
+  if (elements.vocabularyMessage) elements.vocabularyMessage.textContent = "";
+
+  const sentenceRequiredModes = new Set(["edit", "present", "analysis", "passage-share"]);
+  if (sentenceRequiredModes.has(state.mode) && state.sentences.length === 0) {
+    setMode("input");
+  } else {
+    render();
+    if (vocabularyFeature && typeof vocabularyFeature.renderAnalysis === "function") {
+      vocabularyFeature.renderAnalysis();
+    }
+    if (state.mode === "vocabulary-share" && vocabularyFeature && typeof vocabularyFeature.renderShare === "function") {
+      vocabularyFeature.renderShare();
+    }
+  }
+
+  updateProjectPassageBar();
+  showSaveFeedback(`🗑️ 지문 ${removingNumber}번을 삭제했습니다. (현재 지문 ${state.currentPassageIndex + 1} / ${state.passages.length})`);
+}
+
+function deleteAllProjectPassages() {
+  ensureProjectPassagesInitialized();
+  if (!confirm("프로젝트의 모든 지문을 삭제하고 새로운 빈 프로젝트 상태로 돌아가시겠습니까?")) {
+    return;
+  }
+
+  pushHistoryState();
+  const emptyEntry = createEmptyPassageEntry();
+  state.passages = [emptyEntry];
+  state.currentPassageIndex = 0;
+  state.hasLoadedAnalysis = false;
+  state.activeConnectiveColor = "yellow";
+  state.currentFileName = null;
+  state.currentFileHandle = null;
+  updateFileNameDisplay();
+  applyPassageEntryToActiveState(emptyEntry);
+
+  if (elements.inputMessage) {
+    elements.inputMessage.style.color = "var(--color-primary)";
+    elements.inputMessage.textContent = "모든 지문이 삭제되어 새로운 빈 프로젝트 상태로 초기화되었습니다.";
+  }
+  if (elements.editMessage) elements.editMessage.textContent = "";
+  if (elements.vocabularyMessage) elements.vocabularyMessage.textContent = "";
+
+  setMode("input");
+  if (vocabularyFeature && typeof vocabularyFeature.renderAnalysis === "function") {
+    vocabularyFeature.renderAnalysis();
+  }
+  updateProjectPassageBar();
+  elements.passageInput?.focus();
+  showSaveFeedback("🗑️ 모든 지문을 삭제하고 새 빈 프로젝트 상태로 초기화했습니다.");
+}
+
 function getAppStateSnapshot() {
+  syncActivePassageToProject();
   return JSON.stringify({
+    passages: state.passages,
+    currentPassageIndex: state.currentPassageIndex,
     passageText: state.passageText,
     koreanTopic: state.koreanTopic,
     showKoreanTopicInShare: state.showKoreanTopicInShare,
@@ -228,23 +517,14 @@ function pushHistoryState() {
 function restoreAppStateSnapshot(snapshotStr) {
   try {
     const data = JSON.parse(snapshotStr);
-    state.passageText = data.passageText || "";
-    state.koreanTopic = data.koreanTopic || "";
-    state.showKoreanTopicInShare = Boolean(data.showKoreanTopicInShare);
-    state.sentences = Array.isArray(data.sentences) ? data.sentences : [];
-    state.currentSentenceIndex = Math.max(0, Math.min(data.currentSentenceIndex || 0, Math.max(0, state.sentences.length - 1)));
-    state.componentSerial = data.componentSerial || 1;
-    state.analysisLevelCount = data.analysisLevelCount || 3;
-    state.hiddenPassageLevels = Array.isArray(data.hiddenPassageLevels) ? data.hiddenPassageLevels : [];
-    state.hiddenPassageSentenceIndexes = Array.isArray(data.hiddenPassageSentenceIndexes) ? data.hiddenPassageSentenceIndexes : [];
-    state.passageShareMode = data.passageShareMode || "plain";
-    if (vocabularyFeature && typeof vocabularyFeature.normalize === "function") {
-      state.vocabularyItems = vocabularyFeature.normalize(data.vocabularyItems);
+    if (Array.isArray(data.passages) && data.passages.length > 0) {
+      state.passages = data.passages;
+      state.currentPassageIndex = Math.max(0, Math.min(Number(data.currentPassageIndex) || 0, state.passages.length - 1));
+      applyPassageEntryToActiveState(state.passages[state.currentPassageIndex]);
     } else {
-      state.vocabularyItems = Array.isArray(data.vocabularyItems) ? data.vocabularyItems : [];
-    }
-    if (elements.passageInput) {
-      elements.passageInput.value = state.passageText;
+      applyPassageEntryToActiveState(data);
+      state.passages = [extractActivePassageEntry()];
+      state.currentPassageIndex = 0;
     }
     render();
     if (vocabularyFeature && typeof vocabularyFeature.renderAnalysis === "function") {
@@ -253,6 +533,7 @@ function restoreAppStateSnapshot(snapshotStr) {
     if (state.mode === "vocabulary-share" && vocabularyFeature && typeof vocabularyFeature.renderShare === "function") {
       vocabularyFeature.renderShare();
     }
+    updateProjectPassageBar();
   } catch (err) {
     console.warn("Snapshot restore failed:", err);
   }
@@ -508,6 +789,8 @@ function preparePresentation() {
   state.currentSentenceIndex = 0;
   state.minorRevealCount = 0;
   state.componentSerial = 1;
+  syncActivePassageToProject();
+  updateProjectPassageBar();
 
   return state.sentences.length;
 }
@@ -572,6 +855,7 @@ function goToWorkflowMode(mode) {
 
 function render() {
   applySettings();
+  updateProjectPassageBar();
   if (state.mode === "vocabulary") {
     vocabularyFeature.renderAnalysis();
   }
@@ -3944,8 +4228,13 @@ function updateMinorPositions() {
 
 function applyPendingEdits() {
   if (state.mode === "input") {
-    if (elements.passageInput.value.trim()) {
+    const inputVal = elements.passageInput.value.trim();
+    const isUnchanged = state.sentences.length > 0 && inputVal === state.passageText.trim();
+    if (inputVal && !state.hasLoadedAnalysis && !isUnchanged) {
       preparePresentation();
+    } else if (!inputVal) {
+      state.passageText = "";
+      state.sentences = [];
     }
   } else if (state.mode === "edit") {
     const sentence = getCurrentSentence();
@@ -3961,12 +4250,17 @@ function applyPendingEdits() {
       }
     }
   }
+  syncActivePassageToProject();
 }
 
 async function saveAnalysisTxt(saveAs = false) {
   applyPendingEdits();
+  syncActivePassageToProject();
 
-  if (state.sentences.length === 0) {
+  const hasAnyContent = state.passages.some(
+    (entry) => (Array.isArray(entry.sentences) && entry.sentences.length > 0) || String(entry.passageText || "").trim().length > 0
+  );
+  if (!hasAnyContent) {
     alert("저장할 분석 결과가 없습니다.");
     return;
   }
@@ -4140,22 +4434,33 @@ function downloadAnalysisTxt(blob, fileName) {
 function buildAnalysisText() {
   const payload = buildAnalysisPayload();
   const saveSummary = getAnalysisSaveSummary(payload);
+  const passages = Array.isArray(payload.passages) && payload.passages.length > 0
+    ? payload.passages
+    : [payload];
+  const totalSentences = passages.reduce((sum, p) => sum + (Array.isArray(p.sentences) ? p.sentences.length : 0), 0);
   const lines = [
     EXPORT_MARKER,
     "영어 문장 분석 저장 파일",
     `저장 시각: ${payload.savedAt}`,
-    `총 문장 수: ${payload.sentences.length}`,
+    `총 지문 수: ${passages.length}`,
+    `총 문장 수: ${totalSentences}`,
     `[저장 요약] ${saveSummary}`,
     "",
     "[문장 및 성분 인덱스]"
   ];
 
-  payload.sentences.forEach((sentence) => {
-    lines.push("");
-    lines.push(`[문장 ${sentence.sentenceIndex}] ${sentence.text}`);
-    lines.push(`  단어 수: ${sentence.wordCount}`);
-    sentence.components.forEach((component) => {
-      lines.push(`  - 성분 ${component.componentIndex}: id=${component.id}, lane=${component.lane}, role=${component.role}, order=${component.order}, wordIndex0=${component.startIndex}-${component.endIndex}, wordIndex1=${formatOneBasedRange(component.startIndex, component.endIndex)}, text="${component.text}"`);
+  passages.forEach((passage, pIdx) => {
+    if (passages.length > 1) {
+      lines.push("");
+      lines.push(`=== [프로젝트 지문 ${pIdx + 1} / ${passages.length}] ===`);
+    }
+    (Array.isArray(passage.sentences) ? passage.sentences : []).forEach((sentence) => {
+      lines.push("");
+      lines.push(`[문장 ${sentence.sentenceIndex}] ${sentence.text}`);
+      lines.push(`  단어 수: ${sentence.wordCount}`);
+      sentence.components.forEach((component) => {
+        lines.push(`  - 성분 ${component.componentIndex}: id=${component.id}, lane=${component.lane}, role=${component.role}, order=${component.order}, wordIndex0=${component.startIndex}-${component.endIndex}, wordIndex1=${formatOneBasedRange(component.startIndex, component.endIndex)}, text="${component.text}"`);
+      });
     });
   });
 
@@ -4167,40 +4472,70 @@ function buildAnalysisText() {
 }
 
 function getCurrentAnalysisSaveSummary() {
+  syncActivePassageToProject();
   return getAnalysisSaveSummary({
+    passages: state.passages,
     vocabularyItems: state.vocabularyItems,
-    sentences: state.sentences
+    sentences: state.sentences,
+    koreanTopic: state.koreanTopic
   });
 }
 
 function getAnalysisSaveSummary(payload) {
-  const sentences = Array.isArray(payload.sentences) ? payload.sentences : [];
-  const vocabularyCount = Array.isArray(payload.vocabularyItems)
-    ? payload.vocabularyItems.filter((item) => item.term || item.location || item.meaning || item.insights || item.imageData).length
-    : 0;
-  const componentCount = sentences.reduce((count, sentence) => count + (Array.isArray(sentence.components) ? sentence.components.length : 0), 0);
-  const abstractLevelCount = sentences.filter((sentence) => Number(sentence.abstractLevel) > 1).length;
-  const connectiveCount = sentences.reduce((count, sentence) => count + (Array.isArray(sentence.connectiveIndexes) ? sentence.connectiveIndexes.length : 0), 0);
-  const topicSummary = payload.koreanTopic ? " · 주제 포함" : "";
-  return `어휘 ${vocabularyCount}개 · 문장 성분 ${componentCount}개 · 지문 단계 ${abstractLevelCount}건 · 연결어 ${connectiveCount}개${topicSummary}`;
+  const passages = Array.isArray(payload.passages) && payload.passages.length > 0
+    ? payload.passages
+    : [payload];
+  let vocabularyCount = 0;
+  let componentCount = 0;
+  let abstractLevelCount = 0;
+  let connectiveCount = 0;
+  let hasTopic = false;
+
+  passages.forEach((passage) => {
+    const sentences = Array.isArray(passage.sentences) ? passage.sentences : [];
+    const vocab = Array.isArray(passage.vocabularyItems) ? passage.vocabularyItems : [];
+    vocabularyCount += vocab.filter((item) => item.term || item.location || item.meaning || item.insights || item.imageData).length;
+    componentCount += sentences.reduce((count, sentence) => count + (Array.isArray(sentence.components) ? sentence.components.length : 0), 0);
+    abstractLevelCount += sentences.filter((sentence) => Number(sentence.abstractLevel) > 1).length;
+    connectiveCount += sentences.reduce((count, sentence) => count + (Array.isArray(sentence.connectiveIndexes) ? sentence.connectiveIndexes.length : 0), 0);
+    if (passage.koreanTopic) hasTopic = true;
+  });
+
+  const passageSummary = passages.length > 1 ? `지문 ${passages.length}개 · ` : "";
+  const topicSummary = hasTopic ? " · 주제 포함" : "";
+  return `${passageSummary}어휘 ${vocabularyCount}개 · 문장 성분 ${componentCount}개 · 지문 단계 ${abstractLevelCount}건 · 연결어 ${connectiveCount}개${topicSummary}`;
 }
 
-function buildAnalysisPayload() {
+function serializeSinglePassagePayload(passageEntry, passageIndex = 0) {
+  let rawSentences = Array.isArray(passageEntry.sentences) ? passageEntry.sentences : [];
+  const rawText = String(passageEntry.passageText || "").trim();
+  if (rawSentences.length === 0 && rawText) {
+    rawSentences = splitSentences(rawText).map((sentenceText, index) => ({
+      id: `sentence-${index + 1}`,
+      text: sentenceText,
+      isImportant: false,
+      abstractLevel: 1,
+      connectiveIndexes: [],
+      connectiveColors: {},
+      wordCount: getPlainWords(sentenceText).length,
+      components: analyzeSentence(sentenceText, index)
+    }));
+  }
+  const analysisLevelCount = clamp(2, Number(passageEntry.analysisLevelCount) || 3, 9);
+  const vocabularyItems = Array.isArray(passageEntry.vocabularyItems) ? passageEntry.vocabularyItems : [];
+
   return {
-    version: 2,
-    app: "sentence-presentation-board",
-    savedAt: new Date().toISOString(),
-    passageText: state.passageText || state.sentences.map((sentence) => sentence.text).join(" "),
-    koreanTopic: state.koreanTopic || "",
-    showKoreanTopicInShare: Boolean(state.showKoreanTopicInShare),
-    currentSentenceIndex: state.currentSentenceIndex,
-    componentSerial: state.componentSerial,
-    analysisLevelCount: state.analysisLevelCount,
-    settings: { ...state.settings },
-    passageShareMode: state.passageShareMode,
-    hiddenPassageLevels: [...state.hiddenPassageLevels],
-    hiddenPassageSentenceIndexes: [...(state.hiddenPassageSentenceIndexes || [])],
-    vocabularyItems: state.vocabularyItems.map((item) => ({
+    passageIndex: passageIndex + 1,
+    passageText: passageEntry.passageText || rawSentences.map((sentence) => sentence.text).join(" "),
+    koreanTopic: passageEntry.koreanTopic || "",
+    showKoreanTopicInShare: Boolean(passageEntry.showKoreanTopicInShare),
+    currentSentenceIndex: clamp(0, Number(passageEntry.currentSentenceIndex) || 0, Math.max(0, rawSentences.length - 1)),
+    componentSerial: passageEntry.componentSerial || 1,
+    analysisLevelCount,
+    passageShareMode: ["plain", "visual", "outline"].includes(passageEntry.passageShareMode) ? passageEntry.passageShareMode : "plain",
+    hiddenPassageLevels: Array.isArray(passageEntry.hiddenPassageLevels) ? [...passageEntry.hiddenPassageLevels] : [],
+    hiddenPassageSentenceIndexes: Array.isArray(passageEntry.hiddenPassageSentenceIndexes) ? [...passageEntry.hiddenPassageSentenceIndexes] : [],
+    vocabularyItems: vocabularyItems.map((item) => ({
       id: item.id,
       term: item.term,
       location: item.location,
@@ -4209,16 +4544,16 @@ function buildAnalysisPayload() {
       imageData: item.imageData,
       imageName: item.imageName
     })),
-    sentences: state.sentences.map((sentence, sentenceIndex) => ({
+    sentences: rawSentences.map((sentence, sentenceIndex) => ({
       id: sentence.id || `sentence-${sentenceIndex + 1}`,
       sentenceIndex: sentenceIndex + 1,
       text: sentence.text,
       isImportant: sentence.isImportant === true,
-      abstractLevel: clamp(1, Number(sentence.abstractLevel) || 1, state.analysisLevelCount),
+      abstractLevel: clamp(1, Number(sentence.abstractLevel) || 1, analysisLevelCount),
       connectiveIndexes: getSentenceConnectiveIndexes(sentence),
       connectiveColors: getSentenceConnectiveColorsMap(sentence),
       wordCount: Number.isFinite(sentence.wordCount) ? sentence.wordCount : getPlainWords(sentence.text).length,
-      components: sentence.components.map((component, componentIndex) => ({
+      components: (Array.isArray(sentence.components) ? sentence.components : []).map((component, componentIndex) => ({
         id: component.id,
         sentenceIndex: sentenceIndex + 1,
         componentIndex: componentIndex + 1,
@@ -4238,6 +4573,33 @@ function buildAnalysisPayload() {
         words: getComponentWords(component)
       }))
     }))
+  };
+}
+
+function buildAnalysisPayload() {
+  syncActivePassageToProject();
+  const serializedPassages = state.passages.map((entry, idx) => serializeSinglePassagePayload(entry, idx));
+  const activeIndex = clamp(0, state.currentPassageIndex, Math.max(0, serializedPassages.length - 1));
+  const activePassage = serializedPassages[activeIndex] || serializeSinglePassagePayload(extractActivePassageEntry(), 0);
+
+  return {
+    version: 3,
+    app: "sentence-presentation-board",
+    savedAt: new Date().toISOString(),
+    currentPassageIndex: activeIndex,
+    passages: serializedPassages,
+    passageText: activePassage.passageText,
+    koreanTopic: activePassage.koreanTopic,
+    showKoreanTopicInShare: activePassage.showKoreanTopicInShare,
+    currentSentenceIndex: activePassage.currentSentenceIndex,
+    componentSerial: activePassage.componentSerial,
+    analysisLevelCount: activePassage.analysisLevelCount,
+    settings: { ...state.settings },
+    passageShareMode: activePassage.passageShareMode,
+    hiddenPassageLevels: activePassage.hiddenPassageLevels,
+    hiddenPassageSentenceIndexes: activePassage.hiddenPassageSentenceIndexes,
+    vocabularyItems: activePassage.vocabularyItems,
+    sentences: activePassage.sentences
   };
 }
 
@@ -4344,26 +4706,25 @@ function importAnalysisTxt(content) {
     try {
       const payload = parseAnalysisTxt(trimmed);
       const loaded = normalizeImportedAnalysis(payload);
-      state.passageText = loaded.passageText;
-      state.koreanTopic = loaded.koreanTopic;
-      state.showKoreanTopicInShare = loaded.showKoreanTopicInShare;
-      state.isKoreanTopicRevealed = false;
-      state.sentences = loaded.sentences;
-      state.currentSentenceIndex = loaded.currentSentenceIndex;
-      state.minorRevealCount = 0;
-      state.componentSerial = loaded.componentSerial;
-      state.analysisLevelCount = loaded.analysisLevelCount;
-      state.settings = { ...state.settings, ...loaded.settings };
-      state.passageShareMode = loaded.passageShareMode;
-      state.hiddenPassageLevels = loaded.hiddenPassageLevels;
-      state.hiddenPassageSentenceIndexes = Array.isArray(loaded.hiddenPassageSentenceIndexes) ? loaded.hiddenPassageSentenceIndexes : [];
-      state.vocabularyItems = vocabularyFeature.normalize(loaded.vocabularyItems);
-      elements.passageInput.value = state.passageText;
-      if (elements.koreanTopicInput) {
-        elements.koreanTopicInput.value = state.koreanTopic;
+      ensureProjectPassagesInitialized();
+
+      if (loaded.passages.length > 1 || state.passages.length <= 1) {
+        state.passages = loaded.passages;
+        state.currentPassageIndex = loaded.currentPassageIndex;
+      } else {
+        state.passages[state.currentPassageIndex] = loaded.passages[0];
       }
-      elements.inputMessage.textContent = "저장된 분석 결과를 불러왔습니다. 아래 '2단계-어휘 분석 시작'을 누르시면 적용됩니다.";
-      state.hasLoadedAnalysis = true; // 분석 내용 로드 플래그 활성화
+
+      applyPassageEntryToActiveState(state.passages[state.currentPassageIndex]);
+      state.settings = { ...state.settings, ...loaded.settings };
+      state.hasLoadedAnalysis = state.sentences.length > 0;
+      updateProjectPassageBar();
+
+      if (state.passages.length > 1) {
+        elements.inputMessage.textContent = `저장된 프로젝트 분석 결과를 불러왔습니다. (현재 지문 ${state.currentPassageIndex + 1} / ${state.passages.length}) 아래 '2단계-어휘 분석 시작'을 누르시면 적용됩니다.`;
+      } else {
+        elements.inputMessage.textContent = "저장된 분석 결과를 불러왔습니다. 아래 '2단계-어휘 분석 시작'을 누르시면 적용됩니다.";
+      }
     } catch (error) {
       console.warn("분석 JSON 파싱 실패, 순수 지문 본문 추출 폴백 시도:", error);
       try {
@@ -4419,7 +4780,11 @@ function loadAsPlainPassage(content) {
     throw new Error("빈 텍스트 파일입니다.");
   }
   elements.passageInput.value = content;
+  state.passageText = content;
+  state.sentences = [];
   state.hasLoadedAnalysis = false;
+  syncActivePassageToProject();
+  updateProjectPassageBar();
   elements.inputMessage.textContent = "지문 텍스트를 불러왔습니다. 아래 '2단계-어휘 분석 시작'을 누르시면 분석이 시작됩니다.";
 }
 
@@ -4439,36 +4804,78 @@ function parseAnalysisTxt(content) {
   throw new Error("이 앱에서 저장한 분석 TXT 파일이 아닙니다.");
 }
 
-function normalizeImportedAnalysis(payload) {
-  if (!payload || !Array.isArray(payload.sentences)) {
-    throw new Error("TXT 파일 안에 문장 분석 데이터가 없습니다.");
-  }
-
-  const sentences = payload.sentences
+function normalizeSinglePassageData(rawPassage, allowEmpty = false) {
+  const rawSentences = Array.isArray(rawPassage?.sentences) ? rawPassage.sentences : [];
+  let sentences = rawSentences
     .map((sentence, sentenceIndex) => normalizeImportedSentence(sentence, sentenceIndex))
     .filter(Boolean);
 
-  if (sentences.length === 0) {
+  const fallbackPassageText = String(rawPassage?.passageText || "").trim();
+  if (sentences.length === 0 && fallbackPassageText) {
+    sentences = splitSentences(fallbackPassageText).map((sentenceText, index) => ({
+      id: `sentence-${index + 1}`,
+      text: sentenceText,
+      isImportant: false,
+      abstractLevel: 1,
+      connectiveIndexes: [],
+      connectiveColors: {},
+      wordCount: getPlainWords(sentenceText).length,
+      components: analyzeSentence(sentenceText, index)
+    }));
+  }
+
+  if (sentences.length === 0 && !allowEmpty) {
     throw new Error("불러올 문장이 없습니다.");
   }
 
   return {
-    passageText: String(payload.passageText || sentences.map((sentence) => sentence.text).join(" ")),
-    koreanTopic: typeof payload.koreanTopic === "string" ? payload.koreanTopic : "",
-    showKoreanTopicInShare: Boolean(payload.showKoreanTopicInShare),
+    passageText: String(rawPassage?.passageText || sentences.map((sentence) => sentence.text).join(" ")),
+    koreanTopic: typeof rawPassage?.koreanTopic === "string" ? rawPassage.koreanTopic : "",
+    showKoreanTopicInShare: Boolean(rawPassage?.showKoreanTopicInShare),
     sentences,
-    currentSentenceIndex: clamp(0, Number(payload.currentSentenceIndex) || 0, sentences.length - 1),
-    componentSerial: Math.max(Number(payload.componentSerial) || 1, countImportedComponents(sentences) + 1),
-    analysisLevelCount: clamp(2, Number(payload.analysisLevelCount) || 3, 9),
-    settings: typeof payload.settings === "object" && payload.settings ? payload.settings : {},
-    passageShareMode: ["plain", "visual", "outline"].includes(payload.passageShareMode) ? payload.passageShareMode : "plain",
-    hiddenPassageLevels: Array.isArray(payload.hiddenPassageLevels)
-      ? payload.hiddenPassageLevels.map((level) => Number(level)).filter((level) => Number.isInteger(level) && level > 0)
+    currentSentenceIndex: sentences.length > 0 ? clamp(0, Number(rawPassage?.currentSentenceIndex) || 0, sentences.length - 1) : 0,
+    componentSerial: Math.max(Number(rawPassage?.componentSerial) || 1, countImportedComponents(sentences) + 1),
+    analysisLevelCount: clamp(2, Number(rawPassage?.analysisLevelCount) || 3, 9),
+    passageShareMode: ["plain", "visual", "outline"].includes(rawPassage?.passageShareMode) ? rawPassage.passageShareMode : "plain",
+    hiddenPassageLevels: Array.isArray(rawPassage?.hiddenPassageLevels)
+      ? rawPassage.hiddenPassageLevels.map((level) => Number(level)).filter((level) => Number.isInteger(level) && level > 0)
       : [],
-    hiddenPassageSentenceIndexes: Array.isArray(payload.hiddenPassageSentenceIndexes)
-      ? payload.hiddenPassageSentenceIndexes.map((idx) => Number(idx)).filter((idx) => Number.isInteger(idx) && idx >= 0)
+    hiddenPassageSentenceIndexes: Array.isArray(rawPassage?.hiddenPassageSentenceIndexes)
+      ? rawPassage.hiddenPassageSentenceIndexes.map((idx) => Number(idx)).filter((idx) => Number.isInteger(idx) && idx >= 0)
       : [],
-    vocabularyItems: Array.isArray(payload.vocabularyItems) ? payload.vocabularyItems : []
+    vocabularyItems: Array.isArray(rawPassage?.vocabularyItems) ? rawPassage.vocabularyItems : []
+  };
+}
+
+function normalizeImportedAnalysis(payload) {
+  if (!payload || (!Array.isArray(payload.sentences) && !Array.isArray(payload.passages))) {
+    throw new Error("TXT 파일 안에 문장 분석 데이터가 없습니다.");
+  }
+
+  const settings = typeof payload.settings === "object" && payload.settings ? payload.settings : {};
+
+  if (Array.isArray(payload.passages) && payload.passages.length > 0) {
+    const allowEmpty = payload.passages.length > 1;
+    const passages = payload.passages.map((p) => normalizeSinglePassageData(p, allowEmpty));
+    const hasAnyContent = passages.some((p) => p.sentences.length > 0 || p.passageText.trim().length > 0);
+    if (!hasAnyContent) {
+      throw new Error("불러올 문장이 없습니다.");
+    }
+    const currentPassageIndex = clamp(0, Number(payload.currentPassageIndex) || 0, passages.length - 1);
+    return {
+      ...passages[currentPassageIndex],
+      passages,
+      currentPassageIndex,
+      settings
+    };
+  }
+
+  const single = normalizeSinglePassageData(payload, false);
+  return {
+    ...single,
+    passages: [single],
+    currentPassageIndex: 0,
+    settings
   };
 }
 
@@ -4648,6 +5055,8 @@ function bindEvents() {
     if (state.hasLoadedAnalysis || isUnchanged) {
       state.hasLoadedAnalysis = false;
       elements.inputMessage.textContent = "";
+      syncActivePassageToProject();
+      updateProjectPassageBar();
       setMode("vocabulary");
     } else {
       const count = preparePresentation();
@@ -4656,72 +5065,77 @@ function bindEvents() {
         return;
       }
       elements.inputMessage.textContent = "";
+      syncActivePassageToProject();
+      updateProjectPassageBar();
       setMode("vocabulary");
     }
   });
 
   elements.passageInput.addEventListener("input", () => {
     state.hasLoadedAnalysis = false;
-    state.currentFileName = null;
-    state.currentFileHandle = null;
-    updateFileNameDisplay();
+    if (state.passages.length <= 1) {
+      state.currentFileName = null;
+      state.currentFileHandle = null;
+      updateFileNameDisplay();
+    }
+    updateProjectPassageBar();
   });
 
   elements.sampleButton.addEventListener("click", () => {
     elements.passageInput.value = SAMPLE_TEXT;
+    state.passageText = SAMPLE_TEXT;
+    state.sentences = [];
+    state.hasLoadedAnalysis = false;
     elements.inputMessage.textContent = "";
-    state.currentFileName = null;
-    state.currentFileHandle = null;
-    updateFileNameDisplay();
+    if (state.passages.length <= 1) {
+      state.currentFileName = null;
+      state.currentFileHandle = null;
+      updateFileNameDisplay();
+    }
+    syncActivePassageToProject();
+    updateProjectPassageBar();
   });
 
   elements.clearButton.addEventListener("click", () => {
-    elements.passageInput.value = "";
-    elements.inputMessage.textContent = "지문과 2~7단계 분석 내용이 모두 초기화되었습니다.";
-    state.passageText = "";
-    state.sentences = [];
-    state.currentSentenceIndex = 0;
-    state.componentSerial = 1;
-    state.minorRevealCount = 0;
-    state.minorSlots = [];
-    state.lastModifierClickIndex = null;
-    state.lastModifierComponentId = null;
-    state.currentFileName = null;
-    state.currentFileHandle = null;
+    pushHistoryState();
+    applyPassageEntryToActiveState(createEmptyPassageEntry());
     state.hasLoadedAnalysis = false;
-    state.focusedComponentId = null;
-    state.analysisLevelCount = 3;
     state.activeConnectiveColor = "yellow";
-    state.connectiveSelectionAnchor = null;
-    state.passageShareMode = "plain";
-    state.draggedOutlineSentenceIndex = null;
-    state.hiddenPassageLevels = [];
-    state.hiddenPassageSentenceIndexes = [];
-    state.selectedOutlineSentenceIndexes = [];
-    state.lastOutlineSentenceClickIndex = null;
-    state.vocabularyItems = [];
-    state.koreanTopic = "";
-    state.showKoreanTopicInShare = false;
-    state.isKoreanTopicRevealed = false;
-    if (elements.koreanTopicInput) elements.koreanTopicInput.value = "";
-    state.vocabularyShareFocusRow = null;
-    state.vocabularyShareSelectedItemId = null;
-    state.draggedVocabularyIndex = null;
-    state.outlineFocusSentenceIndex = null;
-    if (state.passageShareFitCache && typeof state.passageShareFitCache.clear === "function") {
-      state.passageShareFitCache.clear();
+    if (state.passages.length <= 1) {
+      state.currentFileName = null;
+      state.currentFileHandle = null;
+      updateFileNameDisplay();
     }
+    syncActivePassageToProject();
+    updateProjectPassageBar();
+    elements.inputMessage.textContent = "현재 지문과 2~7단계 분석 내용이 모두 초기화되었습니다.";
     if (elements.editMessage) elements.editMessage.textContent = "";
     if (elements.vocabularyMessage) elements.vocabularyMessage.textContent = "";
-    updateFileNameDisplay();
     vocabularyFeature.renderAnalysis();
   });
 
   if (elements.koreanTopicInput) {
     elements.koreanTopicInput.addEventListener("input", (e) => {
       state.koreanTopic = e.target.value;
+      updateProjectPassageBar();
     });
   }
+
+  elements.prevPassageButton?.addEventListener("click", () => {
+    goToProjectPassage(state.currentPassageIndex - 1);
+  });
+  elements.nextPassageButton?.addEventListener("click", () => {
+    goToProjectPassage(state.currentPassageIndex + 1);
+  });
+  elements.passageProjectSelect?.addEventListener("change", (event) => {
+    const idx = Number(event.target.value);
+    if (Number.isInteger(idx)) {
+      goToProjectPassage(idx);
+    }
+  });
+  elements.addPassageButton?.addEventListener("click", addProjectPassage);
+  elements.deletePassageButton?.addEventListener("click", deleteCurrentProjectPassage);
+  elements.deleteAllPassagesButton?.addEventListener("click", deleteAllProjectPassages);
 
   if (elements.koreanTopicShareToggle) {
     elements.koreanTopicShareToggle.addEventListener("click", () => {
@@ -5044,9 +5458,11 @@ function handleKeyboard(event) {
   }
 }
 
+ensureProjectPassagesInitialized();
 bindEvents();
 applySettings();
 updateHeaderWorkflow(state.mode);
+updateProjectPassageBar();
 void restoreRecentPickerHandle();
 
 function showElementDetail(component) {

@@ -68,6 +68,7 @@
 - 줄글식·개조식 서술은 전체화면(`F`)에서 상단 안내를 접고 본문에 화면 높이를 우선 배정
 - 6단계에서 선택한 연결어는 7단계의 두 시각화 방식에서 파스텔톤 3종 색상(노랑, 빨강, 파랑) 팔레트 선택 및 형광 하이라이트로 다채롭게 강조
 - **전역 되돌리기(Undo: `Ctrl + Z`) 및 다시 실행(Redo: `Ctrl + Y` / `Ctrl + Shift + Z`) 기능**: 문장 성분 이동·역할 변경·분리·병합, 문장 편집, 어휘 카드 추가·삭제·순서 변경, 연결어 하이라이트 및 추상성 단계 변경, 우리말 주제 및 토글 변경 등 앱 내 모든 상태 변경에 대해 전역 작업 기록을 관리하고, 최상단 헤더의 `↩️ 되돌리기` / `↪️ 다시 실행` 버튼 및 키보드 단축키로 이전/이후 작업 상태를 손쉽게 복원 가능. (입력창 내 텍스트 수정 시 브라우저 기본 Undo/Redo와 충돌하지 않도록 지능적 스코프 구분 적용)
+- **다중 지문 프로젝트(Multi-Passage Project) 저장·불러오기 및 지문 간 이동/관리 패널**: 복수의 지문(각 지문의 원문, 어휘 분석, 문장 성분 분석, 추상성 단계 및 연결어, 우리말 주제 등 1~7단계 전체 데이터)을 하나의 `.txt` 프로젝트 파일로 통합 저장·복원 지원. 화면 최상단 프로젝트 지문 바(`#projectPassageBar`)를 통해 `◀ 프로젝트 내 이전 지문`, `프로젝트 내 다음 지문 ▶`, 드롭다운 선택기, `+ 지문 추가`, `- 현재 지문 삭제`, `모든 지문 삭제` 기능을 제공하며, 기존 단일 지문 저장 파일과도 100% 하위 호환(단일 지문 프로젝트 인식 및 다중 지문 프로젝트 내 현재 슬롯 병합 불러오기) 지원
 
 ## 사용 방법
 
@@ -445,3 +446,25 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
   - `node --check js/main.js`: PASS (구문 이상 없음)
   - `impeccable doctor .`: PASS (드리프트 0건)
   - `impeccable detect .`: PASS (정적 디자인 규격 유지, 안티패턴 0건)
+
+## [2026-11-02 21:55] 복수 지문 단일 프로젝트(.txt) 저장·불러오기, 최상단 프로젝트 지문 이동/관리 패널 및 모든 지문 삭제 기능 구현 (Commit ID: bda4864)
+- **수정 내용**:
+  - **최상단 프로젝트 지문 네비게이션 및 관리 패널(`#projectPassageBar`) 추가**:
+    - 화면 맨 위 상단(`English Visualization Board / 영어 시각화 보드` 헤더 위쪽)에 모든 단계(1~7단계)에서 항상 표시되는 프로젝트 지문 바 배치
+    - `◀ 프로젝트 내 이전 지문`(`#prevPassageButton`), 지문 선택 드롭다운(`#passageProjectSelect`), `프로젝트 내 다음 지문 ▶`(`#nextPassageButton`)을 통해 현재 보고 있는 단계(1~7단계)를 유지한 채 프로젝트 내 지문 간 즉각 이동 지원
+    - 우측 관리 그룹에 `+ 지문 추가`(`#addPassageButton`), `- 현재 지문 삭제`(`#deletePassageButton`), `모든 지문 삭제`(`#deleteAllPassagesButton`) 버튼 배치
+    - 1단계 지문 입력창 헤더에도 현재 지문 위치 배지(`지문 M / N`, `#inputPassageBadge`) 연동 표시
+  - **복수 지문 프로젝트 데이터 모델 및 활성 지문 미러링(`state.passages`, `state.currentPassageIndex`)**:
+    - 지문별 원문(`passageText`), 문장 및 성분 분석(`sentences`), 어휘 분석(`vocabularyItems`), 추상성 단계(`passageLevelCount`), 우리말 주제 및 토글(`koreanTopic`, `showKoreanTopicInShare`), 숨김 문장(`hiddenPassageSentenceIndexes`) 등 1~7단계 전 상태를 개별 엔트리로 캡슐화
+    - 지문 전환·추가·삭제·저장 직전에 [`syncActivePassageToProject`](file:///c:/Users/user/Desktop/codex_cli/.projects/English_visualization_board/js/main.js#L254-L280) 및 [`applyPassageEntryToActiveState`](file:///c:/Users/user/Desktop/codex_cli/.projects/English_visualization_board/js/main.js#L285-L333)로 최상위 `state`와 양방향 동기화하여 기존 1~7단계 렌더링 및 `js/vocabulary.js`와 100% 호환 유지
+    - 전역 되돌리기/다시 실행(`Undo`/`Redo`) 스냅샷에 `passages` 배열 및 `currentPassageIndex` 통합
+  - **다중 지문 프로젝트 `.txt` 저장(`version: 3`) 및 기존 단일 지문 파일 100% 하위 호환**:
+    - `buildAnalysisPayload`에서 프로젝트 내 모든 지문 배열(`passages`)과 현재 지문 인덱스(`currentPassageIndex`)를 포함하여 `.txt` 파일로 통합 직렬화 및 사람이 읽기 쉬운 지문별 요약 텍스트 생성
+    - 기존 단일 지문 저장 파일(`version: 1`, `version: 2`)을 불러올 때 자동으로 1개 지문 프로젝트(`지문 1 / 1`)로 인식하여 손실 없이 복원
+    - 프로젝트에 여러 지문이 있는 상태에서 기존 1개짜리 지문 `.txt` 파일을 불러오면 전체 프로젝트를 덮어쓰지 않고 **현재 선택된 지문 슬롯에 병합 로드**하여 기존 단일 지문 파일들을 하나의 프로젝트로 손쉽게 취합 가능
+  - **`모든 지문 삭제` 버튼을 통한 새 빈 프로젝트 초기화**:
+    - `- 현재 지문 삭제` 오른쪽에 `모든 지문 삭제` 버튼을 추가하고, 클릭 시 Undo 스냅샷 기록 후 모든 지문을 비워 새 빈 지문 1개(`지문 1 / 1 — (빈 지문)`) 및 파일 핸들 해제 상태로 안전하게 리셋
+  - **상태 알림 토스트(`#saveStatus`) 인라인 배치로 하단 버튼 가림 현상 해결**:
+    - 기존 우측 하단 고정(`position: fixed`) 방식의 토스트 알림이 1단계 우측 하단 작업 버튼을 가리던 문제를 해결하기 위해, `#saveStatus`를 최상단 `#projectPassageBar` 내부 인라인 배지 형태로 이동 배치
+- **검증 결과**:
+  - `node --check js/main.js`: PASS (구문 이상 없음, Exit Code 0)

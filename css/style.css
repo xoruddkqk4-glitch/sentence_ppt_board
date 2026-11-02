@@ -147,6 +147,168 @@ button {
   letter-spacing: -2px;
 }
 
+/* 프로젝트 내 복수 지문 이동 및 관리 바 */
+.project-passage-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: 8px clamp(var(--space-4), 4vw, var(--space-12));
+  background: #f0f6ff;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.app-shell[data-theme="dark"] .project-passage-bar {
+  background: #0f172a;
+  border-bottom-color: #334155;
+}
+
+.project-passage-nav-group,
+.project-passage-manage-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.project-bar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.project-nav-button,
+.project-manage-button {
+  min-height: 36px;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-pill);
+  background: var(--color-panel);
+  color: var(--color-ink);
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 100ms ease;
+}
+
+.project-nav-button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.project-nav-button:disabled,
+.project-manage-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.project-passage-select {
+  min-height: 36px;
+  min-width: 200px;
+  max-width: 420px;
+  padding: 4px 12px;
+  border: 1.5px solid #93c5fd;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-shell[data-theme="dark"] .project-passage-select {
+  border-color: #3b82f6;
+  background: #1e293b;
+  color: var(--color-dark-ink);
+}
+
+.project-manage-button.add {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.project-manage-button.add:hover:not(:disabled) {
+  border-color: #0369a1;
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.project-manage-button.delete {
+  border-color: #fca5a5;
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.project-manage-button.delete:hover:not(:disabled) {
+  border-color: #be123c;
+  background: #e11d48;
+  color: #ffffff;
+}
+
+.project-manage-button.delete-all {
+  border-color: #fdba74;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.project-manage-button.delete-all:hover:not(:disabled) {
+  border-color: #c2410c;
+  background: #ea580c;
+  color: #ffffff;
+}
+
+.app-shell[data-theme="dark"] .project-nav-button {
+  border-color: #334155;
+  background: #1e293b;
+  color: var(--color-dark-ink);
+}
+
+.app-shell[data-theme="dark"] .project-manage-button.add {
+  border-color: #0369a1;
+  background: #0c4a6e;
+  color: #bae6fd;
+}
+
+.app-shell[data-theme="dark"] .project-manage-button.delete {
+  border-color: #881337;
+  background: #4c0519;
+  color: #fecdd3;
+}
+
+.app-shell[data-theme="dark"] .project-manage-button.delete-all {
+  border-color: #9a3412;
+  background: #431407;
+  color: #fed7aa;
+}
+
+.passage-index-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: var(--radius-pill);
+  border: 1px solid #93c5fd;
+}
+
+.app-shell[data-theme="dark"] .passage-index-badge {
+  background: #1e3a8a;
+  color: #bfdbfe;
+  border-color: #3b82f6;
+}
+
 .stage-heading {
   margin: 0;
   color: #f87171;
@@ -3238,25 +3400,28 @@ input:focus {
   white-space: nowrap;
 }
 
-/* 모든 작업 단계에서 공통으로 표시하는 TXT 저장 완료 알림 */
+/* 모든 작업 단계에서 공통으로 표시하는 상태/저장 완료 알림 (상단 프로젝트 바 내부) */
 .save-status {
-  position: fixed;
-  z-index: 3000;
-  right: clamp(16px, 3vw, 48px);
-  bottom: clamp(16px, 3vw, 48px);
-  max-width: min(560px, calc(100vw - 32px));
-  margin: 0;
-  padding: 14px 20px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  max-height: 36px;
+  max-width: min(560px, 42vw);
+  margin: 0 0 0 auto;
+  padding: 0 14px;
   border: 1px solid #93c5fd;
-  border-radius: var(--radius-md);
-  background: #eff6ff;
+  border-radius: var(--radius-pill);
+  background: #ffffff;
   color: #075985;
-  font-size: var(--font-ui);
+  font-size: 13px;
   font-weight: 800;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, .18);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, .06);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(12px);
+  transform: translateY(-2px);
   transition: opacity 160ms ease, transform 160ms ease;
 }
 

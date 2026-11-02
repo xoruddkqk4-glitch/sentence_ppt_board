@@ -12,6 +12,20 @@
 </head>
 <body>
   <div id="app" class="app-shell" data-mode="input" data-theme="light">
+    <div id="projectPassageBar" class="project-passage-bar" role="region" aria-label="프로젝트 지문 이동 및 관리">
+      <div class="project-passage-nav-group">
+        <span class="project-bar-badge">📂 프로젝트 지문</span>
+        <button class="project-nav-button" type="button" id="prevPassageButton" title="프로젝트 내 이전 지문으로 이동">◀ 프로젝트 내 이전 지문</button>
+        <select id="passageProjectSelect" class="project-passage-select" aria-label="프로젝트 내 지문 목록"></select>
+        <button class="project-nav-button" type="button" id="nextPassageButton" title="프로젝트 내 다음 지문으로 이동">프로젝트 내 다음 지문 ▶</button>
+      </div>
+      <p id="saveStatus" class="save-status" role="status" aria-live="polite"></p>
+      <div class="project-passage-manage-group">
+        <button class="project-manage-button add" type="button" id="addPassageButton" title="현재 프로젝트에 새 지문 추가">+ 지문 추가</button>
+        <button class="project-manage-button delete" type="button" id="deletePassageButton" title="현재 지문을 프로젝트에서 삭제">- 현재 지문 삭제</button>
+        <button class="project-manage-button delete-all" type="button" id="deleteAllPassagesButton" title="모든 지문을 삭제하고 새로운 빈 프로젝트 상태로 초기화">모든 지문 삭제</button>
+      </div>
+    </div>
     <header class="app-header">
       <div class="app-brand">
         <p class="eyebrow">English Visualization Board</p>
@@ -33,7 +47,6 @@
         <button class="top-workflow-button" type="button" id="headerSaveAsTxtButton">다른 이름으로 저장</button>
       </nav>
     </header>
-    <p id="saveStatus" class="save-status" role="status" aria-live="polite"></p>
 
     <main>
       <div id="vocabularyView" class="view vocabulary-view hidden" aria-labelledby="vocabularyTitle">
@@ -79,6 +92,7 @@
             <div class="passage-header">
               <div class="passage-title-group">
                 <label for="passageInput">수업 지문</label>
+                <span id="inputPassageBadge" class="passage-index-badge">지문 1 / 1</span>
                 <span id="fileNameDisplay" class="file-name-badge hidden"></span>
               </div>
             </div>
