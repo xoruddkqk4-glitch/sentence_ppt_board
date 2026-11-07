@@ -3307,7 +3307,7 @@ input:focus {
   z-index: 4;
   height: clamp(14px, 2.4vh, 28px);
   min-width: 18px;
-  border-bottom: 2px solid var(--color-adjective-ink);
+  border-bottom: 4px solid var(--color-adjective-ink);
   pointer-events: none;
 }
 
@@ -3316,7 +3316,7 @@ input:focus {
   content: "";
   position: absolute;
   bottom: 0;
-  width: 2px;
+  width: 4px;
   height: 6px;
   background: var(--color-adjective-ink);
 }

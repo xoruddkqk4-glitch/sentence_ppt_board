@@ -227,16 +227,20 @@ function createEmptyPassageEntry() {
 }
 
 function extractActivePassageEntry() {
+  const inputElVal = elements.passageInput ? elements.passageInput.value : "";
   const rawPassageText = state.mode === "input" && elements.passageInput
-    ? elements.passageInput.value
-    : (state.passageText || state.sentences.map((s) => s.text).join(" "));
+    ? inputElVal
+    : (state.passageText || state.sentences.map((s) => s.text).join(" ") || inputElVal);
+  const titleElVal = elements.passageTitleInput ? elements.passageTitleInput.value.trim() : "";
   const rawPassageTitle = state.mode === "input" && elements.passageTitleInput
-    ? elements.passageTitleInput.value.trim()
-    : (state.passageTitle || "");
+    ? titleElVal
+    : (state.passageTitle || titleElVal);
+  const topicElVal = elements.koreanTopicInput ? elements.koreanTopicInput.value : "";
+  const rawKoreanTopic = state.koreanTopic || topicElVal || "";
   return JSON.parse(JSON.stringify({
     passageTitle: rawPassageTitle,
     passageText: rawPassageText,
-    koreanTopic: state.koreanTopic || "",
+    koreanTopic: rawKoreanTopic,
     showKoreanTopicInShare: Boolean(state.showKoreanTopicInShare),
     sentences: state.sentences || [],
     currentSentenceIndex: state.currentSentenceIndex || 0,
@@ -824,23 +828,72 @@ function addComponent(collection, sentenceIndex, role, words, startIndex, endInd
   });
 }
 
+function isPassageInputUnchanged(inputVal) {
+  if (state.sentences.length === 0) {
+    return false;
+  }
+  const trimmedInput = String(inputVal ?? (elements.passageInput ? elements.passageInput.value : "")).trim();
+  if (!trimmedInput) {
+    return false;
+  }
+  if (trimmedInput === String(state.passageText || "").trim()) {
+    return true;
+  }
+  const inputSentences = splitSentences(trimmedInput).map((s) => s.trim());
+  if (inputSentences.length !== state.sentences.length) {
+    return false;
+  }
+  return inputSentences.every((text, idx) => text === String(state.sentences[idx]?.text || "").trim());
+}
+
 function preparePresentation() {
   const text = elements.passageInput.value;
   const sentences = splitSentences(text);
+  const previousSentences = Array.isArray(state.sentences) ? state.sentences : [];
+  const usedPrevIndexes = new Set();
 
   state.passageText = text;
-  state.sentences = sentences.map((sentenceText, index) => ({
-    id: `sentence-${index + 1}`,
+  state.sentences = sentences.map((sentenceText, index) => {
+    const trimmedText = sentenceText.trim();
+    let matchedPrev = null;
+    if (previousSentences[index] && String(previousSentences[index].text || "").trim() === trimmedText && !usedPrevIndexes.has(index)) {
+      matchedPrev = previousSentences[index];
+      usedPrevIndexes.add(index);
+    } else {
+      const foundIdx = previousSentences.findIndex(
+        (prev, idx) => !usedPrevIndexes.has(idx) && String(prev?.text || "").trim() === trimmedText
+      );
+      if (foundIdx !== -1) {
+        matchedPrev = previousSentences[foundIdx];
+        usedPrevIndexes.add(foundIdx);
+      }
+    }
+
+    if (matchedPrev && Array.isArray(matchedPrev.components) && matchedPrev.components.length > 0) {
+      const cloned = JSON.parse(JSON.stringify(matchedPrev));
+      cloned.id = `sentence-${index + 1}`;
+      cloned.text = sentenceText;
+      cloned.wordCount = getPlainWords(sentenceText).length;
+      cloned.components.forEach((comp, cIdx) => {
+        comp.id = `s${index + 1}-c${cIdx + 1}`;
+      });
+      return cloned;
+    }
+
+    return {
+      id: `sentence-${index + 1}`,
       text: sentenceText,
       isImportant: false,
       abstractLevel: 1,
       connectiveIndexes: [],
+      connectiveColors: {},
       wordCount: getPlainWords(sentenceText).length,
-    components: analyzeSentence(sentenceText, index)
-  }));
-  state.currentSentenceIndex = 0;
+      components: analyzeSentence(sentenceText, index)
+    };
+  });
+  state.currentSentenceIndex = Math.max(0, Math.min(state.currentSentenceIndex || 0, Math.max(0, state.sentences.length - 1)));
   state.minorRevealCount = 0;
-  state.componentSerial = 1;
+  state.componentSerial = countImportedComponents(state.sentences) + 1;
   syncActivePassageToProject();
   updateProjectPassageBar();
 
@@ -889,12 +942,12 @@ function updateHeaderWorkflow(mode) {
 }
 
 function goToWorkflowMode(mode) {
+  applyPendingEdits();
   if (mode === "vocabulary" || mode === "vocabulary-share") {
     setMode(mode);
     return;
   }
   if (mode === "input") {
-    applyPendingEdits();
     goToInputStart();
     return;
   }
@@ -2305,8 +2358,8 @@ function updateSentenceText() {
   sentence.connectiveIndexes = [];
   sentence.connectiveColors = {};
 
-  state.passageText = state.sentences.map((s) => s.text).join(" ");
-  elements.passageInput.value = state.passageText;
+  reindexSentences();
+  syncActivePassageToProject();
 
   render();
 }
@@ -2335,6 +2388,7 @@ function insertNewSentence() {
 
   state.currentSentenceIndex = insertIndex;
   state.minorRevealCount = 0;
+  syncActivePassageToProject();
 
   render();
 }
@@ -2358,6 +2412,7 @@ function deleteCurrentSentence() {
 
   state.currentSentenceIndex = Math.max(0, Math.min(state.currentSentenceIndex, state.sentences.length - 1));
   state.minorRevealCount = 0;
+  syncActivePassageToProject();
 
   render();
 }
@@ -3248,79 +3303,11 @@ function goToSentence(index, revealCount = 0) {
   if (state.sentences.length === 0) {
     return;
   }
+  if (state.mode === "edit") {
+    applyPendingEdits();
+  }
   state.currentSentenceIndex = Math.max(0, Math.min(index, state.sentences.length - 1));
   state.minorRevealCount = clamp(0, revealCount, getCurrentMinorCount());
-  render();
-}
-
-function updateSentenceText() {
-  const sentence = getCurrentSentence();
-  if (!sentence) {
-    return;
-  }
-  const newText = elements.sentenceTextEditor.value.trim();
-  if (!newText) {
-    alert("문장 텍스트를 입력해 주세요.");
-    return;
-  }
-  sentence.text = newText;
-  sentence.wordCount = getPlainWords(newText).length;
-  sentence.components = analyzeSentence(newText, state.currentSentenceIndex);
-  sentence.connectiveIndexes = [];
-  sentence.connectiveColors = {};
-
-  state.passageText = state.sentences.map((s) => s.text).join(" ");
-  elements.passageInput.value = state.passageText;
-
-  render();
-}
-
-function insertNewSentence() {
-  if (state.sentences.length === 0) {
-    return;
-  }
-  const insertIndex = state.currentSentenceIndex + 1;
-  const defaultText = "Insert new English sentence here.";
-  const newSentence = {
-    id: `sentence-inserted-${Date.now()}`,
-    text: defaultText,
-    isImportant: false,
-    abstractLevel: 1,
-    connectiveIndexes: [],
-    connectiveColors: {},
-    wordCount: getPlainWords(defaultText).length,
-    components: analyzeSentence(defaultText, insertIndex)
-  };
-
-  state.sentences.splice(insertIndex, 0, newSentence);
-
-  reindexSentences();
-
-  state.currentSentenceIndex = insertIndex;
-  state.minorRevealCount = 0;
-
-  render();
-}
-
-function deleteCurrentSentence() {
-  if (state.sentences.length === 0) {
-    return;
-  }
-  if (state.sentences.length <= 1) {
-    alert("더 이상 문장을 삭제할 수 없습니다. 최소 하나의 문장이 필요합니다.");
-    return;
-  }
-
-  if (!confirm("현재 문장을 정말 삭제하시겠습니까?")) {
-    return;
-  }
-
-  state.sentences.splice(state.currentSentenceIndex, 1);
-  reindexSentences();
-
-  state.currentSentenceIndex = Math.max(0, Math.min(state.currentSentenceIndex, state.sentences.length - 1));
-  state.minorRevealCount = 0;
-
   render();
 }
 
@@ -3333,7 +3320,9 @@ function reindexSentences() {
     });
   });
   state.passageText = state.sentences.map((s) => s.text).join(" ");
-  elements.passageInput.value = state.passageText;
+  if (elements.passageInput) {
+    elements.passageInput.value = state.passageText;
+  }
 }
 
 function getCurrentMinorCount() {
@@ -4278,17 +4267,38 @@ function updateMinorPositions() {
   });
 }
 
+function hasPassageEntryContent(entry) {
+  if (!entry) return false;
+  if (Array.isArray(entry.sentences) && entry.sentences.length > 0) return true;
+  if (String(entry.passageText || "").trim().length > 0) return true;
+  if (String(entry.passageTitle || "").trim().length > 0) return true;
+  if (String(entry.koreanTopic || "").trim().length > 0) return true;
+  if (
+    Array.isArray(entry.vocabularyItems) &&
+    entry.vocabularyItems.some(
+      (item) =>
+        item &&
+        (String(item.term || "").trim() ||
+          String(item.location || "").trim() ||
+          String(item.meaning || "").trim() ||
+          String(item.insights || "").trim() ||
+          item.imageData)
+    )
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function applyPendingEdits() {
-  if (state.mode === "input") {
-    const inputVal = elements.passageInput.value.trim();
-    const isUnchanged = state.sentences.length > 0 && inputVal === state.passageText.trim();
-    if (inputVal && !state.hasLoadedAnalysis && !isUnchanged) {
-      preparePresentation();
-    } else if (!inputVal) {
-      state.passageText = "";
-      state.sentences = [];
-    }
-  } else if (state.mode === "edit") {
+  if (elements.passageTitleInput && state.mode === "input") {
+    state.passageTitle = elements.passageTitleInput.value.trim();
+  }
+  if (elements.koreanTopicInput && state.mode === "analysis") {
+    state.koreanTopic = elements.koreanTopicInput.value;
+  }
+
+  if (state.mode === "edit") {
     const sentence = getCurrentSentence();
     if (sentence && elements.sentenceTextEditor) {
       const newText = elements.sentenceTextEditor.value.trim();
@@ -4296,22 +4306,71 @@ function applyPendingEdits() {
         sentence.text = newText;
         sentence.wordCount = getPlainWords(newText).length;
         sentence.components = analyzeSentence(newText, state.currentSentenceIndex);
-        state.passageText = state.sentences.map((s) => s.text).join(" ");
-        elements.passageInput.value = state.passageText;
+        sentence.connectiveIndexes = [];
+        sentence.connectiveColors = {};
+        reindexSentences();
         render();
       }
     }
   }
+
+  const inputVal = elements.passageInput ? elements.passageInput.value.trim() : "";
+  if (state.mode === "input") {
+    const isUnchanged = isPassageInputUnchanged(inputVal);
+    if (inputVal && (!state.hasLoadedAnalysis || state.sentences.length === 0) && !isUnchanged) {
+      preparePresentation();
+    } else if (!inputVal) {
+      state.passageText = "";
+      state.sentences = [];
+    }
+  } else if (inputVal && state.sentences.length === 0) {
+    preparePresentation();
+  }
+
   syncActivePassageToProject();
+}
+
+async function openSaveFilePickerWithFallback(pickerOptions) {
+  try {
+    return await window.showSaveFilePicker(pickerOptions);
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw error;
+    }
+    if (pickerOptions.startIn) {
+      console.warn("startIn 핸들로 저장 창 열기 실패, 기본 경로로 재시도합니다.", error);
+      state.recentPickerHandle = null;
+      const retryOptions = { ...pickerOptions };
+      delete retryOptions.startIn;
+      return await window.showSaveFilePicker(retryOptions);
+    }
+    throw error;
+  }
+}
+
+async function openFilePickerWithFallback(pickerOptions) {
+  try {
+    return await window.showOpenFilePicker(pickerOptions);
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw error;
+    }
+    if (pickerOptions.startIn) {
+      console.warn("startIn 핸들로 열기 창 실행 실패, 기본 경로로 재시도합니다.", error);
+      state.recentPickerHandle = null;
+      const retryOptions = { ...pickerOptions };
+      delete retryOptions.startIn;
+      return await window.showOpenFilePicker(retryOptions);
+    }
+    throw error;
+  }
 }
 
 async function saveAnalysisTxt(saveAs = false) {
   applyPendingEdits();
   syncActivePassageToProject();
 
-  const hasAnyContent = state.passages.some(
-    (entry) => (Array.isArray(entry.sentences) && entry.sentences.length > 0) || String(entry.passageText || "").trim().length > 0
-  );
+  const hasAnyContent = state.passages.some((entry) => hasPassageEntryContent(entry));
   if (!hasAnyContent) {
     alert("저장할 분석 결과가 없습니다.");
     return;
@@ -4321,25 +4380,29 @@ async function saveAnalysisTxt(saveAs = false) {
   const content = buildAnalysisText();
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
 
-  // "현재 TXT에 저장" (saveAs === false) 이고, 불러오기 시점에 획득한 파일 핸들이 있는 경우 직접 덮어쓰기 시도
+  // "현재 TXT에 저장" (saveAs === false) 이고, 불러오기/저장 시점에 획득한 파일 핸들이 있는 경우 직접 덮어쓰기 시도
   if (!saveAs && state.currentFileHandle) {
     try {
-      const perm = await state.currentFileHandle.queryPermission({ mode: "readwrite" });
+      let perm = "granted";
+      if (typeof state.currentFileHandle.requestPermission === "function") {
+        perm = await state.currentFileHandle.requestPermission({ mode: "readwrite" });
+      }
       if (perm !== "granted") {
-        const reqPerm = await state.currentFileHandle.requestPermission({ mode: "readwrite" });
-        if (reqPerm !== "granted") {
-          throw new Error("파일 쓰기 권한이 거부되었습니다.");
-        }
+        throw new Error("파일 쓰기 권한이 거부되었습니다.");
       }
 
       const writable = await state.currentFileHandle.createWritable();
       await writable.write(blob);
       await writable.close();
 
-      // 최신 수정본 캐시 업데이트
-      saveCacheSafely(`sentence_board_file_cache_${state.currentFileName}`, content);
+      const savedFileName = state.currentFileName || state.currentFileHandle.name || getAnalysisFileName();
+      state.currentFileName = savedFileName;
+      updateFileNameDisplay();
 
-      const saveMsg = `💾 ${state.currentFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`;
+      // 최신 수정본 캐시 업데이트
+      saveCacheSafely(`sentence_board_file_cache_${savedFileName}`, content);
+
+      const saveMsg = `💾 ${savedFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`;
       elements.inputMessage.style.color = "var(--color-primary)";
       elements.inputMessage.textContent = saveMsg;
       if (elements.editMessage) {
@@ -4359,7 +4422,11 @@ async function saveAnalysisTxt(saveAs = false) {
       }, 3000);
       return;
     } catch (error) {
-      console.warn("기존 파일 핸들 쓰기 실패. 일반 다운로드 폴백을 실행합니다.", error);
+      if (error?.name === "AbortError") {
+        return;
+      }
+      console.warn("기존 파일 핸들 쓰기 실패. 저장 창 또는 다운로드 폴백을 실행합니다.", error);
+      state.currentFileHandle = null;
     }
   }
 
@@ -4382,7 +4449,7 @@ async function saveAnalysisTxt(saveAs = false) {
       if (startIn) {
         pickerOptions.startIn = startIn;
       }
-      const fileHandle = await window.showSaveFilePicker(pickerOptions);
+      const fileHandle = await openSaveFilePickerWithFallback(pickerOptions);
       if (!fileHandle) {
         return;
       }
@@ -4681,21 +4748,18 @@ async function triggerAnalysisImport() {
       if (startIn) {
         pickerOptions.startIn = startIn;
       }
-      const [fileHandle] = await window.showOpenFilePicker(pickerOptions);
+      const [fileHandle] = await openFilePickerWithFallback(pickerOptions);
       if (!fileHandle) {
         return;
       }
 
-      state.currentFileName = fileHandle.name;
-      state.currentFileHandle = fileHandle;
       void rememberRecentPickerHandle(fileHandle);
-      updateFileNameDisplay();
 
       const file = await fileHandle.getFile();
       const resultText = await file.text();
 
       saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, resultText);
-      importAnalysisTxt(resultText);
+      importAnalysisTxt(resultText, { fileName: fileHandle.name, fileHandle });
       return;
     } catch (error) {
       if (error?.name === "AbortError") {
@@ -4716,18 +4780,13 @@ function handleAnalysisFileSelected(event) {
     return;
   }
 
-  // 최신 가져온 파일명 기록 및 파일 핸들 초기화
-  state.currentFileName = file.name;
-  state.currentFileHandle = null;
-  updateFileNameDisplay();
-
   const reader = new FileReader();
   reader.onload = () => {
     try {
       const resultText = String(reader.result || "");
       // 기존 TXT 불러오기로 가져온 최신 데이터를 즉시 로컬 스토리지 캐시에 동기화
       saveCacheSafely(`sentence_board_file_cache_${file.name}`, resultText);
-      importAnalysisTxt(resultText);
+      importAnalysisTxt(resultText, { fileName: file.name, fileHandle: null });
     } catch (error) {
       alert(`지문을 불러오지 못했습니다: ${error.message}`);
     } finally {
@@ -4753,7 +4812,7 @@ function saveCacheSafely(key, value) {
   }
 }
 
-function importAnalysisTxt(content) {
+function importAnalysisTxt(content, fileMeta = {}) {
   const trimmed = content.trim();
   const isAnalysisFile = trimmed.startsWith(EXPORT_MARKER) || trimmed.includes(EXPORT_MARKER);
 
@@ -4763,9 +4822,15 @@ function importAnalysisTxt(content) {
       const loaded = normalizeImportedAnalysis(payload);
       ensureProjectPassagesInitialized();
 
-      if (loaded.passages.length > 1 || state.passages.length <= 1) {
+      const replacesWholeProject = loaded.passages.length > 1 || state.passages.length <= 1;
+      if (replacesWholeProject) {
         state.passages = loaded.passages;
         state.currentPassageIndex = loaded.currentPassageIndex;
+        if (fileMeta.fileName !== undefined) {
+          state.currentFileName = fileMeta.fileName;
+          state.currentFileHandle = fileMeta.fileHandle || null;
+          updateFileNameDisplay();
+        }
       } else {
         state.passages[state.currentPassageIndex] = loaded.passages[0];
       }
@@ -4784,6 +4849,11 @@ function importAnalysisTxt(content) {
       console.warn("분석 JSON 파싱 실패, 순수 지문 본문 추출 폴백 시도:", error);
       try {
         const plainText = extractPassageTextFromDamagedTxt(trimmed);
+        if (state.passages.length <= 1 && fileMeta.fileName !== undefined) {
+          state.currentFileName = fileMeta.fileName;
+          state.currentFileHandle = fileMeta.fileHandle || null;
+          updateFileNameDisplay();
+        }
         loadAsPlainPassage(plainText);
         elements.inputMessage.style.color = "var(--color-primary)";
         elements.inputMessage.textContent = "⚠️ 분석 파일 복원에 실패하여 지문 텍스트만 추출해 불러왔습니다. 아래 '2단계-어휘 분석 시작'을 누르면 새로 분석됩니다.";
@@ -4792,6 +4862,11 @@ function importAnalysisTxt(content) {
       }
     }
   } else {
+    if (state.passages.length <= 1 && fileMeta.fileName !== undefined) {
+      state.currentFileName = fileMeta.fileName;
+      state.currentFileHandle = fileMeta.fileHandle || null;
+      updateFileNameDisplay();
+    }
     loadAsPlainPassage(trimmed);
   }
 }
@@ -4879,11 +4954,7 @@ function normalizeSinglePassageData(rawPassage, allowEmpty = false) {
     }));
   }
 
-  if (sentences.length === 0 && !allowEmpty) {
-    throw new Error("불러올 문장이 없습니다.");
-  }
-
-  return {
+  const normalized = {
     passageTitle: typeof rawPassage?.passageTitle === "string" ? rawPassage.passageTitle.trim() : "",
     passageText: String(rawPassage?.passageText || sentences.map((sentence) => sentence.text).join(" ")),
     koreanTopic: typeof rawPassage?.koreanTopic === "string" ? rawPassage.koreanTopic : "",
@@ -4901,6 +4972,12 @@ function normalizeSinglePassageData(rawPassage, allowEmpty = false) {
       : [],
     vocabularyItems: Array.isArray(rawPassage?.vocabularyItems) ? rawPassage.vocabularyItems : []
   };
+
+  if (!hasPassageEntryContent(normalized) && !allowEmpty) {
+    throw new Error("불러올 문장이 없습니다.");
+  }
+
+  return normalized;
 }
 
 function normalizeImportedAnalysis(payload) {
@@ -4913,7 +4990,7 @@ function normalizeImportedAnalysis(payload) {
   if (Array.isArray(payload.passages) && payload.passages.length > 0) {
     const allowEmpty = payload.passages.length > 1;
     const passages = payload.passages.map((p) => normalizeSinglePassageData(p, allowEmpty));
-    const hasAnyContent = passages.some((p) => p.sentences.length > 0 || p.passageText.trim().length > 0);
+    const hasAnyContent = passages.some((p) => hasPassageEntryContent(p));
     if (!hasAnyContent) {
       throw new Error("불러올 문장이 없습니다.");
     }
@@ -5096,6 +5173,12 @@ async function restoreRecentPickerHandle() {
 
 function goToInputStart() {
   state.currentSentenceIndex = 0;
+  if (elements.passageTitleInput) {
+    elements.passageTitleInput.value = state.passageTitle || "";
+  }
+  if (elements.passageInput && state.sentences.length > 0) {
+    elements.passageInput.value = state.passageText;
+  }
   setScreenOff(false);
   setMode("input");
 }
@@ -5107,7 +5190,8 @@ function setScreenOff(isOff) {
 function bindEvents() {
   elements.passageForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const isUnchanged = state.sentences.length > 0 && elements.passageInput.value.trim() === state.passageText.trim();
+    const inputVal = elements.passageInput.value.trim();
+    const isUnchanged = isPassageInputUnchanged(inputVal);
     if (state.hasLoadedAnalysis || isUnchanged) {
       state.hasLoadedAnalysis = false;
       elements.inputMessage.textContent = "";
@@ -5129,11 +5213,6 @@ function bindEvents() {
 
   elements.passageInput.addEventListener("input", () => {
     state.hasLoadedAnalysis = false;
-    if (state.passages.length <= 1) {
-      state.currentFileName = null;
-      state.currentFileHandle = null;
-      updateFileNameDisplay();
-    }
     updateProjectPassageBar();
   });
 

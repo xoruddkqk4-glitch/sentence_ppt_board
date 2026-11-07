@@ -481,3 +481,16 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
     - 지문 전환 시 이전 지문에서 열려 있던 7단계 우리말 주제 대형 모달(`hidePassageShareTopicModal`)이 자동으로 닫히도록 정리
 - **검증 결과**:
   - `node --check js/main.js`: PASS (구문 이상 없음, Exit Code 0)
+
+## [2026-11-07 16:52] 5단계 형용사 수식 명사 밑줄 브래킷 굵기 통일(4px) 및 현재 TXT에 저장 시 미저장 변경분 누락·파일 핸들 초기화 버그 수정 (Commit ID: aa39441)
+- **수정 내용**:
+  - **5단계 문장 공유 화면 형용사 수식 명사 밑줄(`.modifier-target-bracket`) 굵기 통일 (`css/style.css`)**:
+    - 형용사어가 수식하는 명사 아래 브래킷 밑줄(`border-bottom`)과 양끝 세로 틱(`::before`, `::after`의 `width`) 굵기를 기존 `2px`에서 수식 화살표 굵기와 동일한 `4px`로 변경하여 시각적 일체감 및 전자칠판 가시성 향상
+  - **`현재 TXT에 저장` 실행 시 미저장 내용 누락 및 기존 수동 분석 초기화 버그 수정 (`js/main.js`)**:
+    - 상단 단계 이동 버튼(`goToWorkflowMode`) 및 문장 이동(`goToSentence`) 시 항상 `applyPendingEdits()`를 먼저 실행하여, 1단계 지문 입력 후 상단 버튼으로 바로 2~7단계로 이동하거나 4단계 문장 편집기(`#sentenceTextEditor`) 수정 후 바로 저장할 때 미적용 입력값이 누락되지 않도록 개선
+    - 4단계 성분 편집 시 `reindexSentences()`가 줄바꿈을 공백으로 병합하면서 1단계 원문 입력창과 줄바꿈 차이가 발생해, 1단계 복귀 후 저장 시 `preparePresentation()`이 재호출되어 수동 분석 결과를 초기화하던 문제를 `isPassageInputUnchanged()` 비교 및 문장별 기존 분석 보존 로직으로 해결
+    - 1단계 지문 입력창(`#passageInput`) 타이핑 시 `state.currentFileHandle` 및 `state.currentFileName`을 `null`로 초기화하던 코드를 제거하여, 불러오거나 저장한 파일의 지문을 수정한 뒤에도 `현재 TXT에 저장`으로 즉시 덮어쓰기가 가능하도록 수정
+    - `saveAnalysisTxt` 및 `triggerAnalysisImport`에서 유효하지 않은 `startIn` 파일 핸들로 인해 파일 탐색기 호출이 실패할 경우 기본 경로로 즉시 재시도하는 `openSaveFilePickerWithFallback` / `openFilePickerWithFallback` 폴백 처리 추가
+    - 중복 정의되어 있던 `updateSentenceText`, `insertNewSentence`, `deleteCurrentSentence` 함수를 하나로 통합하여 문장 텍스트 수정·추가·삭제 시 `Undo`/`Redo` 히스토리 및 프로젝트 지문 동기화가 정상 작동하도록 정리
+- **검증 결과**:
+  - `node --check js/main.js`: PASS (구문 이상 없음, Exit Code 0)
