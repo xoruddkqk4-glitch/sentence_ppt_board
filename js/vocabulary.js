@@ -84,18 +84,25 @@
         const card = document.createElement("article");
         card.className = "vocabulary-card";
         card.innerHTML = `
-          <div class="vocabulary-card-header"><span class="vocabulary-drag-handle" draggable="true" title="드래그하여 순서 변경" aria-label="어휘 ${index + 1} 순서 변경">⠿</span><strong>어휘 ${index + 1}</strong><button class="button secondary compact vocabulary-delete" type="button">삭제</button></div>
-          <div class="vocabulary-fields">
-            <label>단어·표현<textarea data-field="term" rows="1" placeholder="예: take part in (Alt+Enter로 줄바꿈)">${escapeHtml(item.term)}</textarea></label>
-            <label>위치<input data-field="location" value="${escapeAttribute(item.location)}" placeholder="예: 2번 문장/3번째 줄"></label>
-            <label>의미<textarea data-field="meaning" rows="2" placeholder="예: ~에 참여하다 (Alt+Enter로 줄바꿈)">${escapeHtml(item.meaning)}</textarea></label>
-            <label class="vocabulary-insights">Word Insights<textarea data-field="insights" rows="2" placeholder="품사, 어원, 연어, 기억법, 수업 질문 (Alt+Enter로 줄바꿈)">${escapeHtml(item.insights)}</textarea></label>
+          <div class="vocabulary-card-header">
+            <div class="vocabulary-card-title-group">
+              <span class="vocabulary-drag-handle" draggable="true" title="드래그하여 순서 변경" aria-label="어휘 ${index + 1} 순서 변경">⠿</span>
+              <strong class="vocabulary-card-badge">어휘 ${index + 1}</strong>
+              <span class="vocabulary-card-hint">줄바꿈: Alt + Enter</span>
+            </div>
+            <div class="vocabulary-card-actions">
+              <span class="vocabulary-image-help">이미지 최대 2MB</span>
+              <label class="vocabulary-image-upload" title="단어 카드에 함께 표시할 이미지를 선택하세요 (최대 2MB)">🖼️ 이미지 삽입<input class="vocabulary-image-input" type="file" accept="image/*"></label>
+              <button class="button secondary compact vocabulary-delete" type="button">삭제</button>
+            </div>
           </div>
-          <div class="vocabulary-image-field">
-            <label class="vocabulary-image-upload">이미지 삽입<input class="vocabulary-image-input" type="file" accept="image/*"></label>
-            <p class="vocabulary-image-help">단어 카드에 함께 표시할 이미지를 선택하세요. (최대 2MB)</p>
-            ${item.imageData ? `<div class="vocabulary-image-preview"><img src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}"><span>${escapeHtml(item.imageName || "첨부 이미지")}</span><button class="button secondary compact vocabulary-image-remove" type="button">이미지 삭제</button></div>` : ""}
-          </div>`;
+          <div class="vocabulary-fields">
+            <label><span>단어·표현</span><textarea data-field="term" rows="2" placeholder="예: take part in">${escapeHtml(item.term)}</textarea></label>
+            <label><span>위치</span><textarea data-field="location" rows="2" placeholder="예: 2번 문장 / 3번째 줄">${escapeHtml(item.location)}</textarea></label>
+            <label><span>의미</span><textarea data-field="meaning" rows="2" placeholder="예: ~에 참여하다">${escapeHtml(item.meaning)}</textarea></label>
+            <label class="vocabulary-insights"><span>Word Insights</span><textarea data-field="insights" rows="2" placeholder="예: 품사, 어원, 연어, 기억법, 수업 질문 등">${escapeHtml(item.insights)}</textarea></label>
+          </div>
+          ${item.imageData ? `<div class="vocabulary-image-field"><div class="vocabulary-image-preview"><img src="${escapeAttribute(item.imageData)}" alt="${escapeAttribute(item.term || "어휘 참고 이미지")}"><span>${escapeHtml(item.imageName || "첨부 이미지")}</span><button class="button secondary compact vocabulary-image-remove" type="button">이미지 삭제</button></div></div>` : ""}`;
         card.querySelectorAll("[data-field]").forEach((field) => field.addEventListener("input", (event) => {
           item[event.target.dataset.field] = event.target.value;
           elements.vocabularyMessage.textContent = "어휘 내용이 현재 수업 세션에 저장되었습니다.";
@@ -455,19 +462,58 @@
               handleImgActivate(event);
             }
           });
+          shareImgEl.addEventListener("load", () => {
+            requestAnimationFrame(fitShareToViewport);
+          });
         }
 
         elements.vocabularyShareContent.appendChild(card);
       });
+      fitShareToViewport();
       requestAnimationFrame(fitShareToViewport);
+    }
+
+    function doesCardOverflow(card) {
+      if (card.scrollHeight > card.clientHeight + 1 || card.scrollWidth > card.clientWidth + 1) {
+        return true;
+      }
+      const body = card.querySelector(".vocab-card-body");
+      if (body && (body.scrollHeight > body.clientHeight + 1 || body.scrollWidth > body.clientWidth + 1)) {
+        return true;
+      }
+      const textBlocks = card.querySelectorAll(".vocabulary-share-heading, .vocabulary-meaning, .vocabulary-insight-text");
+      for (const block of textBlocks) {
+        if (block.scrollWidth > block.clientWidth + 1) {
+          return true;
+        }
+        const lastChild = block.lastElementChild;
+        if (lastChild) {
+          const blockRect = block.getBoundingClientRect();
+          const lastRect = lastChild.getBoundingClientRect();
+          if (blockRect.width > 0 && lastRect.right - blockRect.left > block.clientWidth + 1) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     function fitShareToViewport() {
       const content = elements.vocabularyShareContent;
-      let fontSize = Number.parseFloat(getComputedStyle(content).getPropertyValue("--vocabulary-term-size")) || 42;
-      const cardsOverflow = () => [...content.querySelectorAll(".vocabulary-share-card")]
-        .some((card) => card.scrollHeight > card.clientHeight + 1);
-      while (cardsOverflow() && fontSize > 8) {
+      if (!content) return;
+      const baseFontSize = Number.parseFloat(content.style.getPropertyValue("--vocabulary-term-size"))
+        || Number.parseFloat(getComputedStyle(content).getPropertyValue("--vocabulary-term-size"))
+        || 42;
+      const cards = [...content.querySelectorAll(".vocabulary-share-card")];
+      if (!cards.length) return;
+
+      cards.forEach((card) => {
+        card.style.removeProperty("--vocabulary-term-size");
+      });
+
+      let fontSize = baseFontSize;
+      const anyCardOverflows = () => cards.some((card) => doesCardOverflow(card));
+      while (anyCardOverflows() && fontSize > 8) {
         fontSize -= 1;
         content.style.setProperty("--vocabulary-term-size", `${fontSize}px`);
       }

@@ -80,7 +80,10 @@ const state = {
   lastModifierComponentId: null,
   currentFileName: null,
   currentFileHandle: null,
+  currentServerFilePath: null,
+  localServerApiReady: false,
   recentPickerHandle: null,
+  preferInputFileImport: false,
   hasLoadedAnalysis: false,
   focusedComponentId: null,
   analysisLevelCount: 3,
@@ -113,6 +116,7 @@ const elements = {
   deleteAllPassagesButton: document.getElementById("deleteAllPassagesButton"),
   inputPassageBadge: document.getElementById("inputPassageBadge"),
   passageTitleInput: document.getElementById("passageTitleInput"),
+  projectFileNameBadge: document.getElementById("projectFileNameBadge"),
   saveStatus: document.getElementById("saveStatus"),
   vocabularyView: document.getElementById("vocabularyView"),
   vocabularyShareView: document.getElementById("vocabularyShareView"),
@@ -398,6 +402,7 @@ function updateProjectPassageBar() {
       elements.passageProjectSelect.appendChild(option);
     });
   }
+  updateFileNameDisplay();
 }
 
 function goToProjectPassage(targetIndex) {
@@ -518,6 +523,7 @@ function deleteAllProjectPassages() {
   state.activeConnectiveColor = "yellow";
   state.currentFileName = null;
   state.currentFileHandle = null;
+  state.currentServerFilePath = null;
   updateFileNameDisplay();
   applyPassageEntryToActiveState(emptyEntry);
 
@@ -1422,7 +1428,7 @@ function renderPassageShareView() {
     const rowIndex = originalIndex + 2;
 
     const isHiddenByLevel = hiddenLevels.has(level);
-    const isHiddenBySentence = isOutlineMode && hiddenSentences.has(originalIndex);
+    const isHiddenBySentence = hiddenSentences.has(originalIndex);
 
     // 개조식 모드: 행 맨 앞(1열)에 새로운 열을 추가하여 전등 스위치 모양의 ON/OFF 토글 배치
     if (isOutlineMode) {
@@ -1456,6 +1462,7 @@ function renderPassageShareView() {
     const sentenceElement = document.createElement(isOutlineMode ? "div" : "span");
     sentenceElement.className = isVisualMode ? "passage-visual-sentence" : isOutlineMode ? "passage-outline-sentence" : "passage-plain-sentence";
     sentenceElement.dataset.abstractLevel = String(level);
+    sentenceElement.dataset.sentenceIndex = String(originalIndex);
 
     // 개조식 모드에서는 단계 숨김일 때만 카드 전체를 is-hidden 처리하며, 문장 단위 숨김은 카드를 투명 처리하여 빈 여백을 100% 보존함
     const isElementHidden = isOutlineMode ? isHiddenByLevel : (isHiddenByLevel || isHiddenBySentence);
@@ -1821,7 +1828,7 @@ function renderPassageShareLevelFilters() {
   container.innerHTML = "";
   const label = document.createElement("span");
   label.className = "passage-share-filter-label";
-  label.textContent = "단계 표시 : 전체 문장(숫자키 0)";
+  label.textContent = "단계 표시 : 전체(0) | 단계 토글(1~n) | 문장 토글(Alt+숫자키)";
   container.appendChild(label);
 
   for (let level = 1; level <= state.analysisLevelCount; level += 1) {
@@ -1831,7 +1838,7 @@ function renderPassageShareLevelFilters() {
     button.classList.toggle("is-selected", hiddenLevels.has(level));
     button.setAttribute("aria-pressed", String(hiddenLevels.has(level)));
     button.textContent = `${level}단계(숫자키 ${level})`;
-    button.title = `숫자키 ${level}: ${level}단계 문장 표시/숨김`;
+    button.title = `숫자키 ${level}: ${level}단계 문장 표시/숨김 | Alt+숫자키: 해당 문장만 표시/숨김`;
     button.addEventListener("click", () => {
       togglePassageShareLevel(level);
     });
@@ -1908,7 +1915,10 @@ function updateOutlineSentenceSelectionVisuals() {
   }
 }
 
-function toggleOutlineSentenceHidden(sentenceIndex) {
+function togglePassageShareSentence(sentenceIndex) {
+  if (!Number.isInteger(sentenceIndex) || sentenceIndex < 0 || sentenceIndex >= state.sentences.length) {
+    return;
+  }
   const hidden = new Set(state.hiddenPassageSentenceIndexes || []);
   const isNowHidden = !hidden.has(sentenceIndex);
   if (isNowHidden) {
@@ -1944,8 +1954,22 @@ function toggleOutlineSentenceHidden(sentenceIndex) {
       updateOutlineSentenceSelectionVisuals();
       return;
     }
+  } else if (content) {
+    const sentenceEl = content.querySelector(`[data-sentence-index="${sentenceIndex}"]`);
+    if (sentenceEl) {
+      const level = Number(sentenceEl.dataset.abstractLevel);
+      const isHiddenByLevel = (state.hiddenPassageLevels || []).includes(level);
+      const isHidden = isHiddenByLevel || isNowHidden;
+      sentenceEl.classList.toggle("is-hidden", isHidden);
+      sentenceEl.setAttribute("aria-hidden", String(isHidden));
+      return;
+    }
   }
   renderPassageShareView();
+}
+
+function toggleOutlineSentenceHidden(sentenceIndex) {
+  togglePassageShareSentence(sentenceIndex);
 }
 
 function hideSelectedOutlineSentences() {
@@ -2052,9 +2076,13 @@ function updatePassageShareLevelVisibility() {
   if (!content) return;
 
   const hiddenLevels = new Set(state.hiddenPassageLevels);
+  const hiddenSentences = new Set(state.hiddenPassageSentenceIndexes || []);
   content.querySelectorAll("[data-abstract-level]").forEach((sentenceElement) => {
     const level = Number(sentenceElement.dataset.abstractLevel);
-    const isHidden = hiddenLevels.has(level);
+    const sentenceIndex = Number(sentenceElement.dataset.sentenceIndex);
+    const isHiddenByLevel = hiddenLevels.has(level);
+    const isHiddenBySentence = Number.isInteger(sentenceIndex) && hiddenSentences.has(sentenceIndex);
+    const isHidden = isHiddenByLevel || isHiddenBySentence;
     sentenceElement.classList.toggle("is-hidden", isHidden);
     sentenceElement.setAttribute("aria-hidden", String(isHidden));
     if (sentenceElement.classList.contains("passage-outline-sentence")) {
@@ -3172,6 +3200,10 @@ function rebuildMinorSlotsFromWords() {
   const first = wordRects[0];
   const last = wordRects[wordRects.length - 1];
   const edgeGap = getMajorEdgeGap();
+  const boxGuardPx = clamp(16, slotRect.width * 0.02, 56);
+  const stageMinX = slotRect.left + boxGuardPx + 14;
+  const stageMaxX = slotRect.right - boxGuardPx - 14;
+  const pxToSlotPercent = (px) => Math.round(clamp(0, ((px - slotRect.left) / slotRect.width) * 100, 100) * 10) / 10;
 
   // 가장자리 점이 첫/마지막 단어와 절대 겹치지 않도록, 단어 경계에서 떨어뜨릴 최소 간격(px).
   // 점(::before) 지름 18px의 절반 + 여유. 주요소 글씨가 클수록(짧은 문장) 더 크게 잡아
@@ -3183,9 +3215,14 @@ function rebuildMinorSlotsFromWords() {
   // 그보다 더 왼쪽(edgeGap)이 필요하면 더 왼쪽에 두되, 화면(슬롯 영역) 밖으로는 나가지 않는다.
   const startClearancePx = first.left - dotClearance;
   const startTargetPx = Math.min(startClearancePx, first.left - edgeGap);
+  const startMaxX = Math.max(stageMinX, startClearancePx);
+  const startMinX = Math.min(stageMinX, startMaxX);
   slots.push({
     index: firstIndex - 0.5,
-    percent: clampEdgeSlotPercent(startTargetPx, startClearancePx, slotRect, "start")
+    side: "start",
+    percent: clampEdgeSlotPercent(startTargetPx, startClearancePx, slotRect, "start"),
+    minPercent: pxToSlotPercent(startMinX),
+    maxPercent: pxToSlotPercent(startMaxX)
   });
 
   // 단어와 단어 사이 슬롯: 양쪽 주요소 단어의 원문 인덱스 중간값으로 표시
@@ -3196,7 +3233,10 @@ function rebuildMinorSlotsFromWords() {
     }
     slots.push({
       index: (wordIndexes[index] + wordIndexes[index + 1]) / 2,
-      percent: rectXToPercent((rect.right + nextRect.left) / 2, slotRect)
+      side: "middle",
+      percent: rectXToPercent((rect.right + nextRect.left) / 2, slotRect),
+      minPercent: pxToSlotPercent(stageMinX),
+      maxPercent: pxToSlotPercent(stageMaxX)
     });
   });
 
@@ -3205,9 +3245,14 @@ function rebuildMinorSlotsFromWords() {
   // 그보다 더 오른쪽(edgeGap)이 필요하면 더 오른쪽에 두되, 화면 밖으로는 나가지 않는다.
   const endClearancePx = last.right + dotClearance;
   const endTargetPx = Math.max(endClearancePx, last.right + edgeGap);
+  const endMinX = Math.min(stageMaxX, endClearancePx);
+  const endMaxX = Math.max(stageMaxX, endMinX);
   slots.push({
     index: lastIndex + 0.5,
-    percent: clampEdgeSlotPercent(endTargetPx, endClearancePx, slotRect, "end")
+    side: "end",
+    percent: clampEdgeSlotPercent(endTargetPx, endClearancePx, slotRect, "end"),
+    minPercent: pxToSlotPercent(endMinX),
+    maxPercent: pxToSlotPercent(endMaxX)
   });
 
   state.minorSlots = slots;
@@ -3220,12 +3265,13 @@ function rectXToPercent(x, rect) {
 
 // 가장자리 점(문장 맨앞/맨뒤 슬롯)의 percent를 계산한다.
 // 핵심 규칙: 점은 반드시 첫 단어보다 왼쪽 / 마지막 단어보다 오른쪽(clearancePx)에 있어야 한다.
-// 점이 슬롯 영역(화면) 밖으로 나가면 안 되므로, 그 때만 화면 경계(점 반지름 여유 포함)로 당긴다.
+// 점이 슬롯 영역(화면) 밖으로 나가면 안 되므로, 그 때만 화면 경계(박스 여백 + 점 반지름 여유 포함)로 당긴다.
 // 단어와의 겹침 방지를 최우선으로 하되, 화면을 벗어나지 않게만 보정한다.
 function clampEdgeSlotPercent(targetPx, clearancePx, rect, side) {
-  const dotRadiusPx = 11; // 점 반지름(9px) + 약간의 여유
-  const minX = rect.left + dotRadiusPx;
-  const maxX = rect.right - dotRadiusPx;
+  const boxGuardPx = clamp(16, rect.width * 0.02, 56);
+  const edgePadPx = boxGuardPx + 14;
+  const minX = rect.left + edgePadPx;
+  const maxX = rect.right - edgePadPx;
 
   let valuePx;
   if (side === "start") {
@@ -3245,12 +3291,12 @@ function clampEdgeSlotPercent(targetPx, clearancePx, rect, side) {
 // 주요소 글씨가 매우 클 때도 점이 첫/마지막 글자 위로 겹치지 않도록 글씨 크기에 비례시킨다.
 function getMinorDotClearance() {
   const majorSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current")) || 56;
-  return Math.round(clamp(26, 18 + majorSize * 0.32, 160));
+  return Math.round(clamp(20, 14 + majorSize * 0.32, 160));
 }
 
 function getMajorEdgeGap() {
-  const currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current"));
-  return clamp(100, currentSize * 1.6, 320);
+  const currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current")) || 56;
+  return clamp(28, currentSize * 1.45, 320);
 }
 
 function getStageEdgeGuard(rect) {
@@ -4015,18 +4061,23 @@ function applySettings() {
   elements.app.style.setProperty("--font-minor-current", `${Math.round(minorBase)}px`);
 }
 
+function runPresentationFitStep() {
+  fitMajorLine();
+  rebuildMinorSlotsFromWords();
+  updateMinorPositions();
+  fitMinorRows();
+  clampMinorBoxes();
+  updateModifierTargetBrackets();
+  updateMinorConnectorLengths();
+}
+
 function schedulePresentationFit() {
+  runPresentationFitStep();
   let pass = 0;
   const runPass = () => {
-    fitMajorLine();
-    rebuildMinorSlotsFromWords();
-    updateMinorPositions();
-    fitMinorRows();
-    clampMinorBoxes();
-    updateModifierTargetBrackets();
-    updateMinorConnectorLengths();
+    runPresentationFitStep();
     pass += 1;
-    if (pass < 5) {
+    if (pass < 4) {
       requestAnimationFrame(runPass);
     }
   };
@@ -4039,8 +4090,17 @@ function fitMajorLine() {
   }
 
   const lane = document.querySelector(".presentation-stage");
-  const currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current"));
+  if (!lane) {
+    return;
+  }
+  let currentSize = Number.parseFloat(getComputedStyle(elements.app).getPropertyValue("--font-major-current"));
+  if (!Number.isFinite(currentSize) || currentSize <= 0) {
+    currentSize = 56;
+  }
   const laneRect = lane.getBoundingClientRect();
+  if (!laneRect.width || !lane.clientWidth) {
+    return;
+  }
 
   const sentence = getCurrentSentence();
   const isTitleOrSub = sentence?.components.some(c => c.role === "title" || c.role === "subtitle");
@@ -4064,29 +4124,77 @@ function fitMajorLine() {
     if (ratio >= 1) {
       return;
     }
-    const nextSize = Math.max(20, Math.floor(currentSize * Math.max(0.12, ratio) * 0.95));
+    const nextSize = Math.max(12, Math.floor(currentSize * Math.max(0.1, ratio) * 0.95));
     elements.app.style.setProperty("--font-major-current", `${nextSize}px`);
     return;
   }
 
-  const edgeGuard = getStageEdgeGuard(laneRect);
-  // 가장자리 점이 들어갈 공간을 양쪽에 예약한다. dotClearance(점~단어 최소 간격)도
-  // 함께 반영해 주요소가 줄어들어도 점이 첫/마지막 단어와 겹치지 않게 한다.
-  const anchorReserve = Math.max(getMajorEdgeGap(), getMinorDotClearance()) * 2;
-  const edgeReserve = edgeGuard * 2 + anchorReserve;
-  const availableWidth = Math.max(220, lane.clientWidth - edgeReserve);
-  const bounds = getRenderedBounds(elements.majorPresentLane.querySelectorAll(".present-word"));
-  if (!bounds || !availableWidth) {
+  const getMajorTargets = () => {
+    const chips = elements.majorPresentLane.querySelectorAll(".present-chip");
+    const words = elements.majorPresentLane.querySelectorAll(".present-word");
+    return chips.length > 0 ? [...chips, ...words] : [...words];
+  };
+
+  const computeStageBounds = (fontSize) => {
+    const stageRect = lane.getBoundingClientRect();
+    const slotRect = getMinorLaneMetrics();
+    const boxGuardPx = clamp(16, (slotRect.width || stageRect.width) * 0.02, 56);
+    const dotClearance = Math.round(clamp(20, 14 + fontSize * 0.32, 160));
+    const safeLeft = slotRect.width
+      ? Math.max(stageRect.left + 20, slotRect.left + boxGuardPx + 14 + dotClearance)
+      : stageRect.left + 32;
+    const safeRight = slotRect.width
+      ? Math.min(stageRect.right - 20, slotRect.right - boxGuardPx - 14 - dotClearance)
+      : stageRect.right - 32;
+    const maxSafeWidth = Math.max(220, safeRight - safeLeft);
+
+    const baseEdgeGuard = getStageEdgeGuard(stageRect);
+    const scaledEdgeGuard = fontSize < 48
+      ? Math.min(baseEdgeGuard, Math.max(24, fontSize * 1.4))
+      : baseEdgeGuard;
+    const majorEdgeGap = clamp(28, fontSize * 1.45, 320);
+    const anchorReserve = Math.max(majorEdgeGap, dotClearance) * 2;
+    const edgeReserve = scaledEdgeGuard * 2 + anchorReserve;
+    const availableWidth = Math.min(maxSafeWidth, Math.max(220, lane.clientWidth - edgeReserve));
+    return { safeLeft, safeRight, availableWidth };
+  };
+
+  const targets = getMajorTargets();
+  let bounds = getRenderedBounds(targets);
+  if (!bounds || !bounds.width) {
     return;
   }
 
-  const ratio = availableWidth / bounds.width;
-  if (ratio >= 1) {
-    return;
-  }
+  const minFontSize = 8;
+  let guard = 0;
 
-  const nextSize = Math.max(24, Math.floor(currentSize * Math.max(0.18, ratio) * 0.98));
-  elements.app.style.setProperty("--font-major-current", `${nextSize}px`);
+  while (guard < 45 && currentSize > minFontSize) {
+    const { safeLeft, safeRight, availableWidth } = computeStageBounds(currentSize);
+    const overflowsWidth = bounds.width > availableWidth + 0.5;
+    const clipsLeft = bounds.left < safeLeft - 0.5;
+    const clipsRight = bounds.right > safeRight + 0.5;
+
+    if (!overflowsWidth && !clipsLeft && !clipsRight) {
+      break;
+    }
+
+    const ratio = availableWidth / Math.max(bounds.width, 1);
+    let nextSize;
+    if (ratio < 0.92) {
+      const drop = Math.max(1, Math.floor(currentSize * (1 - ratio) * 0.8));
+      nextSize = Math.max(minFontSize, currentSize - drop);
+    } else {
+      nextSize = Math.max(minFontSize, currentSize - 1);
+    }
+
+    currentSize = nextSize;
+    elements.app.style.setProperty("--font-major-current", `${currentSize}px`);
+    bounds = getRenderedBounds(targets);
+    if (!bounds || !bounds.width) {
+      break;
+    }
+    guard += 1;
+  }
 }
 
 function getRenderedBounds(nodeList) {
@@ -4218,6 +4326,75 @@ function getModifierTargetBottomY(component, stageRect) {
   return bottom - stageRect.top + 26; // 8px (bracket top offset) + ~18px (average bracket height)
 }
 
+function spreadAdverbAnchors(list, metrics) {
+  const result = new Map();
+  if (list.length === 0) {
+    return result;
+  }
+
+  const width = metrics.width || 1200;
+  const boxGuardPx = clamp(16, width * 0.02, 56);
+  const stageMinPercent = ((boxGuardPx + 14) / width) * 100;
+  const stageMaxPercent = 100 - stageMinPercent;
+  const idealStepPercent = clamp(2.4, (38 / width) * 100, 4.5);
+  const minStepPercent = clamp(1.4, (22 / width) * 100, 2.8);
+
+  const groups = new Map();
+  list.forEach((item) => {
+    const key = Number.isFinite(item.slot?.index)
+      ? `slot-${item.slot.index}`
+      : `pct-${Math.round(item.percent * 10) / 10}`;
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key).push(item);
+  });
+
+  groups.forEach((items) => {
+    // 4단계(수정 화면)에서의 부사구 순서(component.order)를 기준으로 좌->우 정렬
+    const ordered = items.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+    const count = ordered.length;
+    const baseSlot = ordered[0].slot;
+    const slotCenter = ordered[0].percent;
+
+    if (count === 1) {
+      result.set(ordered[0].component.id, Math.round(clamp(stageMinPercent, slotCenter, stageMaxPercent) * 10) / 10);
+      return;
+    }
+
+    const minP = Number.isFinite(baseSlot?.minPercent) ? Math.max(stageMinPercent, baseSlot.minPercent) : stageMinPercent;
+    const maxP = Number.isFinite(baseSlot?.maxPercent) ? Math.min(stageMaxPercent, baseSlot.maxPercent) : stageMaxPercent;
+    const availSpan = Math.max(0, maxP - minP);
+
+    let step = idealStepPercent;
+    if (availSpan > 0 && (count - 1) * step > availSpan) {
+      step = Math.max(minStepPercent, availSpan / (count - 1));
+    }
+
+    const totalSpan = (count - 1) * step;
+    let startPercent = slotCenter - totalSpan / 2;
+
+    if (startPercent + totalSpan > maxP) {
+      startPercent = maxP - totalSpan;
+    }
+    if (startPercent < minP) {
+      startPercent = minP;
+    }
+    // 만약 minP 인근에서도 전체 폭이 stageMaxPercent를 넘으면 무대 안쪽으로 재보정
+    if (startPercent + totalSpan > stageMaxPercent) {
+      startPercent = Math.max(stageMinPercent, stageMaxPercent - totalSpan);
+    }
+
+    ordered.forEach((item, index) => {
+      const rawPercent = startPercent + index * step;
+      const clampedPercent = clamp(stageMinPercent, rawPercent, stageMaxPercent);
+      result.set(item.component.id, Math.round(clampedPercent * 10) / 10);
+    });
+  });
+
+  return result;
+}
+
 function updateMinorPositions() {
   const sentence = getCurrentSentence();
   if (!sentence) {
@@ -4229,7 +4406,7 @@ function updateMinorPositions() {
   const edgePercent = metrics.width ? (getStageEdgeGuard(metrics) / metrics.width) * 100 : 6;
   const anchorById = new Map();
   const boxById = new Map();
-  const autoAdverbs = [];
+  const adverbItems = [];
 
   components.forEach((component) => {
     if (component.role === "adjective") {
@@ -4240,20 +4417,17 @@ function updateMinorPositions() {
       }
       return;
     }
-    if (component.pinnedAnchor) {
-      // 드래그로 직접 옮긴 부사어: 선택한 슬롯(단어 사이)에 고정하고 자동 배치(spread)에서 제외해 독립적으로 움직인다.
-      anchorById.set(component.id, getClosestSlot(Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1).percent);
-      return;
-    }
-    autoAdverbs.push({
+    const slot = getClosestSlot(Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1);
+    adverbItems.push({
       component,
       order: component.order,
-      percent: getClosestSlot(Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1).percent
+      slot,
+      percent: slot.percent
     });
   });
 
-  autoAdverbs.forEach((item) => {
-    anchorById.set(item.component.id, item.percent);
+  spreadAdverbAnchors(adverbItems, metrics).forEach((percent, id) => {
+    anchorById.set(id, percent);
   });
 
   elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
@@ -4330,40 +4504,402 @@ function applyPendingEdits() {
   syncActivePassageToProject();
 }
 
-async function openSaveFilePickerWithFallback(pickerOptions) {
-  try {
-    return await window.showSaveFilePicker(pickerOptions);
-  } catch (error) {
-    if (error?.name === "AbortError") {
-      throw error;
+function isEdgeBrowser() {
+  if (Array.isArray(navigator.userAgentData?.brands)) {
+    if (navigator.userAgentData.brands.some((b) => /Microsoft Edge/i.test(b.brand))) {
+      return true;
     }
-    if (pickerOptions.startIn) {
-      console.warn("startIn 핸들로 저장 창 열기 실패, 기본 경로로 재시도합니다.", error);
-      state.recentPickerHandle = null;
-      const retryOptions = { ...pickerOptions };
-      delete retryOptions.startIn;
-      return await window.showSaveFilePicker(retryOptions);
+  }
+  return /\bEdg\//i.test(navigator.userAgent || "");
+}
+
+async function ensureLocalServerApi() {
+  if (
+    window.location.protocol !== "http:" ||
+    (window.location.hostname !== "127.0.0.1" && window.location.hostname !== "localhost")
+  ) {
+    state.localServerApiReady = false;
+    return false;
+  }
+  if (state.localServerApiReady) {
+    return true;
+  }
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 500);
+    const response = await fetch("/__whiteboard_ping", {
+      signal: controller.signal,
+      cache: "no-store"
+    });
+    clearTimeout(timer);
+    if (!response.ok) return false;
+    const data = await response.json();
+    const supported = Boolean(
+      data?.app === "english-visualization-board" &&
+      Number(data?.version) >= 3 &&
+      Array.isArray(data?.capabilities) &&
+      data.capabilities.includes("native-win-dialog")
+    );
+    state.localServerApiReady = supported;
+    return supported;
+  } catch (_err) {
+    return false;
+  }
+}
+
+async function callLocalServerApi(endpoint, payload = {}) {
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Whiteboard-Local": "1"
+    },
+    body: JSON.stringify(payload)
+  });
+  return await response.json();
+}
+
+function shouldUseNativeSaveFilePicker() {
+  if (typeof window.showSaveFilePicker !== "function") {
+    return false;
+  }
+  // Chrome에서 로컬 파일(file://)로 직접 열었을 때는 Chrome 보안 정책상
+  // showSaveFilePicker가 항상 기본 폴더만 열고 '저장' 클릭 시 AbortError로 거부된다.
+  // (Edge의 file:// 환경 및 Chrome의 http://localhost · https:// 환경에서는 정상 작동)
+  if (window.location.protocol === "file:" && !isEdgeBrowser()) {
+    return false;
+  }
+  return true;
+}
+
+function shouldUseNativeOpenFilePicker() {
+  if (typeof window.showOpenFilePicker !== "function") {
+    return false;
+  }
+  if (state.preferInputFileImport) {
+    return false;
+  }
+  if (window.location.protocol === "file:" && !isEdgeBrowser()) {
+    return false;
+  }
+  return true;
+}
+
+async function runSingleSavePickerAttempt(options) {
+  let didWindowBlur = false;
+  const onWindowBlur = () => {
+    didWindowBlur = true;
+  };
+  window.addEventListener("blur", onWindowBlur, { once: true });
+  const startedAt = performance.now();
+  try {
+    const handle = await window.showSaveFilePicker(options);
+    return { handle, cancelled: false };
+  } catch (error) {
+    const elapsedMs = performance.now() - startedAt;
+    const dialogLikelyOpened = didWindowBlur || elapsedMs >= 300;
+    if (dialogLikelyOpened) {
+      if (isAbortError(error)) {
+        return { handle: null, cancelled: true };
+      }
+      return { handle: null, cancelled: false, postDialogError: error };
     }
     throw error;
+  } finally {
+    window.removeEventListener("blur", onWindowBlur);
   }
+}
+
+async function openSaveFilePickerWithFallback(pickerOptions) {
+  try {
+    return await runSingleSavePickerAttempt(pickerOptions);
+  } catch (error) {
+    if (pickerOptions.startIn) {
+      if (pickerOptions.startIn === state.currentFileHandle) {
+        state.currentFileHandle = null;
+      }
+      if (pickerOptions.startIn === state.recentPickerHandle) {
+        void clearRecentPickerHandle();
+      }
+    }
+    if (pickerOptions.startIn || pickerOptions.id) {
+      try {
+        console.warn("저장 창 옵션으로 실행 실패, 클린 옵션으로 재시도합니다.", error);
+        const cleanOptions = {
+          suggestedName: pickerOptions.suggestedName,
+          types: pickerOptions.types
+        };
+        return await runSingleSavePickerAttempt(cleanOptions);
+      } catch (retryError) {
+        if (retryError?.name === "SecurityError" && pickerOptions.startIn) {
+          return { handle: null, cancelled: false, needsRetryClick: true };
+        }
+        console.warn("클린 옵션 저장 창 실행 실패, 브라우저 다운로드 폴백으로 전환합니다.", retryError);
+        return { handle: null, cancelled: false, error: retryError };
+      }
+    }
+    console.warn("저장 창 실행 실패, 브라우저 다운로드 폴백으로 전환합니다.", error);
+    return { handle: null, cancelled: false, error };
+  }
+}
+
+function isAbortError(error) {
+  return error?.name === "AbortError" || error?.name === "Abort";
 }
 
 async function openFilePickerWithFallback(pickerOptions) {
   try {
     return await window.showOpenFilePicker(pickerOptions);
   } catch (error) {
-    if (error?.name === "AbortError") {
+    if (isAbortError(error)) {
       throw error;
     }
     if (pickerOptions.startIn) {
       console.warn("startIn 핸들로 열기 창 실행 실패, 기본 경로로 재시도합니다.", error);
-      state.recentPickerHandle = null;
+      // startIn 후보가 유효하지 않으면 다음 호출에서도 쓰지 않도록 정리한다.
+      if (pickerOptions.startIn === state.currentFileHandle) {
+        state.currentFileHandle = null;
+      }
+      if (pickerOptions.startIn === state.recentPickerHandle) {
+        void clearRecentPickerHandle();
+      }
       const retryOptions = { ...pickerOptions };
       delete retryOptions.startIn;
       return await window.showOpenFilePicker(retryOptions);
     }
     throw error;
   }
+}
+
+async function readTextFromFileHandle(fileHandle) {
+  const file = await fileHandle.getFile();
+  let resultText = "";
+  if (typeof file.text === "function") {
+    resultText = await file.text();
+  } else {
+    resultText = await readBlobAsText(file);
+  }
+
+  // OneDrive 등 클라우드 전용(online-only) 파일이 Chrome에서 0바이트로 읽히는 경우
+  if (!resultText && file.size === 0) {
+    throw new Error(
+      "파일 내용이 비어 있습니다. OneDrive 등 클라우드 전용 파일이면 먼저 로컬로 동기화한 뒤 다시 시도하거나, 'TXT 불러오기'를 다시 눌러 기본 파일 선택 창을 사용해 주세요."
+    );
+  }
+
+  return resultText;
+}
+
+function readBlobAsText(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("파일을 읽는 중 오류가 발생했습니다."));
+    reader.readAsText(blob, "utf-8");
+  });
+}
+
+function openAnalysisFileInputFallback() {
+  state.currentFileHandle = null;
+  if (!elements.analysisFileInput) {
+    alert("파일 선택 구성을 찾을 수 없습니다.");
+    return;
+  }
+  elements.analysisFileInput.value = "";
+  elements.analysisFileInput.click();
+}
+
+function armInputFileImportFallback(message) {
+  state.preferInputFileImport = true;
+  if (elements.inputMessage) {
+    elements.inputMessage.style.color = "var(--color-primary)";
+    elements.inputMessage.textContent = message;
+  }
+}
+
+let activeSaveObjectUrl = null;
+
+function releaseActiveSaveObjectUrl() {
+  if (activeSaveObjectUrl) {
+    const urlToRevoke = activeSaveObjectUrl;
+    activeSaveObjectUrl = null;
+    setTimeout(() => URL.revokeObjectURL(urlToRevoke), 60000);
+  }
+}
+
+function createDownloadHrefForText(content, blob) {
+  releaseActiveSaveObjectUrl();
+  const encoded = encodeURIComponent(content);
+  // Chromium kMaxURLChars(2MB) 이내인 일반 분석 TXT는 file:// 오리진에서도 100% 허용되는 data URI 사용
+  if (encoded.length <= 1800000) {
+    return `data:text/plain;charset=utf-8,${encoded}`;
+  }
+  const targetBlob = blob || new Blob([content], { type: "text/plain;charset=utf-8" });
+  activeSaveObjectUrl = URL.createObjectURL(targetBlob);
+  return activeSaveObjectUrl;
+}
+
+function normalizeTxtFileName(rawName, fallbackName) {
+  const fallback = fallbackName || getAnalysisFileName();
+  let cleaned = String(rawName || "")
+    .trim()
+    .replace(/[<>:"/\\|?*\x00-\x1f]+/g, "-")
+    .replace(/[. ]+$/g, "");
+  if (!cleaned || cleaned.toLowerCase() === ".txt") {
+    cleaned = fallback;
+  }
+  if (!/\.txt$/i.test(cleaned)) {
+    cleaned = `${cleaned}.txt`;
+  }
+  return cleaned;
+}
+
+function showSaveCompletionMessages(saveMsg) {
+  if (elements.inputMessage) {
+    elements.inputMessage.style.color = "var(--color-primary)";
+    elements.inputMessage.textContent = saveMsg;
+  }
+  if (elements.editMessage) {
+    elements.editMessage.style.color = "var(--color-primary)";
+    elements.editMessage.textContent = saveMsg;
+  }
+  showSaveFeedback(saveMsg);
+  setTimeout(() => {
+    if (elements.inputMessage && elements.inputMessage.textContent === saveMsg) {
+      elements.inputMessage.textContent = "";
+      elements.inputMessage.style.color = "";
+    }
+    if (elements.editMessage && elements.editMessage.textContent === saveMsg) {
+      elements.editMessage.textContent = "";
+      elements.editMessage.style.color = "";
+    }
+  }, 3000);
+}
+
+async function ensureReadWritePermission(fileHandle) {
+  if (!fileHandle) return false;
+  if (typeof fileHandle.queryPermission === "function") {
+    const current = await fileHandle.queryPermission({ mode: "readwrite" });
+    if (current === "granted") {
+      return true;
+    }
+  }
+  if (typeof fileHandle.requestPermission === "function") {
+    const requested = await fileHandle.requestPermission({ mode: "readwrite" });
+    return requested === "granted";
+  }
+  return true;
+}
+
+async function writeTextToFileHandleWithRetry(fileHandle, content) {
+  const granted = await ensureReadWritePermission(fileHandle);
+  if (!granted) {
+    throw new Error("파일 쓰기 권한이 허용되지 않았습니다.");
+  }
+
+  const payloadData = typeof TextEncoder !== "undefined"
+    ? new TextEncoder().encode(content)
+    : content;
+
+  const retryDelaysMs = [150, 350, 650, 1000];
+  let lastError = null;
+
+  for (let attempt = 0; attempt <= retryDelaysMs.length; attempt += 1) {
+    let writable = null;
+    try {
+      writable = await fileHandle.createWritable({ keepExistingData: false });
+      await writable.write(payloadData);
+      await writable.close();
+      return;
+    } catch (error) {
+      lastError = error;
+      if (writable && typeof writable.abort === "function") {
+        try {
+          await writable.abort();
+        } catch (_abortErr) {
+          // ignore abort cleanup error
+        }
+      }
+      if (attempt < retryDelaysMs.length) {
+        console.warn(
+          `파일 쓰기 시도 ${attempt + 1} 실패 (동기화/잠금 가능성), ${retryDelaysMs[attempt]}ms 후 재시도합니다.`,
+          error
+        );
+        await new Promise((resolve) => setTimeout(resolve, retryDelaysMs[attempt]));
+      }
+    }
+  }
+
+  throw lastError || new Error("파일 저장에 실패했습니다.");
+}
+
+function handleHeaderSaveClick(event, saveAs = false) {
+  applyPendingEdits();
+  syncActivePassageToProject();
+
+  const hasAnyContent = state.passages.some((entry) => hasPassageEntryContent(entry));
+  if (!hasAnyContent) {
+    event.preventDefault();
+    alert("저장할 분석 결과가 없습니다.");
+    return;
+  }
+
+  // 로컬 런처(127.0.0.1), Edge(file:// 포함) 및 http/https 환경의 Chrome에서는 기존 저장 경로 그대로 사용
+  if (
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "localhost" ||
+    state.localServerApiReady ||
+    (!saveAs && (state.currentServerFilePath || state.currentFileHandle)) ||
+    shouldUseNativeSaveFilePicker()
+  ) {
+    event.preventDefault();
+    void saveAnalysisTxt(saveAs);
+    return;
+  }
+
+  const confirmDownload = confirm(
+    "현재 Chrome에서 index.html을 직접 열었기 때문에(file:// 주소) Chrome 보안 정책상 '다운로드 없는 직접 파일 저장' 및 '열린 TXT 자동 전환'이 제한됩니다.\n\n" +
+    "폴더의 [영어시각화보드_실행.bat] 파일을 더블클릭해 실행하면 Edge처럼 다운로드 없이 선택한 폴더에 바로 저장되고, 저장 직후 새 TXT 파일이 열린 상태로 전환됩니다.\n\n" +
+    "지금 작업 중인 내용을 우선 임시 다운로드 방식으로 내려받으시겠습니까?"
+  );
+  if (!confirmDownload) {
+    event.preventDefault();
+    return;
+  }
+
+  const anchorEl = event.currentTarget;
+  if (!(anchorEl instanceof HTMLAnchorElement)) {
+    event.preventDefault();
+    void saveAnalysisTxt(saveAs);
+    return;
+  }
+
+  // Chrome file:// 환경: 클릭된 네이티브 <a download> 요소에 직접 href/download를 주입하고
+  // preventDefault()를 호출하지 않아 브라우저 기본 다운로드 매니저가 즉시 처리하게 한다.
+  const saveSummary = getCurrentAnalysisSaveSummary();
+  const content = buildAnalysisText();
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const targetFileName = normalizeTxtFileName(
+    state.currentFileName || getAnalysisFileName(),
+    getAnalysisFileName()
+  );
+  const href = createDownloadHrefForText(content, blob);
+
+  anchorEl.setAttribute("href", href);
+  anchorEl.setAttribute("download", targetFileName);
+
+  state.currentFileHandle = null;
+  state.currentFileName = targetFileName;
+  updateFileNameDisplay();
+  saveCacheSafely(`sentence_board_file_cache_${targetFileName}`, content);
+
+  setTimeout(() => {
+    if (anchorEl.getAttribute("href") === href) {
+      anchorEl.setAttribute("href", "#");
+    }
+  }, 1500);
+
+  showSaveCompletionMessages(`💾 ${targetFileName} 파일 저장을 실행했습니다. (${saveSummary})`);
 }
 
 async function saveAnalysisTxt(saveAs = false) {
@@ -4376,24 +4912,83 @@ async function saveAnalysisTxt(saveAs = false) {
     return;
   }
 
-  const saveSummary = getCurrentAnalysisSaveSummary();
-  const content = buildAnalysisText();
-  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const isLocalServerReady = await ensureLocalServerApi();
+  if (
+    !isLocalServerReady &&
+    window.location.protocol === "http:" &&
+    (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+  ) {
+    alert("⚠️ 로컬 실행기 서버 버전이 업데이트되었습니다. 폴더의 [영어시각화보드_실행.bat]을 다시 더블클릭해 실행해 주세요.");
+    return;
+  }
+
+  // 로컬 실행기(launch-board.js v3) 환경: Chrome 보안 정책과 무관하게 Windows 탐색기 저장 + 직접 파일 쓰기 실행
+  if (isLocalServerReady) {
+    const saveSummary = getCurrentAnalysisSaveSummary();
+    const content = buildAnalysisText();
+
+    if (!saveAs && state.currentServerFilePath) {
+      try {
+        const res = await callLocalServerApi("/__whiteboard_api/save-current", {
+          filePath: state.currentServerFilePath,
+          content
+        });
+        if (res?.ok) {
+          const savedFileName = res.fileName || state.currentFileName || getAnalysisFileName();
+          state.currentFileName = savedFileName;
+          state.currentFileHandle = null;
+          updateFileNameDisplay();
+          saveCacheSafely(`sentence_board_file_cache_${savedFileName}`, content);
+          showSaveCompletionMessages(`💾 ${savedFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`);
+          return;
+        }
+        if (res && !res.ok && !res.needsSaveAs) {
+          alert(`⚠️ 파일 저장 실패: ${res.error || "알 수 없는 오류"}`);
+          return;
+        }
+      } catch (err) {
+        alert(`⚠️ 파일 저장 중 오류가 발생했습니다: ${err?.message || err}`);
+        return;
+      }
+    }
+
+    const suggestedName = normalizeTxtFileName(
+      state.currentFileName || getAnalysisFileName(),
+      getAnalysisFileName()
+    );
+    try {
+      const res = await callLocalServerApi("/__whiteboard_api/save-as", {
+        suggestedName,
+        content
+      });
+      if (res?.busy || res?.cancelled) {
+        return;
+      }
+      if (res?.ok && res.filePath) {
+        state.currentServerFilePath = res.filePath;
+        state.currentFileHandle = null;
+        state.currentFileName = res.fileName;
+        updateFileNameDisplay();
+        saveCacheSafely(`sentence_board_file_cache_${res.fileName}`, content);
+        showSaveCompletionMessages(`💾 ${res.fileName}에 전체 분석 정보를 저장했습니다. (${saveSummary})`);
+        return;
+      }
+      alert(`⚠️ 파일 저장 중 오류가 발생했습니다: ${res?.error || "알 수 없는 오류"}`);
+      return;
+    } catch (err) {
+      alert(`⚠️ 파일 저장 중 오류가 발생했습니다: ${err?.message || err}`);
+      return;
+    }
+  }
 
   // "현재 TXT에 저장" (saveAs === false) 이고, 불러오기/저장 시점에 획득한 파일 핸들이 있는 경우 직접 덮어쓰기 시도
   if (!saveAs && state.currentFileHandle) {
     try {
-      let perm = "granted";
-      if (typeof state.currentFileHandle.requestPermission === "function") {
-        perm = await state.currentFileHandle.requestPermission({ mode: "readwrite" });
-      }
-      if (perm !== "granted") {
-        throw new Error("파일 쓰기 권한이 거부되었습니다.");
-      }
+      const saveSummary = getCurrentAnalysisSaveSummary();
+      const content = buildAnalysisText();
 
-      const writable = await state.currentFileHandle.createWritable();
-      await writable.write(blob);
-      await writable.close();
+      await writeTextToFileHandleWithRetry(state.currentFileHandle, content);
+      void rememberRecentPickerHandle(state.currentFileHandle);
 
       const savedFileName = state.currentFileName || state.currentFileHandle.name || getAnalysisFileName();
       state.currentFileName = savedFileName;
@@ -4402,24 +4997,7 @@ async function saveAnalysisTxt(saveAs = false) {
       // 최신 수정본 캐시 업데이트
       saveCacheSafely(`sentence_board_file_cache_${savedFileName}`, content);
 
-      const saveMsg = `💾 ${savedFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`;
-      elements.inputMessage.style.color = "var(--color-primary)";
-      elements.inputMessage.textContent = saveMsg;
-      if (elements.editMessage) {
-        elements.editMessage.style.color = "var(--color-primary)";
-        elements.editMessage.textContent = saveMsg;
-      }
-      showSaveFeedback(saveMsg);
-      setTimeout(() => {
-        if (elements.inputMessage.textContent === saveMsg) {
-          elements.inputMessage.textContent = "";
-          elements.inputMessage.style.color = "";
-        }
-        if (elements.editMessage && elements.editMessage.textContent === saveMsg) {
-          elements.editMessage.textContent = "";
-          elements.editMessage.style.color = "";
-        }
-      }, 3000);
+      showSaveCompletionMessages(`💾 ${savedFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`);
       return;
     } catch (error) {
       if (error?.name === "AbortError") {
@@ -4431,60 +5009,69 @@ async function saveAnalysisTxt(saveAs = false) {
   }
 
   // "다른 이름으로 저장" (saveAs === true) 이거나 파일 핸들이 없는 경우
-  // 1. showSaveFilePicker가 지원되면 탐색기 창을 먼저 켬
-  if (window.showSaveFilePicker) {
+  // 1. Chrome/Edge 등 showSaveFilePicker 지원 브라우저에서는 클릭 직후 즉시 네이티브 탐색기 창 열기
+  if (shouldUseNativeSaveFilePicker()) {
     try {
-      const suggestedName = state.currentFileName || getAnalysisFileName();
+      const suggestedName = normalizeTxtFileName(
+        state.currentFileName || getAnalysisFileName(),
+        getAnalysisFileName()
+      );
       const pickerOptions = {
-        suggestedName: suggestedName,
+        suggestedName,
+        id: "whiteboard_ppt_board_picker",
         types: [
           {
             description: "Text file",
             accept: { "text/plain": [".txt"] }
           }
-        ],
-        id: "whiteboard_ppt_board_picker"
+        ]
       };
       const startIn = getPickerStartIn();
       if (startIn) {
         pickerOptions.startIn = startIn;
       }
-      const fileHandle = await openSaveFilePickerWithFallback(pickerOptions);
-      if (!fileHandle) {
+      const pickerResult = await openSaveFilePickerWithFallback(pickerOptions);
+      if (pickerResult?.cancelled) {
         return;
       }
-
-      // 새 파일 정보로 활성 파일 핸들 및 파일명 즉시 갱신 (A -> B 전환 버그 해결!)
-      state.currentFileHandle = fileHandle;
-      state.currentFileName = fileHandle.name;
-      void rememberRecentPickerHandle(fileHandle);
-      updateFileNameDisplay();
-
-      const writable = await fileHandle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-
-      saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, content);
-
-      const saveMsg = `💾 ${fileHandle.name}에 전체 분석 정보를 저장했습니다. (${saveSummary})`;
-      elements.inputMessage.style.color = "var(--color-primary)";
-      elements.inputMessage.textContent = saveMsg;
-      if (elements.editMessage) {
-        elements.editMessage.style.color = "var(--color-primary)";
-        elements.editMessage.textContent = saveMsg;
+      if (pickerResult?.needsRetryClick) {
+        const retryMsg = "⚠️ 이전 저장 폴더 경로가 변경되어 초기화했습니다. '다른 이름으로 저장'을 한 번 더 눌러 주세요.";
+        showSaveFeedback(retryMsg);
+        alert(retryMsg);
+        return;
       }
-      showSaveFeedback(saveMsg);
-      setTimeout(() => {
-        if (elements.inputMessage.textContent === saveMsg) {
-          elements.inputMessage.textContent = "";
-          elements.inputMessage.style.color = "";
+      if (pickerResult?.postDialogError) {
+        const err = pickerResult.postDialogError;
+        const errMsg = `⚠️ 선택한 위치에는 저장할 수 없습니다 (${err?.name || "오류"}: ${err?.message || err}). 다른 폴더를 선택해 주세요.`;
+        showSaveFeedback(errMsg);
+        alert(errMsg);
+        return;
+      }
+      const fileHandle = pickerResult?.handle;
+      if (fileHandle) {
+        void rememberRecentPickerHandle(fileHandle);
+        const saveSummary = getCurrentAnalysisSaveSummary();
+        const content = buildAnalysisText();
+
+        try {
+          await writeTextToFileHandleWithRetry(fileHandle, content);
+
+          // 새 파일 정보로 활성 파일 핸들 및 파일명 즉시 갱신 (A -> B 전환 버그 해결!)
+          state.currentFileHandle = fileHandle;
+          state.currentFileName = fileHandle.name;
+          updateFileNameDisplay();
+
+          saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, content);
+          showSaveCompletionMessages(`💾 ${fileHandle.name}에 전체 분석 정보를 저장했습니다. (${saveSummary})`);
+          return;
+        } catch (writeError) {
+          console.error("선택한 파일 핸들 쓰기 실패:", writeError);
+          const failMsg = `⚠️ 파일 저장 중 오류가 발생했습니다 (${writeError?.name || "Error"}: ${writeError?.message || writeError}). OneDrive 동기화 잠금이나 읽기 전용 여부를 확인한 뒤 다시 저장해 주세요.`;
+          showSaveFeedback(failMsg);
+          alert(failMsg);
+          return;
         }
-        if (elements.editMessage && elements.editMessage.textContent === saveMsg) {
-          elements.editMessage.textContent = "";
-          elements.editMessage.style.color = "";
-        }
-      }, 3000);
-      return;
+      }
     } catch (error) {
       if (error?.name === "AbortError") {
         return; // 사용자가 저장을 취소한 경우 조기 종료
@@ -4493,33 +5080,18 @@ async function saveAnalysisTxt(saveAs = false) {
     }
   }
 
-  // 2. showSaveFilePicker 미지원 시 또는 에러 시 일반 브라우저 다운로드 폴백
-  const fallbackFileName = state.currentFileName || getAnalysisFileName();
+  // 2. showSaveFilePicker 미지원 또는 창 오픈 거부 시 브라우저 다운로드 폴백
+  const saveSummary = getCurrentAnalysisSaveSummary();
+  const content = buildAnalysisText();
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const fallbackFileName = normalizeTxtFileName(state.currentFileName, getAnalysisFileName());
   state.currentFileHandle = null; // 핸들 저장이 불가능하므로 null로 리셋
   state.currentFileName = fallbackFileName;
   updateFileNameDisplay();
 
   saveCacheSafely(`sentence_board_file_cache_${fallbackFileName}`, content);
-  downloadAnalysisTxt(blob, fallbackFileName);
-
-  const saveMsg = `⬇️ ${fallbackFileName} 파일을 새로 다운로드했습니다. 기존 파일은 덮어쓰지 않았습니다. (${saveSummary})`;
-  elements.inputMessage.style.color = "var(--color-primary)";
-  elements.inputMessage.textContent = saveMsg;
-  if (elements.editMessage) {
-    elements.editMessage.style.color = "var(--color-primary)";
-    elements.editMessage.textContent = saveMsg;
-  }
-  showSaveFeedback(saveMsg);
-  setTimeout(() => {
-    if (elements.inputMessage.textContent === saveMsg) {
-      elements.inputMessage.textContent = "";
-      elements.inputMessage.style.color = "";
-    }
-    if (elements.editMessage && elements.editMessage.textContent === saveMsg) {
-      elements.editMessage.textContent = "";
-      elements.editMessage.style.color = "";
-    }
-  }, 3000);
+  downloadAnalysisTxt(content, blob, fallbackFileName);
+  showSaveCompletionMessages(`⬇️ ${fallbackFileName} 파일을 새로 다운로드했습니다. 기존 파일은 덮어쓰지 않았습니다. (${saveSummary})`);
 }
 
 function showSaveFeedback(message) {
@@ -4540,14 +5112,21 @@ function getAnalysisFileName() {
   return `sentence-analysis-${stamp}.txt`;
 }
 
-function downloadAnalysisTxt(blob, fileName) {
+function downloadAnalysisTxt(content, blob, fileName) {
+  const href = createDownloadHrefForText(content, blob);
   const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
+  link.href = href;
   link.download = fileName;
+  link.style.display = "none";
   document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  try {
+    link.click();
+  } catch (e) {
+    console.warn("link.click() 실패, window.open 폴백 시도", e);
+    window.open(href, "_blank");
+  } finally {
+    setTimeout(() => link.remove(), 100);
+  }
 }
 
 function buildAnalysisText() {
@@ -4732,63 +5311,149 @@ function formatOneBasedRange(startIndex, endIndex) {
   return `${Number(startIndex) + 1}-${Number(endIndex)}`;
 }
 
-async function triggerAnalysisImport() {
-  if (window.showOpenFilePicker) {
+async function triggerNativeAnalysisImport() {
+  state.preferInputFileImport = false;
+  if (elements.inputMessage) {
+    elements.inputMessage.style.color = "";
+    elements.inputMessage.textContent = "파일 선택 창을 여는 중…";
+  }
+
+  // 로컬 실행기(launch-board.js v2) 환경: Chrome 정책과 무관하게 Windows 탐색기 열기 API 우선 사용
+  if (await ensureLocalServerApi()) {
     try {
-      const pickerOptions = {
-        types: [
-          {
-            description: "Text file",
-            accept: { "text/plain": [".txt"] }
-          }
-        ],
-        id: "whiteboard_ppt_board_picker"
-      };
-      const startIn = getPickerStartIn();
-      if (startIn) {
-        pickerOptions.startIn = startIn;
-      }
-      const [fileHandle] = await openFilePickerWithFallback(pickerOptions);
-      if (!fileHandle) {
+      const res = await callLocalServerApi("/__whiteboard_api/open", {});
+      if (res?.busy || res?.cancelled) {
+        if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
+          elements.inputMessage.textContent = "";
+        }
         return;
       }
-
-      void rememberRecentPickerHandle(fileHandle);
-
-      const file = await fileHandle.getFile();
-      const resultText = await file.text();
-
-      saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, resultText);
-      importAnalysisTxt(resultText, { fileName: fileHandle.name, fileHandle });
-      return;
+      if (res?.ok && typeof res.content === "string") {
+        if (!res.content.trim()) {
+          throw new Error("파일 내용이 비어 있습니다.");
+        }
+        saveCacheSafely(`sentence_board_file_cache_${res.fileName}`, res.content);
+        importAnalysisTxt(res.content, {
+          fileName: res.fileName,
+          fileHandle: null,
+          serverFilePath: res.filePath
+        });
+        if (elements.inputMessage) {
+          elements.inputMessage.style.color = "";
+        }
+        return;
+      }
+      throw new Error(res?.error || "파일을 열지 못했습니다.");
     } catch (error) {
-      if (error?.name === "AbortError") {
-        return;
+      console.error("TXT 불러오기 실패:", error);
+      const errMsg = error?.message || String(error);
+      if (elements.inputMessage) {
+        elements.inputMessage.style.color = "var(--color-danger, #b00020)";
+        elements.inputMessage.textContent = `불러오기 실패: ${errMsg}`;
       }
-      console.warn("OpenFilePicker failed. Falling back to input file.", error);
+      alert(`지문을 불러오지 못했습니다: ${errMsg}`);
+      return;
     }
   }
 
-  state.currentFileHandle = null;
-  elements.analysisFileInput.value = "";
-  elements.analysisFileInput.click();
+  try {
+    const pickerOptions = {
+      id: "whiteboard_ppt_board_picker",
+      types: [
+        {
+          description: "Text file",
+          accept: { "text/plain": [".txt"] }
+        }
+      ]
+    };
+    const startIn = getPickerStartIn();
+    if (startIn) {
+      pickerOptions.startIn = startIn;
+    }
+    const [fileHandle] = await openFilePickerWithFallback(pickerOptions);
+    if (!fileHandle) {
+      if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
+        elements.inputMessage.textContent = "";
+      }
+      return;
+    }
+
+    void rememberRecentPickerHandle(fileHandle);
+    const resultText = await readTextFromFileHandle(fileHandle);
+    if (!resultText.trim()) {
+      throw new Error("파일 내용이 비어 있습니다.");
+    }
+    saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, resultText);
+    importAnalysisTxt(resultText, { fileName: fileHandle.name, fileHandle });
+    if (elements.inputMessage) {
+      elements.inputMessage.style.color = "";
+    }
+  } catch (error) {
+    if (isAbortError(error)) {
+      if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
+        elements.inputMessage.textContent = "";
+      }
+      return;
+    }
+    if (error?.name === "SecurityError") {
+      openAnalysisFileInputFallback();
+      return;
+    }
+    console.error("TXT 불러오기 실패:", error);
+    const errMsg = error?.message || String(error);
+    if (elements.inputMessage) {
+      elements.inputMessage.style.color = "var(--color-danger, #b00020)";
+      elements.inputMessage.textContent = `불러오기 실패: ${errMsg}`;
+    }
+    alert(`지문을 불러오지 못했습니다: ${errMsg}`);
+  }
+}
+
+function triggerAnalysisImport() {
+  // label[for=analysisFileInput] 클릭으로 네이티브 파일창이 열리므로
+  // 여기서는 상태 메시지만 갱신한다. (Chrome 호환: 프로그래밍 click/FSA 미사용)
+  state.preferInputFileImport = false;
+  if (elements.inputMessage) {
+    elements.inputMessage.style.color = "";
+    elements.inputMessage.textContent = "파일 선택 창을 여는 중…";
+  }
 }
 
 function handleAnalysisFileSelected(event) {
   const file = event.target.files?.[0];
   if (!file) {
+    if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
+      elements.inputMessage.textContent = "";
+    }
     return;
+  }
+
+  state.preferInputFileImport = false;
+  if (elements.inputMessage) {
+    elements.inputMessage.style.color = "";
+    elements.inputMessage.textContent = `"${file.name}" 불러오는 중…`;
   }
 
   const reader = new FileReader();
   reader.onload = () => {
     try {
       const resultText = String(reader.result || "");
+      if (!resultText.trim()) {
+        throw new Error("파일 내용이 비어 있습니다.");
+      }
       // 기존 TXT 불러오기로 가져온 최신 데이터를 즉시 로컬 스토리지 캐시에 동기화
       saveCacheSafely(`sentence_board_file_cache_${file.name}`, resultText);
       importAnalysisTxt(resultText, { fileName: file.name, fileHandle: null });
+      if (elements.inputMessage) {
+        elements.inputMessage.style.color = "";
+      }
     } catch (error) {
-      alert(`지문을 불러오지 못했습니다: ${error.message}`);
+      console.error("TXT 불러오기 실패:", error);
+      if (elements.inputMessage) {
+        elements.inputMessage.style.color = "var(--color-danger, #b00020)";
+        elements.inputMessage.textContent = `불러오기 실패: ${error.message || error}`;
+      }
+      alert(`지문을 불러오지 못했습니다: ${error.message || error}`);
     } finally {
       if (event.target) {
         event.target.value = "";
@@ -4796,7 +5461,12 @@ function handleAnalysisFileSelected(event) {
     }
   };
   reader.onerror = () => {
-    alert("파일을 읽는 중 오류가 발생했습니다.");
+    const message = "파일을 읽는 중 오류가 발생했습니다.";
+    if (elements.inputMessage) {
+      elements.inputMessage.style.color = "var(--color-danger, #b00020)";
+      elements.inputMessage.textContent = message;
+    }
+    alert(message);
     if (event.target) {
       event.target.value = "";
     }
@@ -4829,6 +5499,7 @@ function importAnalysisTxt(content, fileMeta = {}) {
         if (fileMeta.fileName !== undefined) {
           state.currentFileName = fileMeta.fileName;
           state.currentFileHandle = fileMeta.fileHandle || null;
+          state.currentServerFilePath = fileMeta.serverFilePath || null;
           updateFileNameDisplay();
         }
       } else {
@@ -4852,6 +5523,7 @@ function importAnalysisTxt(content, fileMeta = {}) {
         if (state.passages.length <= 1 && fileMeta.fileName !== undefined) {
           state.currentFileName = fileMeta.fileName;
           state.currentFileHandle = fileMeta.fileHandle || null;
+          state.currentServerFilePath = fileMeta.serverFilePath || null;
           updateFileNameDisplay();
         }
         loadAsPlainPassage(plainText);
@@ -4865,6 +5537,7 @@ function importAnalysisTxt(content, fileMeta = {}) {
     if (state.passages.length <= 1 && fileMeta.fileName !== undefined) {
       state.currentFileName = fileMeta.fileName;
       state.currentFileHandle = fileMeta.fileHandle || null;
+      state.currentServerFilePath = fileMeta.serverFilePath || null;
       updateFileNameDisplay();
     }
     loadAsPlainPassage(trimmed);
@@ -5099,18 +5772,49 @@ function updateNavButtons() {
 }
 
 function updateFileNameDisplay() {
-  if (!elements.fileNameDisplay) return;
-  if (state.currentFileName) {
-    elements.fileNameDisplay.textContent = state.currentFileName;
-    elements.fileNameDisplay.classList.remove("hidden");
-  } else {
-    elements.fileNameDisplay.textContent = "";
-    elements.fileNameDisplay.classList.add("hidden");
+  const fileName = state.currentFileName ? String(state.currentFileName).trim() : "";
+
+  if (elements.projectFileNameBadge) {
+    if (fileName) {
+      elements.projectFileNameBadge.textContent = `📄 ${fileName}`;
+      elements.projectFileNameBadge.title = `현재 열려 있는 TXT 파일: ${fileName}`;
+      elements.projectFileNameBadge.classList.add("has-file");
+      elements.projectFileNameBadge.classList.remove("is-empty");
+    } else {
+      elements.projectFileNameBadge.textContent = "📄 열린 TXT 없음";
+      elements.projectFileNameBadge.title = "현재 열려 있는 TXT 파일이 없습니다.";
+      elements.projectFileNameBadge.classList.remove("has-file");
+      elements.projectFileNameBadge.classList.add("is-empty");
+    }
+  }
+
+  if (elements.fileNameDisplay) {
+    if (fileName) {
+      elements.fileNameDisplay.textContent = fileName;
+      elements.fileNameDisplay.classList.remove("hidden");
+    } else {
+      elements.fileNameDisplay.textContent = "";
+      elements.fileNameDisplay.classList.add("hidden");
+    }
   }
 }
 
+function isValidFileSystemHandle(handle) {
+  return Boolean(
+    handle &&
+    typeof handle === "object" &&
+    (handle.kind === "file" || handle.kind === "directory")
+  );
+}
+
 function getPickerStartIn() {
-  return state.currentFileHandle || state.recentPickerHandle || undefined;
+  if (isValidFileSystemHandle(state.currentFileHandle)) {
+    return state.currentFileHandle;
+  }
+  if (isValidFileSystemHandle(state.recentPickerHandle)) {
+    return state.recentPickerHandle;
+  }
+  return undefined;
 }
 
 function openPickerHandleDatabase() {
@@ -5133,7 +5837,7 @@ function openPickerHandleDatabase() {
 }
 
 async function rememberRecentPickerHandle(fileHandle) {
-  if (!fileHandle) return;
+  if (!isValidFileSystemHandle(fileHandle)) return;
   state.recentPickerHandle = fileHandle;
 
   try {
@@ -5151,6 +5855,23 @@ async function rememberRecentPickerHandle(fileHandle) {
   }
 }
 
+async function clearRecentPickerHandle() {
+  state.recentPickerHandle = null;
+  try {
+    const database = await openPickerHandleDatabase();
+    await new Promise((resolve, reject) => {
+      const transaction = database.transaction(PICKER_HANDLE_STORE, "readwrite");
+      transaction.objectStore(PICKER_HANDLE_STORE).delete(RECENT_PICKER_HANDLE_KEY);
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
+    database.close();
+  } catch (error) {
+    console.warn("최근 작업 폴더 정보를 초기화하지 못했습니다.", error);
+  }
+}
+
 async function restoreRecentPickerHandle() {
   try {
     const database = await openPickerHandleDatabase();
@@ -5161,9 +5882,25 @@ async function restoreRecentPickerHandle() {
       request.onerror = () => reject(request.error);
     });
     database.close();
-    if (fileHandle) {
-      state.recentPickerHandle = fileHandle;
+    if (!isValidFileSystemHandle(fileHandle)) {
+      return;
     }
+    if (fileHandle.kind === "file" && typeof fileHandle.queryPermission === "function") {
+      try {
+        const perm = await fileHandle.queryPermission({ mode: "read" });
+        if (perm === "denied") {
+          void clearRecentPickerHandle();
+          return;
+        }
+        if (perm === "granted" && typeof fileHandle.getFile === "function") {
+          await fileHandle.getFile();
+        }
+      } catch (_verifyErr) {
+        void clearRecentPickerHandle();
+        return;
+      }
+    }
+    state.recentPickerHandle = fileHandle;
   } catch (error) {
     console.warn("최근 작업 폴더 정보를 불러오지 못했습니다.", error);
   }
@@ -5225,6 +5962,7 @@ function bindEvents() {
     if (state.passages.length <= 1) {
       state.currentFileName = null;
       state.currentFileHandle = null;
+      state.currentServerFilePath = null;
       updateFileNameDisplay();
     }
     syncActivePassageToProject();
@@ -5239,6 +5977,7 @@ function bindEvents() {
     if (state.passages.length <= 1) {
       state.currentFileName = null;
       state.currentFileHandle = null;
+      state.currentServerFilePath = null;
       updateFileNameDisplay();
     }
     syncActivePassageToProject();
@@ -5307,12 +6046,39 @@ function bindEvents() {
     });
   }
 
-  elements.inputImportButton.addEventListener("click", triggerAnalysisImport);
+  if (elements.inputImportButton && elements.analysisFileInput) {
+    elements.inputImportButton.addEventListener("click", (event) => {
+      if (event.target === elements.analysisFileInput) {
+        return;
+      }
+      if (
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "localhost" ||
+        state.localServerApiReady ||
+        shouldUseNativeOpenFilePicker()
+      ) {
+        event.preventDefault();
+        void triggerNativeAnalysisImport();
+        return;
+      }
+      triggerAnalysisImport();
+    });
+    elements.analysisFileInput.addEventListener("change", handleAnalysisFileSelected);
+    elements.analysisFileInput.addEventListener("cancel", () => {
+      if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
+        elements.inputMessage.textContent = "";
+      }
+    });
+  } else {
+    console.error("TXT 불러오기 버튼 또는 파일 input을 찾지 못했습니다.", {
+      button: Boolean(elements.inputImportButton),
+      input: Boolean(elements.analysisFileInput)
+    });
+  }
   elements.applySentenceTextButton.addEventListener("click", updateSentenceText);
   elements.toggleImportantButton.addEventListener("click", toggleImportantSentence);
   elements.addSentenceButton.addEventListener("click", insertNewSentence);
   elements.deleteSentenceButton.addEventListener("click", deleteCurrentSentence);
-  elements.analysisFileInput.addEventListener("change", handleAnalysisFileSelected);
 
   elements.headerInputButton.addEventListener("click", () => goToWorkflowMode("input"));
   elements.headerVocabularyButton.addEventListener("click", () => goToWorkflowMode("vocabulary"));
@@ -5323,8 +6089,16 @@ function bindEvents() {
   elements.headerPassageShareButton.addEventListener("click", () => goToWorkflowMode("passage-share"));
   if (elements.headerUndoButton) elements.headerUndoButton.addEventListener("click", undoState);
   if (elements.headerRedoButton) elements.headerRedoButton.addEventListener("click", redoState);
-  elements.headerSaveTxtButton.addEventListener("click", () => saveAnalysisTxt(false));
-  elements.headerSaveAsTxtButton.addEventListener("click", () => saveAnalysisTxt(true));
+  elements.headerSaveTxtButton.addEventListener("click", (event) => handleHeaderSaveClick(event, false));
+  elements.headerSaveAsTxtButton.addEventListener("click", (event) => handleHeaderSaveClick(event, true));
+  const handleSaveAnchorSpaceKey = (event) => {
+    if (event.key === " " || event.code === "Space") {
+      event.preventDefault();
+      event.currentTarget.click();
+    }
+  };
+  elements.headerSaveTxtButton.addEventListener("keydown", handleSaveAnchorSpaceKey);
+  elements.headerSaveAsTxtButton.addEventListener("keydown", handleSaveAnchorSpaceKey);
 
   elements.plainShareModeButton.addEventListener("click", () => {
     state.passageShareMode = "plain";
@@ -5379,7 +6153,14 @@ function bindEvents() {
   elements.minorPresentLane.addEventListener("dragover", handlePresentMinorDragOver);
   elements.minorPresentLane.addEventListener("drop", handlePresentMinorDrop);
 
+  // bubble 기본 키보드 핸들러
   document.addEventListener("keydown", handleKeyboard);
+  // Chrome은 Alt 메뉴 가로채기가 강해 window 캡처 단계에서 먼저 차단/처리한다.
+  window.addEventListener("keydown", handlePassageShareShortcutCapture, true);
+  window.addEventListener("keyup", handlePassageShareShortcutCapture, true);
+  window.addEventListener("blur", () => {
+    passageShareAltHeld = false;
+  });
   window.addEventListener("resize", () => {
     applySettings();
     schedulePresentationFit();
@@ -5406,13 +6187,99 @@ function bindEvents() {
   }
 }
 
+function isTypingFocusTarget(element = document.activeElement) {
+  if (!element) return false;
+  if (element.isContentEditable) return true;
+  const tag = element.tagName;
+  if (tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (tag !== "INPUT") return false;
+  // file/checkbox 등은 텍스트 입력이 아니므로 7단계 단축키를 막지 않는다.
+  const type = String(element.type || "text").toLowerCase();
+  return !["button", "checkbox", "radio", "file", "range", "reset", "submit", "color"].includes(type);
+}
+
+// Chrome은 Alt를 메뉴 접근키로 가로채 event.altKey가 숫자키 이벤트에서 false가 되는 경우가 있다.
+// 그래서 Alt 눌림 상태를 앱이 직접 추적한다. (Edge는 대체로 event.altKey만으로도 충분)
+let passageShareAltHeld = false;
+
+function isAltKeyEvent(event) {
+  return event.key === "Alt" || event.code === "AltLeft" || event.code === "AltRight";
+}
+
+function getAltDigitShortcutNumber(event) {
+  // Alt 조합에서는 event.key가 특수문자/메뉴문자로 바뀌는 경우가 많아
+  // 물리 키 위치(event.code)를 우선한다. (Digit3 / Numpad3 → 3)
+  const code = String(event.code || "");
+  const digitCodeMatch = code.match(/^(?:Digit|Numpad)([0-9])$/);
+  if (digitCodeMatch) {
+    const value = Number(digitCodeMatch[1]);
+    return value === 0 ? 10 : value;
+  }
+
+  if (event.key >= "0" && event.key <= "9") {
+    const value = Number(event.key);
+    return value === 0 ? 10 : value;
+  }
+
+  return -1;
+}
+
+function suppressBrowserAltMenu(event) {
+  if (typeof event.preventDefault === "function") event.preventDefault();
+  if (typeof event.stopPropagation === "function") event.stopPropagation();
+  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+}
+
+function handlePassageShareAltKeyTracking(event) {
+  if (state.mode !== "passage-share") {
+    passageShareAltHeld = false;
+    return false;
+  }
+  if (!isAltKeyEvent(event)) return false;
+
+  if (event.type === "keydown") {
+    passageShareAltHeld = true;
+  } else if (event.type === "keyup") {
+    passageShareAltHeld = false;
+  }
+  // Windows Chrome 메뉴 바 활성화 차단 (Edge는 상대적으로 덜 가로챔)
+  suppressBrowserAltMenu(event);
+  return true;
+}
+
+function handlePassageShareAltDigitShortcut(event) {
+  if (state.mode !== "passage-share") return false;
+  if (event.ctrlKey || event.metaKey) return false;
+  if (isAltKeyEvent(event)) return false;
+
+  const altActive = event.altKey || passageShareAltHeld;
+  if (!altActive) return false;
+
+  const num = getAltDigitShortcutNumber(event);
+  if (num < 1 || num > 10) return false;
+
+  const targetSentenceIndex = num - 1;
+  if (targetSentenceIndex >= state.sentences.length) return false;
+
+  suppressBrowserAltMenu(event);
+  togglePassageShareSentence(targetSentenceIndex);
+  return true;
+}
+
+function handlePassageShareShortcutCapture(event) {
+  if (handlePassageShareAltKeyTracking(event)) return;
+  if (event.type === "keydown" && handlePassageShareAltDigitShortcut(event)) return;
+}
+
 function handleKeyboard(event) {
+  // Alt+숫자 문장 토글은 window capture 리스너(handlePassageShareShortcutCapture)에서만 처리한다.
+  // 여기서 다시 처리하면 숨김↔표시가 두 번 토글되어 키가 안 먹는 것처럼 보인다.
+
   const isCtrlOrCmd = event.ctrlKey || event.metaKey;
   if (isCtrlOrCmd) {
     const keyLower = event.key.toLowerCase();
     if (keyLower === "z") {
-      const activeTag = document.activeElement?.tagName;
-      const isInput = activeTag === "TEXTAREA" || activeTag === "INPUT" || document.activeElement?.isContentEditable;
+      const isInput = isTypingFocusTarget();
       if (!isInput) {
         event.preventDefault();
         if (event.shiftKey) {
@@ -5428,8 +6295,7 @@ function handleKeyboard(event) {
       }
     }
     if (keyLower === "y") {
-      const activeTag = document.activeElement?.tagName;
-      const isInput = activeTag === "TEXTAREA" || activeTag === "INPUT" || document.activeElement?.isContentEditable;
+      const isInput = isTypingFocusTarget();
       if (!isInput) {
         event.preventDefault();
         redoState();
@@ -5438,8 +6304,7 @@ function handleKeyboard(event) {
     }
   }
 
-  const activeTag = document.activeElement?.tagName;
-  if (activeTag === "TEXTAREA" || activeTag === "INPUT" || activeTag === "SELECT") {
+  if (isTypingFocusTarget()) {
     return;
   }
 
@@ -5508,6 +6373,12 @@ function handleKeyboard(event) {
         return;
       }
     }
+
+    // Ctrl 키 조합은 크롬 탭 이동 등 브라우저 기본 단축키로 보장하기 위해 앱에서 가로채지 않고 즉시 반환
+    if (event.ctrlKey || event.metaKey) {
+      return;
+    }
+
     if (event.key === "0") {
       event.preventDefault();
       showAllPassageShareLevels();
@@ -5607,6 +6478,50 @@ applySettings();
 updateHeaderWorkflow(state.mode);
 updateProjectPassageBar();
 void restoreRecentPickerHandle();
+void ensureLocalServerApi();
+void tryUpgradeChromeFileToLocalhost();
+
+async function tryUpgradeChromeFileToLocalhost() {
+  if (window.location.protocol !== "file:" || isEdgeBrowser()) {
+    return;
+  }
+  if (state.passageText.trim() || state.sentences.length > 0 || elements.passageInput?.value?.trim()) {
+    return;
+  }
+  const currentFilePath = decodeURIComponent(window.location.pathname || "")
+    .replace(/^\/([A-Za-z]:)/, "$1")
+    .replace(/\//g, "\\")
+    .toLowerCase();
+
+  for (const port of [5510, 5511, 5512]) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 350);
+      const response = await fetch(`http://127.0.0.1:${port}/__whiteboard_ping`, {
+        signal: controller.signal,
+        cache: "no-store"
+      });
+      clearTimeout(timer);
+      if (!response.ok) continue;
+
+      const data = await response.json();
+      if (data?.app !== "english-visualization-board" || typeof data.root !== "string") {
+        continue;
+      }
+      const serverRoot = data.root.replace(/\//g, "\\").toLowerCase();
+      if (!currentFilePath.startsWith(serverRoot)) {
+        continue;
+      }
+      if (state.passageText.trim() || state.sentences.length > 0 || elements.passageInput?.value?.trim()) {
+        return;
+      }
+      window.location.replace(`http://127.0.0.1:${port}/`);
+      return;
+    } catch (_err) {
+      // 로컬 런처 서버가 아직 켜져 있지 않으면 조용히 무시
+    }
+  }
+}
 
 function showElementDetail(component) {
   elements.elementDetailOverlay.classList.remove("hidden");

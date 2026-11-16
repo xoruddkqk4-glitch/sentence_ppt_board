@@ -7,8 +7,8 @@
   <meta name="description" content="영어 지문을 문장 성분별 발표 화면으로 보여주는 교실용 앱">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/vocabulary.css">
+  <link rel="stylesheet" href="css/style.css?v=20261116g">
+  <link rel="stylesheet" href="css/vocabulary.css?v=20261116g">
 </head>
 <body>
   <div id="app" class="app-shell" data-mode="input" data-theme="light">
@@ -20,7 +20,10 @@
         <button class="project-nav-button" type="button" id="nextPassageButton" title="프로젝트 내 다음 지문으로 이동">프로젝트 내 다음 지문 ▶</button>
         <button class="project-manage-button rename" type="button" id="renamePassageButton" title="현재 지문 이름 수정">✏️ 지문 이름 변경</button>
       </div>
-      <p id="saveStatus" class="save-status" role="status" aria-live="polite"></p>
+      <div class="project-bar-status-area">
+        <span id="projectFileNameBadge" class="project-file-name-badge is-empty" title="현재 열려 있는 TXT 파일이 없습니다.">📄 열린 TXT 없음</span>
+        <p id="saveStatus" class="save-status" role="status" aria-live="polite"></p>
+      </div>
       <div class="project-passage-manage-group">
         <button class="project-manage-button add" type="button" id="addPassageButton" title="현재 프로젝트에 새 지문 추가">+ 지문 추가</button>
         <button class="project-manage-button delete" type="button" id="deletePassageButton" title="현재 지문을 프로젝트에서 삭제">- 현재 지문 삭제</button>
@@ -44,8 +47,8 @@
         <button class="top-workflow-button" type="button" id="headerUndoButton" title="Ctrl+Z: 이전으로 돌아가기 (Undo)" disabled>↩️ 되돌리기</button>
         <button class="top-workflow-button" type="button" id="headerRedoButton" title="Ctrl+Y / Ctrl+Shift+Z: 다시 실행 (Redo)" disabled>↪️ 다시 실행</button>
         <span class="top-workflow-divider" aria-hidden="true">|||</span>
-        <button class="top-workflow-button" type="button" id="headerSaveTxtButton">현재 TXT에 저장</button>
-        <button class="top-workflow-button" type="button" id="headerSaveAsTxtButton">다른 이름으로 저장</button>
+        <a class="top-workflow-button" id="headerSaveTxtButton" href="#" download="">현재 TXT에 저장</a>
+        <a class="top-workflow-button" id="headerSaveAsTxtButton" href="#" download="">다른 이름으로 저장</a>
       </nav>
     </header>
 
@@ -103,7 +106,10 @@
             <div class="button-row">
               <button class="button secondary" type="button" id="clearButton">초기화</button>
               <button class="button secondary" type="button" id="sampleButton">샘플 넣기</button>
-              <button class="button secondary" type="button" id="inputImportButton">TXT 불러오기</button>
+              <label class="button secondary" id="inputImportButton">
+                TXT 불러오기
+                <input id="analysisFileInput" type="file" accept=".txt,text/plain" tabindex="-1" aria-label="TXT 파일 선택">
+              </label>
               <button class="button primary" type="submit">2단계-어휘 분석 시작</button>
             </div>
           </form>
@@ -282,7 +288,7 @@
           <div id="passageShareSentenceBar" class="passage-share-sentence-bar hidden" aria-label="개조식 문장 숨김 제어">
             <div class="sentence-bar-left">
               <span class="sentence-bar-label">문장 제어 :</span>
-              <span class="sentence-bar-guide">각 문장 카드의 <strong>[👁️ 문장 N]</strong> 버튼을 누르면 해당 문장을 숨기거나 다시 볼 수 있습니다.</span>
+              <span class="sentence-bar-guide">각 문장 카드의 <strong>[👁️ 문장 N]</strong> 버튼을 누르거나 <strong>[Alt + 숫자키 N]</strong>을 누르면 해당 문장을 숨기거나 다시 볼 수 있습니다.</span>
               <button type="button" id="outlineShowAllBtn" class="button secondary compact sentence-action-btn" title="단축키: 0">모두 보이기 (0)</button>
             </div>
             <div class="sentence-bar-right">
@@ -343,9 +349,8 @@
     </div>
   </div>
 
-  <input id="analysisFileInput" type="file" accept=".txt,text/plain" hidden>
-  <script src="js/quick-txt-data.js"></script>
-  <script src="js/vocabulary.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/quick-txt-data.js?v=20261116g"></script>
+  <script src="js/vocabulary.js?v=20261116g"></script>
+  <script src="js/main.js?v=20261116g"></script>
 </body>
 </html>
