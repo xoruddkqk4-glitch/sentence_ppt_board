@@ -82,6 +82,10 @@ const state = {
   currentFileHandle: null,
   currentServerFilePath: null,
   localServerApiReady: false,
+  localServerVersion: 0,
+  localServerCapabilities: [],
+  fileIoInFlight: null,
+  directFileNoticeDismissed: false,
   recentPickerHandle: null,
   preferInputFileImport: false,
   hasLoadedAnalysis: false,
@@ -206,7 +210,12 @@ const elements = {
   elementDetailText: document.getElementById("elementDetailText"),
   elementCloseButton: document.getElementById("elementCloseButton"),
   headerUndoButton: document.getElementById("headerUndoButton"),
-  headerRedoButton: document.getElementById("headerRedoButton")
+  headerRedoButton: document.getElementById("headerRedoButton"),
+  directFileNoticeBanner: document.getElementById("directFileNoticeBanner"),
+  directFileNoticeText: document.getElementById("directFileNoticeText"),
+  retryLocalServerButton: document.getElementById("retryLocalServerButton"),
+  dismissDirectFileNoticeButton: document.getElementById("dismissDirectFileNoticeButton"),
+  fileDropOverlay: document.getElementById("fileDropOverlay")
 };
 
 const undoStack = [];
@@ -4513,50 +4522,220 @@ function isEdgeBrowser() {
   return /\bEdg\//i.test(navigator.userAgent || "");
 }
 
-async function ensureLocalServerApi() {
-  if (
-    window.location.protocol !== "http:" ||
-    (window.location.hostname !== "127.0.0.1" && window.location.hostname !== "localhost")
-  ) {
-    state.localServerApiReady = false;
-    return false;
-  }
-  if (state.localServerApiReady) {
+let localServerPingPromise = null;
+let lastFocusServerSyncAt = 0;
+let externalFileDragDepth = 0;
+
+function isLocalServerHost() {
+  return (
+    window.location.protocol === "http:" &&
+    (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+  );
+}
+
+function hasLocalServerCapability(capability) {
+  return Array.isArray(state.localServerCapabilities) && state.localServerCapabilities.includes(capability);
+}
+
+function isDirectFileBlocked() {
+  return window.location.protocol === "file:" && !shouldUseNativeSaveFilePicker();
+}
+
+function hasAnyBoardContent() {
+  if (state.passages.some((entry) => hasPassageEntryContent(entry))) {
     return true;
   }
+  return Boolean(elements.passageInput?.value?.trim());
+}
+
+function updateDirectFileNoticeBanner() {
+  const banner = elements.directFileNoticeBanner;
+  const textEl = elements.directFileNoticeText;
+  const dismissBtn = elements.dismissDirectFileNoticeButton;
+  const saveBlocked = isDirectFileBlocked();
+
+  const saveButtons = [elements.headerSaveTxtButton, elements.headerSaveAsTxtButton].filter(Boolean);
+  saveButtons.forEach((btn) => {
+    btn.classList.toggle("is-save-blocked", saveBlocked);
+    if (saveBlocked) {
+      btn.title = "index.html 직접 실행(file://)에서는 저장이 차단됩니다. [영어시각화보드_실행.bat]으로 실행해 주세요.";
+    } else {
+      btn.removeAttribute("title");
+    }
+  });
+
+  if (!banner || !textEl) return;
+
+  if (isLocalServerHost() || window.location.protocol !== "file:") {
+    banner.classList.add("hidden");
+    banner.classList.remove("is-blocked", "is-info");
+    return;
+  }
+
+  if (saveBlocked) {
+    banner.classList.remove("hidden", "is-info");
+    banner.classList.add("is-blocked");
+    textEl.textContent =
+      "⚠️ index.html을 직접 열었습니다(file://). Chrome에서는 직접 저장·덮어쓰기가 차단됩니다. 폴더의 [영어시각화보드_실행.bat]을 더블클릭해 실행해 주세요.";
+    if (dismissBtn) {
+      dismissBtn.classList.add("hidden");
+    }
+    return;
+  }
+
+  if (state.directFileNoticeDismissed) {
+    banner.classList.add("hidden");
+    return;
+  }
+
+  banner.classList.remove("hidden", "is-blocked");
+  banner.classList.add("is-info");
+  textEl.textContent =
+    "ℹ️ index.html을 직접 열었습니다(file://). Edge에서는 저장이 가능하지만, [영어시각화보드_실행.bat]으로 실행하면 권한 팝업 없이 더 안정적으로 덮어쓸 수 있습니다.";
+  if (dismissBtn) {
+    dismissBtn.classList.remove("hidden");
+  }
+}
+
+function showDirectFileSaveBlockedAlert() {
+  updateDirectFileNoticeBanner();
+  showSaveFeedback("⛔ index.html 직접 실행(file://)에서는 저장이 차단됩니다. [영어시각화보드_실행.bat]으로 실행해 주세요.");
+  alert(
+    "현재 index.html 파일을 직접 열어(file://) 파일 덮어쓰기 및 폴더 지정 저장이 차단되어 있습니다.\n\n" +
+    "다운로드 폴더에 중복 파일이 쌓이지 않도록 브라우저 임시 다운로드 저장도 차단했습니다.\n\n" +
+    "폴더의 [영어시각화보드_실행.bat] 파일을 더블클릭해 실행해 주세요. (현재 화면 작업 내용이 있다면 복사해 둔 뒤 .bat 실행 창에서 이어서 작업해 주세요.)"
+  );
+}
+
+async function pingLocalServerOnce(timeoutMs = 1200) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 500);
     const response = await fetch("/__whiteboard_ping", {
       signal: controller.signal,
       cache: "no-store"
     });
-    clearTimeout(timer);
-    if (!response.ok) return false;
-    const data = await response.json();
-    const supported = Boolean(
-      data?.app === "english-visualization-board" &&
-      Number(data?.version) >= 3 &&
-      Array.isArray(data?.capabilities) &&
-      data.capabilities.includes("native-win-dialog")
-    );
-    state.localServerApiReady = supported;
-    return supported;
+    if (!response.ok) return null;
+    return await response.json();
   } catch (_err) {
-    return false;
+    return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
-async function callLocalServerApi(endpoint, payload = {}) {
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Whiteboard-Local": "1"
-    },
-    body: JSON.stringify(payload)
+async function ensureLocalServerApi({ forceRefresh = false } = {}) {
+  if (!isLocalServerHost()) {
+    state.localServerApiReady = false;
+    state.localServerVersion = 0;
+    state.localServerCapabilities = [];
+    updateFileNameDisplay();
+    updateDirectFileNoticeBanner();
+    return false;
+  }
+  if (!forceRefresh && state.localServerApiReady) {
+    return true;
+  }
+  if (!forceRefresh && localServerPingPromise) {
+    return await localServerPingPromise;
+  }
+
+  const runProbe = async () => {
+    const attempts = [1200, 1800];
+    for (let idx = 0; idx < attempts.length; idx += 1) {
+      const data = await pingLocalServerOnce(attempts[idx]);
+      if (data?.app === "english-visualization-board") {
+        const version = Number(data?.version) || 0;
+        const capabilities = Array.isArray(data?.capabilities) ? data.capabilities : [];
+        const supported = Boolean(version >= 3 && capabilities.includes("native-win-dialog"));
+        state.localServerApiReady = supported;
+        state.localServerVersion = version;
+        state.localServerCapabilities = capabilities;
+        updateFileNameDisplay();
+        updateDirectFileNoticeBanner();
+        return supported;
+      }
+      if (idx < attempts.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      }
+    }
+    state.localServerApiReady = false;
+    state.localServerVersion = 0;
+    state.localServerCapabilities = [];
+    updateFileNameDisplay();
+    return false;
+  };
+
+  const promise = runProbe().finally(() => {
+    if (localServerPingPromise === promise) {
+      localServerPingPromise = null;
+    }
   });
-  return await response.json();
+  localServerPingPromise = promise;
+  return await promise;
+}
+
+async function callLocalServerApi(endpoint, payload = {}, { retryOnNetworkError = true } = {}) {
+  const doPost = async () => {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Whiteboard-Local": "1"
+      },
+      body: JSON.stringify(payload)
+    });
+    const rawText = await response.text();
+    try {
+      return rawText ? JSON.parse(rawText) : {};
+    } catch (_parseErr) {
+      return {
+        ok: false,
+        error: `로컬 서버 응답 형식이 올바르지 않습니다 (HTTP ${response.status}).`
+      };
+    }
+  };
+
+  try {
+    return await doPost();
+  } catch (err) {
+    const isNetworkErr = err instanceof TypeError || err?.name === "TypeError";
+    if (!isNetworkErr) {
+      throw err;
+    }
+    state.localServerApiReady = false;
+    if (retryOnNetworkError) {
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      const recovered = await ensureLocalServerApi({ forceRefresh: true });
+      if (recovered) {
+        try {
+          return await doPost();
+        } catch (retryErr) {
+          if (!(retryErr instanceof TypeError || retryErr?.name === "TypeError")) {
+            throw retryErr;
+          }
+          state.localServerApiReady = false;
+        }
+      }
+    }
+    throw new Error(
+      "로컬 실행기 서버와 연결이 끊어졌습니다. 폴더의 [영어시각화보드_실행.bat]을 다시 더블클릭해 실행한 뒤 다시 시도해 주세요. (현재 화면의 작업 내용은 유지됩니다.)"
+    );
+  }
+}
+
+async function focusOpenLocalDialogIfBusy() {
+  if (!isLocalServerHost() || !hasLocalServerCapability("dialog-focus-control")) {
+    return false;
+  }
+  try {
+    const res = await callLocalServerApi("/__whiteboard_api/focus-dialog", {}, {
+      retryOnNetworkError: false
+    });
+    return Boolean(res?.focused);
+  } catch (_err) {
+    return false;
+  }
 }
 
 function shouldUseNativeSaveFilePicker() {
@@ -4634,11 +4813,11 @@ async function openSaveFilePickerWithFallback(pickerOptions) {
         if (retryError?.name === "SecurityError" && pickerOptions.startIn) {
           return { handle: null, cancelled: false, needsRetryClick: true };
         }
-        console.warn("클린 옵션 저장 창 실행 실패, 브라우저 다운로드 폴백으로 전환합니다.", retryError);
+        console.warn("클린 옵션 저장 창 실행 실패:", retryError);
         return { handle: null, cancelled: false, error: retryError };
       }
     }
-    console.warn("저장 창 실행 실패, 브라우저 다운로드 폴백으로 전환합니다.", error);
+    console.warn("저장 창 실행 실패:", error);
     return { handle: null, cancelled: false, error };
   }
 }
@@ -4715,28 +4894,6 @@ function armInputFileImportFallback(message) {
     elements.inputMessage.style.color = "var(--color-primary)";
     elements.inputMessage.textContent = message;
   }
-}
-
-let activeSaveObjectUrl = null;
-
-function releaseActiveSaveObjectUrl() {
-  if (activeSaveObjectUrl) {
-    const urlToRevoke = activeSaveObjectUrl;
-    activeSaveObjectUrl = null;
-    setTimeout(() => URL.revokeObjectURL(urlToRevoke), 60000);
-  }
-}
-
-function createDownloadHrefForText(content, blob) {
-  releaseActiveSaveObjectUrl();
-  const encoded = encodeURIComponent(content);
-  // Chromium kMaxURLChars(2MB) 이내인 일반 분석 TXT는 file:// 오리진에서도 100% 허용되는 data URI 사용
-  if (encoded.length <= 1800000) {
-    return `data:text/plain;charset=utf-8,${encoded}`;
-  }
-  const targetBlob = blob || new Blob([content], { type: "text/plain;charset=utf-8" });
-  activeSaveObjectUrl = URL.createObjectURL(targetBlob);
-  return activeSaveObjectUrl;
 }
 
 function normalizeTxtFileName(rawName, fallbackName) {
@@ -4834,75 +4991,31 @@ async function writeTextToFileHandleWithRetry(fileHandle, content) {
 }
 
 function handleHeaderSaveClick(event, saveAs = false) {
+  event.preventDefault();
+
+  if (isDirectFileBlocked()) {
+    showDirectFileSaveBlockedAlert();
+    return;
+  }
+
   applyPendingEdits();
   syncActivePassageToProject();
 
   const hasAnyContent = state.passages.some((entry) => hasPassageEntryContent(entry));
   if (!hasAnyContent) {
-    event.preventDefault();
     alert("저장할 분석 결과가 없습니다.");
     return;
   }
 
-  // 로컬 런처(127.0.0.1), Edge(file:// 포함) 및 http/https 환경의 Chrome에서는 기존 저장 경로 그대로 사용
-  if (
-    window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "localhost" ||
-    state.localServerApiReady ||
-    (!saveAs && (state.currentServerFilePath || state.currentFileHandle)) ||
-    shouldUseNativeSaveFilePicker()
-  ) {
-    event.preventDefault();
-    void saveAnalysisTxt(saveAs);
-    return;
-  }
-
-  const confirmDownload = confirm(
-    "현재 Chrome에서 index.html을 직접 열었기 때문에(file:// 주소) Chrome 보안 정책상 '다운로드 없는 직접 파일 저장' 및 '열린 TXT 자동 전환'이 제한됩니다.\n\n" +
-    "폴더의 [영어시각화보드_실행.bat] 파일을 더블클릭해 실행하면 Edge처럼 다운로드 없이 선택한 폴더에 바로 저장되고, 저장 직후 새 TXT 파일이 열린 상태로 전환됩니다.\n\n" +
-    "지금 작업 중인 내용을 우선 임시 다운로드 방식으로 내려받으시겠습니까?"
-  );
-  if (!confirmDownload) {
-    event.preventDefault();
-    return;
-  }
-
-  const anchorEl = event.currentTarget;
-  if (!(anchorEl instanceof HTMLAnchorElement)) {
-    event.preventDefault();
-    void saveAnalysisTxt(saveAs);
-    return;
-  }
-
-  // Chrome file:// 환경: 클릭된 네이티브 <a download> 요소에 직접 href/download를 주입하고
-  // preventDefault()를 호출하지 않아 브라우저 기본 다운로드 매니저가 즉시 처리하게 한다.
-  const saveSummary = getCurrentAnalysisSaveSummary();
-  const content = buildAnalysisText();
-  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-  const targetFileName = normalizeTxtFileName(
-    state.currentFileName || getAnalysisFileName(),
-    getAnalysisFileName()
-  );
-  const href = createDownloadHrefForText(content, blob);
-
-  anchorEl.setAttribute("href", href);
-  anchorEl.setAttribute("download", targetFileName);
-
-  state.currentFileHandle = null;
-  state.currentFileName = targetFileName;
-  updateFileNameDisplay();
-  saveCacheSafely(`sentence_board_file_cache_${targetFileName}`, content);
-
-  setTimeout(() => {
-    if (anchorEl.getAttribute("href") === href) {
-      anchorEl.setAttribute("href", "#");
-    }
-  }, 1500);
-
-  showSaveCompletionMessages(`💾 ${targetFileName} 파일 저장을 실행했습니다. (${saveSummary})`);
+  void saveAnalysisTxt(saveAs);
 }
 
 async function saveAnalysisTxt(saveAs = false) {
+  if (isDirectFileBlocked()) {
+    showDirectFileSaveBlockedAlert();
+    return;
+  }
+
   applyPendingEdits();
   syncActivePassageToProject();
 
@@ -4912,186 +5025,229 @@ async function saveAnalysisTxt(saveAs = false) {
     return;
   }
 
-  const isLocalServerReady = await ensureLocalServerApi();
-  if (
-    !isLocalServerReady &&
-    window.location.protocol === "http:" &&
-    (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
-  ) {
-    alert("⚠️ 로컬 실행기 서버 버전이 업데이트되었습니다. 폴더의 [영어시각화보드_실행.bat]을 다시 더블클릭해 실행해 주세요.");
+  if (state.fileIoInFlight) {
+    if (state.fileIoInFlight === "open" || state.fileIoInFlight === "save-as") {
+      void focusOpenLocalDialogIfBusy();
+      showSaveFeedback("⚠️ 이미 파일 탐색기 창이 열려 있습니다. 열려 있는 창을 먼저 완료하거나 닫아 주세요.");
+    } else {
+      showSaveFeedback("⏳ 이전 파일 작업을 처리하는 중입니다…");
+    }
     return;
   }
 
-  // 로컬 실행기(launch-board.js v3) 환경: Chrome 보안 정책과 무관하게 Windows 탐색기 저장 + 직접 파일 쓰기 실행
-  if (isLocalServerReady) {
-    const saveSummary = getCurrentAnalysisSaveSummary();
-    const content = buildAnalysisText();
+  state.fileIoInFlight = "save-pending";
+  try {
+    const isLocalServerReady = await ensureLocalServerApi();
+    if (!isLocalServerReady && isLocalServerHost()) {
+      alert(
+        "⚠️ 로컬 실행기 서버와 연결되지 않았거나 업데이트가 필요합니다. 폴더의 [영어시각화보드_실행.bat]을 다시 더블클릭해 실행해 주세요. (현재 화면의 작업 내용은 유지됩니다.)"
+      );
+      return;
+    }
 
-    if (!saveAs && state.currentServerFilePath) {
-      try {
-        const res = await callLocalServerApi("/__whiteboard_api/save-current", {
-          filePath: state.currentServerFilePath,
-          content
-        });
-        if (res?.ok) {
-          const savedFileName = res.fileName || state.currentFileName || getAnalysisFileName();
+    // 로컬 실행기(launch-board.js) 환경: Chrome 보안 정책과 무관하게 Windows 탐색기 저장 + 직접 파일 쓰기 실행
+    if (isLocalServerReady) {
+      const saveSummary = getCurrentAnalysisSaveSummary();
+      const content = buildAnalysisText();
+
+      if (!saveAs && state.currentServerFilePath) {
+        state.fileIoInFlight = "save-current";
+        try {
+          const res = await callLocalServerApi("/__whiteboard_api/save-current", {
+            filePath: state.currentServerFilePath,
+            content
+          });
+          if (res?.ok) {
+            const savedFileName = res.fileName || state.currentFileName || getAnalysisFileName();
+            state.currentFileName = savedFileName;
+            state.currentFileHandle = null;
+            updateFileNameDisplay();
+            saveCacheSafely(`sentence_board_file_cache_${savedFileName}`, content);
+            showSaveCompletionMessages(`💾 ${savedFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`);
+            return;
+          }
+          if (res && !res.ok && !res.needsSaveAs) {
+            alert(`⚠️ 파일 저장 실패: ${res.error || "알 수 없는 오류"}`);
+            return;
+          }
+          if (res?.needsSaveAs) {
+            showSaveFeedback("⚠️ 파일 경로를 다시 확인해야 하여 저장 위치 선택 창을 엽니다.");
+          }
+        } catch (err) {
+          alert(`⚠️ 파일 저장 중 오류가 발생했습니다: ${err?.message || err}`);
+          return;
+        }
+      } else if (!saveAs && state.currentFileHandle) {
+        state.fileIoInFlight = "save-current";
+        try {
+          await writeTextToFileHandleWithRetry(state.currentFileHandle, content);
+          void rememberRecentPickerHandle(state.currentFileHandle);
+          const savedFileName = state.currentFileName || state.currentFileHandle.name || getAnalysisFileName();
           state.currentFileName = savedFileName;
-          state.currentFileHandle = null;
           updateFileNameDisplay();
           saveCacheSafely(`sentence_board_file_cache_${savedFileName}`, content);
           showSaveCompletionMessages(`💾 ${savedFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`);
           return;
+        } catch (error) {
+          if (error?.name === "AbortError") {
+            return;
+          }
+          console.warn("드래그 파일 핸들 쓰기 실패. 저장 위치 선택 창을 엽니다.", error);
+          state.currentFileHandle = null;
+          showSaveFeedback("⚠️ 드래그한 파일 핸들로 직접 쓰기에 실패하여 저장 위치 선택 창을 엽니다.");
         }
-        if (res && !res.ok && !res.needsSaveAs) {
-          alert(`⚠️ 파일 저장 실패: ${res.error || "알 수 없는 오류"}`);
+      }
+
+      state.fileIoInFlight = "save-as";
+      if (document.fullscreenElement) {
+        await document.exitFullscreen().catch(() => {});
+      }
+      const suggestedName = normalizeTxtFileName(
+        state.currentFileName || getAnalysisFileName(),
+        getAnalysisFileName()
+      );
+      try {
+        const res = await callLocalServerApi("/__whiteboard_api/save-as", {
+          suggestedName,
+          content
+        });
+        if (res?.busy) {
+          showSaveFeedback(res.error || "⚠️ 이미 파일 탐색기 창이 열려 있습니다. 열려 있는 창을 확인해 주세요.");
           return;
         }
+        if (res?.cancelled) {
+          return;
+        }
+        if (res?.ok && res.filePath) {
+          state.currentServerFilePath = res.filePath;
+          state.currentFileHandle = null;
+          state.currentFileName = res.fileName;
+          updateFileNameDisplay();
+          saveCacheSafely(`sentence_board_file_cache_${res.fileName}`, content);
+          showSaveCompletionMessages(`💾 ${res.fileName}에 전체 분석 정보를 저장했습니다. (${saveSummary})`);
+          window.focus();
+          return;
+        }
+        alert(`⚠️ 파일 저장 중 오류가 발생했습니다: ${res?.error || "알 수 없는 오류"}`);
+        return;
       } catch (err) {
         alert(`⚠️ 파일 저장 중 오류가 발생했습니다: ${err?.message || err}`);
         return;
       }
     }
 
-    const suggestedName = normalizeTxtFileName(
-      state.currentFileName || getAnalysisFileName(),
-      getAnalysisFileName()
-    );
-    try {
-      const res = await callLocalServerApi("/__whiteboard_api/save-as", {
-        suggestedName,
-        content
-      });
-      if (res?.busy || res?.cancelled) {
-        return;
-      }
-      if (res?.ok && res.filePath) {
-        state.currentServerFilePath = res.filePath;
-        state.currentFileHandle = null;
-        state.currentFileName = res.fileName;
-        updateFileNameDisplay();
-        saveCacheSafely(`sentence_board_file_cache_${res.fileName}`, content);
-        showSaveCompletionMessages(`💾 ${res.fileName}에 전체 분석 정보를 저장했습니다. (${saveSummary})`);
-        return;
-      }
-      alert(`⚠️ 파일 저장 중 오류가 발생했습니다: ${res?.error || "알 수 없는 오류"}`);
-      return;
-    } catch (err) {
-      alert(`⚠️ 파일 저장 중 오류가 발생했습니다: ${err?.message || err}`);
-      return;
-    }
-  }
-
-  // "현재 TXT에 저장" (saveAs === false) 이고, 불러오기/저장 시점에 획득한 파일 핸들이 있는 경우 직접 덮어쓰기 시도
-  if (!saveAs && state.currentFileHandle) {
-    try {
-      const saveSummary = getCurrentAnalysisSaveSummary();
-      const content = buildAnalysisText();
-
-      await writeTextToFileHandleWithRetry(state.currentFileHandle, content);
-      void rememberRecentPickerHandle(state.currentFileHandle);
-
-      const savedFileName = state.currentFileName || state.currentFileHandle.name || getAnalysisFileName();
-      state.currentFileName = savedFileName;
-      updateFileNameDisplay();
-
-      // 최신 수정본 캐시 업데이트
-      saveCacheSafely(`sentence_board_file_cache_${savedFileName}`, content);
-
-      showSaveCompletionMessages(`💾 ${savedFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`);
-      return;
-    } catch (error) {
-      if (error?.name === "AbortError") {
-        return;
-      }
-      console.warn("기존 파일 핸들 쓰기 실패. 저장 창 또는 다운로드 폴백을 실행합니다.", error);
-      state.currentFileHandle = null;
-    }
-  }
-
-  // "다른 이름으로 저장" (saveAs === true) 이거나 파일 핸들이 없는 경우
-  // 1. Chrome/Edge 등 showSaveFilePicker 지원 브라우저에서는 클릭 직후 즉시 네이티브 탐색기 창 열기
-  if (shouldUseNativeSaveFilePicker()) {
-    try {
-      const suggestedName = normalizeTxtFileName(
-        state.currentFileName || getAnalysisFileName(),
-        getAnalysisFileName()
-      );
-      const pickerOptions = {
-        suggestedName,
-        id: "whiteboard_ppt_board_picker",
-        types: [
-          {
-            description: "Text file",
-            accept: { "text/plain": [".txt"] }
-          }
-        ]
-      };
-      const startIn = getPickerStartIn();
-      if (startIn) {
-        pickerOptions.startIn = startIn;
-      }
-      const pickerResult = await openSaveFilePickerWithFallback(pickerOptions);
-      if (pickerResult?.cancelled) {
-        return;
-      }
-      if (pickerResult?.needsRetryClick) {
-        const retryMsg = "⚠️ 이전 저장 폴더 경로가 변경되어 초기화했습니다. '다른 이름으로 저장'을 한 번 더 눌러 주세요.";
-        showSaveFeedback(retryMsg);
-        alert(retryMsg);
-        return;
-      }
-      if (pickerResult?.postDialogError) {
-        const err = pickerResult.postDialogError;
-        const errMsg = `⚠️ 선택한 위치에는 저장할 수 없습니다 (${err?.name || "오류"}: ${err?.message || err}). 다른 폴더를 선택해 주세요.`;
-        showSaveFeedback(errMsg);
-        alert(errMsg);
-        return;
-      }
-      const fileHandle = pickerResult?.handle;
-      if (fileHandle) {
-        void rememberRecentPickerHandle(fileHandle);
+    // "현재 TXT에 저장" (saveAs === false) 이고, 불러오기/저장 시점에 획득한 파일 핸들이 있는 경우 직접 덮어쓰기 시도
+    if (!saveAs && state.currentFileHandle) {
+      state.fileIoInFlight = "save-current";
+      try {
         const saveSummary = getCurrentAnalysisSaveSummary();
         const content = buildAnalysisText();
 
-        try {
-          await writeTextToFileHandleWithRetry(fileHandle, content);
+        await writeTextToFileHandleWithRetry(state.currentFileHandle, content);
+        void rememberRecentPickerHandle(state.currentFileHandle);
 
-          // 새 파일 정보로 활성 파일 핸들 및 파일명 즉시 갱신 (A -> B 전환 버그 해결!)
-          state.currentFileHandle = fileHandle;
-          state.currentFileName = fileHandle.name;
-          updateFileNameDisplay();
+        const savedFileName = state.currentFileName || state.currentFileHandle.name || getAnalysisFileName();
+        state.currentFileName = savedFileName;
+        updateFileNameDisplay();
 
-          saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, content);
-          showSaveCompletionMessages(`💾 ${fileHandle.name}에 전체 분석 정보를 저장했습니다. (${saveSummary})`);
-          return;
-        } catch (writeError) {
-          console.error("선택한 파일 핸들 쓰기 실패:", writeError);
-          const failMsg = `⚠️ 파일 저장 중 오류가 발생했습니다 (${writeError?.name || "Error"}: ${writeError?.message || writeError}). OneDrive 동기화 잠금이나 읽기 전용 여부를 확인한 뒤 다시 저장해 주세요.`;
-          showSaveFeedback(failMsg);
-          alert(failMsg);
+        // 최신 수정본 캐시 업데이트
+        saveCacheSafely(`sentence_board_file_cache_${savedFileName}`, content);
+
+        showSaveCompletionMessages(`💾 ${savedFileName}에 전체 분석 정보를 덮어써 저장했습니다. (${saveSummary})`);
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") {
           return;
         }
+        console.warn("기존 파일 핸들 쓰기 실패. 저장 위치 선택 창으로 전환합니다.", error);
+        state.currentFileHandle = null;
       }
-    } catch (error) {
-      if (error?.name === "AbortError") {
-        return; // 사용자가 저장을 취소한 경우 조기 종료
-      }
-      console.warn("SaveFilePicker failed. Falling back to browser download.", error);
     }
+
+    // "다른 이름으로 저장" (saveAs === true) 이거나 파일 핸들이 없는 경우 (Edge file:// 등)
+    if (shouldUseNativeSaveFilePicker()) {
+      state.fileIoInFlight = "save-as";
+      if (document.fullscreenElement) {
+        await document.exitFullscreen().catch(() => {});
+      }
+      try {
+        const suggestedName = normalizeTxtFileName(
+          state.currentFileName || getAnalysisFileName(),
+          getAnalysisFileName()
+        );
+        const pickerOptions = {
+          suggestedName,
+          id: "whiteboard_ppt_board_picker",
+          types: [
+            {
+              description: "Text file",
+              accept: { "text/plain": [".txt"] }
+            }
+          ]
+        };
+        const startIn = getPickerStartIn();
+        if (startIn) {
+          pickerOptions.startIn = startIn;
+        }
+        const pickerResult = await openSaveFilePickerWithFallback(pickerOptions);
+        if (pickerResult?.cancelled) {
+          return;
+        }
+        if (pickerResult?.needsRetryClick) {
+          const retryMsg = "⚠️ 이전 저장 폴더 경로가 변경되어 초기화했습니다. '다른 이름으로 저장'을 한 번 더 눌러 주세요.";
+          showSaveFeedback(retryMsg);
+          alert(retryMsg);
+          return;
+        }
+        if (pickerResult?.postDialogError) {
+          const err = pickerResult.postDialogError;
+          const errMsg = `⚠️ 선택한 위치에는 저장할 수 없습니다 (${err?.name || "오류"}: ${err?.message || err}). 다른 폴더를 선택해 주세요.`;
+          showSaveFeedback(errMsg);
+          alert(errMsg);
+          return;
+        }
+        const fileHandle = pickerResult?.handle;
+        if (fileHandle) {
+          void rememberRecentPickerHandle(fileHandle);
+          const saveSummary = getCurrentAnalysisSaveSummary();
+          const content = buildAnalysisText();
+
+          try {
+            await writeTextToFileHandleWithRetry(fileHandle, content);
+
+            // 새 파일 정보로 활성 파일 핸들 및 파일명 즉시 갱신
+            state.currentFileHandle = fileHandle;
+            state.currentFileName = fileHandle.name;
+            updateFileNameDisplay();
+
+            saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, content);
+            showSaveCompletionMessages(`💾 ${fileHandle.name}에 전체 분석 정보를 저장했습니다. (${saveSummary})`);
+            window.focus();
+            return;
+          } catch (writeError) {
+            console.error("선택한 파일 핸들 쓰기 실패:", writeError);
+            const failMsg = `⚠️ 파일 저장 중 오류가 발생했습니다 (${writeError?.name || "Error"}: ${writeError?.message || writeError}). OneDrive 동기화 잠금이나 읽기 전용 여부를 확인한 뒤 다시 저장해 주세요.`;
+            showSaveFeedback(failMsg);
+            alert(failMsg);
+            return;
+          }
+        }
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          return;
+        }
+        console.warn("SaveFilePicker failed.", error);
+      }
+    }
+
+    if (window.location.protocol === "file:") {
+      showDirectFileSaveBlockedAlert();
+    } else {
+      alert("⚠️ 현재 브라우저 환경에서는 파일 직접 저장을 지원하지 않습니다. 폴더의 [영어시각화보드_실행.bat]을 더블클릭해 실행한 뒤 저장해 주세요.");
+    }
+  } finally {
+    state.fileIoInFlight = null;
   }
-
-  // 2. showSaveFilePicker 미지원 또는 창 오픈 거부 시 브라우저 다운로드 폴백
-  const saveSummary = getCurrentAnalysisSaveSummary();
-  const content = buildAnalysisText();
-  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-  const fallbackFileName = normalizeTxtFileName(state.currentFileName, getAnalysisFileName());
-  state.currentFileHandle = null; // 핸들 저장이 불가능하므로 null로 리셋
-  state.currentFileName = fallbackFileName;
-  updateFileNameDisplay();
-
-  saveCacheSafely(`sentence_board_file_cache_${fallbackFileName}`, content);
-  downloadAnalysisTxt(content, blob, fallbackFileName);
-  showSaveCompletionMessages(`⬇️ ${fallbackFileName} 파일을 새로 다운로드했습니다. 기존 파일은 덮어쓰지 않았습니다. (${saveSummary})`);
 }
 
 function showSaveFeedback(message) {
@@ -5110,23 +5266,6 @@ function showSaveFeedback(message) {
 function getAnalysisFileName() {
   const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
   return `sentence-analysis-${stamp}.txt`;
-}
-
-function downloadAnalysisTxt(content, blob, fileName) {
-  const href = createDownloadHrefForText(content, blob);
-  const link = document.createElement("a");
-  link.href = href;
-  link.download = fileName;
-  link.style.display = "none";
-  document.body.appendChild(link);
-  try {
-    link.click();
-  } catch (e) {
-    console.warn("link.click() 실패, window.open 폴백 시도", e);
-    window.open(href, "_blank");
-  } finally {
-    setTimeout(() => link.remove(), 100);
-  }
 }
 
 function buildAnalysisText() {
@@ -5312,39 +5451,130 @@ function formatOneBasedRange(startIndex, endIndex) {
 }
 
 async function triggerNativeAnalysisImport() {
+  if (state.fileIoInFlight) {
+    if (state.fileIoInFlight === "open" || state.fileIoInFlight === "save-as") {
+      void focusOpenLocalDialogIfBusy();
+      showSaveFeedback("⚠️ 이미 파일 탐색기 창이 열려 있습니다. 열려 있는 창을 먼저 완료하거나 닫아 주세요.");
+    } else {
+      showSaveFeedback("⏳ 이전 파일 작업을 처리하는 중입니다…");
+    }
+    return;
+  }
+
   state.preferInputFileImport = false;
   if (elements.inputMessage) {
     elements.inputMessage.style.color = "";
     elements.inputMessage.textContent = "파일 선택 창을 여는 중…";
   }
 
-  // 로컬 실행기(launch-board.js v2) 환경: Chrome 정책과 무관하게 Windows 탐색기 열기 API 우선 사용
-  if (await ensureLocalServerApi()) {
+  state.fileIoInFlight = "open";
+  try {
+    const isLocalServerReady = await ensureLocalServerApi();
+    if (!isLocalServerReady && isLocalServerHost()) {
+      if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
+        elements.inputMessage.textContent = "";
+      }
+      alert(
+        "⚠️ 로컬 실행기 서버와 연결되지 않았습니다. 폴더의 [영어시각화보드_실행.bat]을 다시 더블클릭해 실행해 주세요."
+      );
+      return;
+    }
+
+    // 로컬 실행기(launch-board.js) 환경: Chrome 정책과 무관하게 Windows 탐색기 열기 API 사용
+    if (isLocalServerReady) {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen().catch(() => {});
+      }
+      try {
+        const res = await callLocalServerApi("/__whiteboard_api/open", {});
+        if (res?.busy) {
+          const busyMsg = res.error || "⚠️ 이미 파일 탐색기 창이 열려 있습니다. 열려 있는 창을 확인해 주세요.";
+          if (elements.inputMessage) {
+            elements.inputMessage.style.color = "var(--color-primary)";
+            elements.inputMessage.textContent = busyMsg;
+          }
+          showSaveFeedback(busyMsg);
+          return;
+        }
+        if (res?.cancelled) {
+          if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
+            elements.inputMessage.textContent = "";
+          }
+          return;
+        }
+        if (res?.ok && typeof res.content === "string") {
+          if (!res.content.trim()) {
+            throw new Error("파일 내용이 비어 있습니다.");
+          }
+          saveCacheSafely(`sentence_board_file_cache_${res.fileName}`, res.content);
+          importAnalysisTxt(res.content, {
+            fileName: res.fileName,
+            fileHandle: null,
+            serverFilePath: res.filePath
+          });
+          if (elements.inputMessage) {
+            elements.inputMessage.style.color = "";
+          }
+          window.focus();
+          return;
+        }
+        throw new Error(res?.error || "파일을 열지 못했습니다.");
+      } catch (error) {
+        console.error("TXT 불러오기 실패:", error);
+        const errMsg = error?.message || String(error);
+        if (elements.inputMessage) {
+          elements.inputMessage.style.color = "var(--color-danger, #b00020)";
+          elements.inputMessage.textContent = `불러오기 실패: ${errMsg}`;
+        }
+        alert(`지문을 불러오지 못했습니다: ${errMsg}`);
+        return;
+      }
+    }
+
     try {
-      const res = await callLocalServerApi("/__whiteboard_api/open", {});
-      if (res?.busy || res?.cancelled) {
+      const pickerOptions = {
+        id: "whiteboard_ppt_board_picker",
+        types: [
+          {
+            description: "Text file",
+            accept: { "text/plain": [".txt"] }
+          }
+        ]
+      };
+      const startIn = getPickerStartIn();
+      if (startIn) {
+        pickerOptions.startIn = startIn;
+      }
+      const [fileHandle] = await openFilePickerWithFallback(pickerOptions);
+      if (!fileHandle) {
         if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
           elements.inputMessage.textContent = "";
         }
         return;
       }
-      if (res?.ok && typeof res.content === "string") {
-        if (!res.content.trim()) {
-          throw new Error("파일 내용이 비어 있습니다.");
-        }
-        saveCacheSafely(`sentence_board_file_cache_${res.fileName}`, res.content);
-        importAnalysisTxt(res.content, {
-          fileName: res.fileName,
-          fileHandle: null,
-          serverFilePath: res.filePath
-        });
-        if (elements.inputMessage) {
-          elements.inputMessage.style.color = "";
+
+      void rememberRecentPickerHandle(fileHandle);
+      const resultText = await readTextFromFileHandle(fileHandle);
+      if (!resultText.trim()) {
+        throw new Error("파일 내용이 비어 있습니다.");
+      }
+      saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, resultText);
+      importAnalysisTxt(resultText, { fileName: fileHandle.name, fileHandle });
+      if (elements.inputMessage) {
+        elements.inputMessage.style.color = "";
+      }
+      window.focus();
+    } catch (error) {
+      if (isAbortError(error)) {
+        if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
+          elements.inputMessage.textContent = "";
         }
         return;
       }
-      throw new Error(res?.error || "파일을 열지 못했습니다.");
-    } catch (error) {
+      if (error?.name === "SecurityError") {
+        openAnalysisFileInputFallback();
+        return;
+      }
       console.error("TXT 불러오기 실패:", error);
       const errMsg = error?.message || String(error);
       if (elements.inputMessage) {
@@ -5352,60 +5582,9 @@ async function triggerNativeAnalysisImport() {
         elements.inputMessage.textContent = `불러오기 실패: ${errMsg}`;
       }
       alert(`지문을 불러오지 못했습니다: ${errMsg}`);
-      return;
     }
-  }
-
-  try {
-    const pickerOptions = {
-      id: "whiteboard_ppt_board_picker",
-      types: [
-        {
-          description: "Text file",
-          accept: { "text/plain": [".txt"] }
-        }
-      ]
-    };
-    const startIn = getPickerStartIn();
-    if (startIn) {
-      pickerOptions.startIn = startIn;
-    }
-    const [fileHandle] = await openFilePickerWithFallback(pickerOptions);
-    if (!fileHandle) {
-      if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
-        elements.inputMessage.textContent = "";
-      }
-      return;
-    }
-
-    void rememberRecentPickerHandle(fileHandle);
-    const resultText = await readTextFromFileHandle(fileHandle);
-    if (!resultText.trim()) {
-      throw new Error("파일 내용이 비어 있습니다.");
-    }
-    saveCacheSafely(`sentence_board_file_cache_${fileHandle.name}`, resultText);
-    importAnalysisTxt(resultText, { fileName: fileHandle.name, fileHandle });
-    if (elements.inputMessage) {
-      elements.inputMessage.style.color = "";
-    }
-  } catch (error) {
-    if (isAbortError(error)) {
-      if (elements.inputMessage && elements.inputMessage.textContent === "파일 선택 창을 여는 중…") {
-        elements.inputMessage.textContent = "";
-      }
-      return;
-    }
-    if (error?.name === "SecurityError") {
-      openAnalysisFileInputFallback();
-      return;
-    }
-    console.error("TXT 불러오기 실패:", error);
-    const errMsg = error?.message || String(error);
-    if (elements.inputMessage) {
-      elements.inputMessage.style.color = "var(--color-danger, #b00020)";
-      elements.inputMessage.textContent = `불러오기 실패: ${errMsg}`;
-    }
-    alert(`지문을 불러오지 못했습니다: ${errMsg}`);
+  } finally {
+    state.fileIoInFlight = null;
   }
 }
 
@@ -5777,7 +5956,17 @@ function updateFileNameDisplay() {
   if (elements.projectFileNameBadge) {
     if (fileName) {
       elements.projectFileNameBadge.textContent = `📄 ${fileName}`;
-      elements.projectFileNameBadge.title = `현재 열려 있는 TXT 파일: ${fileName}`;
+      let linkDesc = "저장 시 1회 위치 지정 필요";
+      if (isDirectFileBlocked()) {
+        linkDesc = "index.html 직접 실행 - 저장 차단됨";
+      } else if (state.currentServerFilePath) {
+        linkDesc = "원본 직접 덮어쓰기 연결됨";
+      } else if (state.currentFileHandle) {
+        linkDesc = isLocalServerHost()
+          ? "드래그 파일 직접 덮어쓰기 연결됨"
+          : "파일 핸들 직접 덮어쓰기 연결됨";
+      }
+      elements.projectFileNameBadge.title = `현재 열려 있는 TXT 파일: ${fileName} (${linkDesc})`;
       elements.projectFileNameBadge.classList.add("has-file");
       elements.projectFileNameBadge.classList.remove("is-empty");
     } else {
@@ -6048,17 +6237,16 @@ function bindEvents() {
 
   if (elements.inputImportButton && elements.analysisFileInput) {
     elements.inputImportButton.addEventListener("click", (event) => {
-      if (event.target === elements.analysisFileInput) {
-        return;
-      }
       if (
-        window.location.hostname === "127.0.0.1" ||
-        window.location.hostname === "localhost" ||
+        isLocalServerHost() ||
         state.localServerApiReady ||
         shouldUseNativeOpenFilePicker()
       ) {
         event.preventDefault();
         void triggerNativeAnalysisImport();
+        return;
+      }
+      if (event.target === elements.analysisFileInput) {
         return;
       }
       triggerAnalysisImport();
@@ -6091,14 +6279,19 @@ function bindEvents() {
   if (elements.headerRedoButton) elements.headerRedoButton.addEventListener("click", redoState);
   elements.headerSaveTxtButton.addEventListener("click", (event) => handleHeaderSaveClick(event, false));
   elements.headerSaveAsTxtButton.addEventListener("click", (event) => handleHeaderSaveClick(event, true));
-  const handleSaveAnchorSpaceKey = (event) => {
-    if (event.key === " " || event.code === "Space") {
-      event.preventDefault();
-      event.currentTarget.click();
-    }
-  };
-  elements.headerSaveTxtButton.addEventListener("keydown", handleSaveAnchorSpaceKey);
-  elements.headerSaveAsTxtButton.addEventListener("keydown", handleSaveAnchorSpaceKey);
+  if (elements.retryLocalServerButton) {
+    elements.retryLocalServerButton.addEventListener("click", () => {
+      void tryUpgradeFileToLocalhost({ userInitiated: true });
+    });
+  }
+  if (elements.dismissDirectFileNoticeButton) {
+    elements.dismissDirectFileNoticeButton.addEventListener("click", () => {
+      state.directFileNoticeDismissed = true;
+      updateDirectFileNoticeBanner();
+    });
+  }
+  bindExternalFileDropEvents();
+  bindWindowFocusSync();
 
   elements.plainShareModeButton.addEventListener("click", () => {
     state.passageShareMode = "plain";
@@ -6477,50 +6670,345 @@ bindEvents();
 applySettings();
 updateHeaderWorkflow(state.mode);
 updateProjectPassageBar();
+updateDirectFileNoticeBanner();
 void restoreRecentPickerHandle();
 void ensureLocalServerApi();
-void tryUpgradeChromeFileToLocalhost();
+void tryUpgradeFileToLocalhost({ userInitiated: false });
 
-async function tryUpgradeChromeFileToLocalhost() {
-  if (window.location.protocol !== "file:" || isEdgeBrowser()) {
+function isInternalAppDrag() {
+  return Boolean(
+    state.draggedComponentId ||
+    state.draggedOutlineSentenceIndex !== null ||
+    state.draggedVocabularyIndex !== null
+  );
+}
+
+function hasExternalFiles(event) {
+  if (isInternalAppDrag()) {
+    return false;
+  }
+  const dt = event?.dataTransfer;
+  if (!dt) return false;
+  if (dt.items && dt.items.length > 0) {
+    if (Array.from(dt.items).some((item) => item && item.kind === "file")) {
+      return true;
+    }
+  }
+  if (dt.types) {
+    const types = Array.from(dt.types);
+    if (types.includes("Files")) {
+      return true;
+    }
+  }
+  return Boolean(dt.files && dt.files.length > 0);
+}
+
+function setFileDropOverlayVisible(visible) {
+  if (!elements.fileDropOverlay) return;
+  elements.fileDropOverlay.classList.toggle("hidden", !visible);
+  elements.fileDropOverlay.setAttribute("aria-hidden", visible ? "false" : "true");
+}
+
+async function computeFileSha256Hex(file) {
+  try {
+    if (!window.crypto?.subtle?.digest || !file) {
+      return null;
+    }
+    const buf = await file.arrayBuffer();
+    const digest = await window.crypto.subtle.digest("SHA-256", buf);
+    return Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  } catch (_err) {
+    return null;
+  }
+}
+
+async function handleDroppedAnalysisFile({ droppedFile, handlePromise }) {
+  if (!droppedFile) return;
+
+  if (!/\.txt$/i.test(droppedFile.name || "")) {
+    showSaveFeedback("⚠️ TXT 파일(.txt)만 드래그하여 불러올 수 있습니다.");
     return;
   }
-  if (state.passageText.trim() || state.sentences.length > 0 || elements.passageInput?.value?.trim()) {
+
+  if (state.fileIoInFlight) {
+    if (state.fileIoInFlight === "open" || state.fileIoInFlight === "save-as") {
+      void focusOpenLocalDialogIfBusy();
+      showSaveFeedback("⚠️ 이미 파일 탐색기 창이 열려 있습니다. 열려 있는 창을 먼저 완료하거나 닫아 주세요.");
+    } else {
+      showSaveFeedback("⏳ 이전 파일 작업을 처리하는 중입니다…");
+    }
     return;
   }
+
+  state.fileIoInFlight = "drop";
+  try {
+    const resultText = typeof droppedFile.text === "function"
+      ? await droppedFile.text()
+      : await readBlobAsText(droppedFile);
+
+    if (!resultText.trim()) {
+      const emptyMsg = "파일 내용이 비어 있습니다.";
+      showSaveFeedback(`⚠️ ${emptyMsg}`);
+      alert(emptyMsg);
+      return;
+    }
+
+    let droppedHandle = null;
+    if (handlePromise) {
+      try {
+        const candidate = await handlePromise;
+        if (candidate && candidate.kind === "file") {
+          droppedHandle = candidate;
+        }
+      } catch (_err) {
+        droppedHandle = null;
+      }
+    }
+
+    let resolvedServerFilePath = null;
+    if (isLocalServerHost()) {
+      const serverReady = await ensureLocalServerApi();
+      if (serverReady && hasLocalServerCapability("drop-path-resolve")) {
+        try {
+          const sha256 = await computeFileSha256Hex(droppedFile);
+          const payload = {
+            fileName: droppedFile.name,
+            fileSize: droppedFile.size,
+            lastModified: droppedFile.lastModified
+          };
+          if (sha256) {
+            payload.sha256 = sha256;
+          } else {
+            payload.content = resultText;
+          }
+          const res = await callLocalServerApi("/__whiteboard_api/resolve-dropped-file", payload, {
+            retryOnNetworkError: true
+          });
+          if (res?.ok && res.resolved && typeof res.filePath === "string") {
+            resolvedServerFilePath = res.filePath;
+          }
+        } catch (resolveErr) {
+          console.warn("드래그한 TXT 원본 경로 확인 실패:", resolveErr);
+        }
+      }
+    }
+
+    if (hasAnyBoardContent()) {
+      pushHistoryState();
+    }
+
+    saveCacheSafely(`sentence_board_file_cache_${droppedFile.name}`, resultText);
+    if (!resolvedServerFilePath && droppedHandle && !isDirectFileBlocked()) {
+      void rememberRecentPickerHandle(droppedHandle);
+    }
+
+    importAnalysisTxt(resultText, {
+      fileName: droppedFile.name,
+      fileHandle: resolvedServerFilePath ? null : droppedHandle,
+      serverFilePath: resolvedServerFilePath
+    });
+
+    if (state.mode !== "input") {
+      if (state.sentences.length > 0) {
+        render();
+        if (vocabularyFeature && typeof vocabularyFeature.renderAnalysis === "function") {
+          vocabularyFeature.renderAnalysis();
+        }
+      } else {
+        setMode("input");
+      }
+    }
+
+    updateFileNameDisplay();
+
+    if (isDirectFileBlocked()) {
+      showSaveFeedback(`📄 ${droppedFile.name} 불러오기 완료 (직접 실행 차단: 저장은 .bat 실행 필요)`);
+    } else if (resolvedServerFilePath) {
+      showSaveFeedback(`📄 ${droppedFile.name} 불러오기 완료 (원본 직접 덮어쓰기 연결됨)`);
+    } else if (droppedHandle) {
+      showSaveFeedback(`📄 ${droppedFile.name} 불러오기 완료 (드래그 파일 직접 덮어쓰기 연결됨)`);
+    } else {
+      showSaveFeedback(`📄 ${droppedFile.name} 불러오기 완료 (최초 저장 시 1회 위치 지정 필요)`);
+    }
+  } catch (error) {
+    console.error("드래그한 TXT 불러오기 실패:", error);
+    const errMsg = error?.message || String(error);
+    showSaveFeedback(`⚠️ 불러오기 실패: ${errMsg}`);
+    alert(`지문을 불러오지 못했습니다: ${errMsg}`);
+  } finally {
+    state.fileIoInFlight = null;
+  }
+}
+
+function bindExternalFileDropEvents() {
+  const clearOverlay = () => {
+    externalFileDragDepth = 0;
+    setFileDropOverlayVisible(false);
+  };
+
+  window.addEventListener(
+    "dragenter",
+    (event) => {
+      if (!hasExternalFiles(event)) return;
+      event.preventDefault();
+      externalFileDragDepth += 1;
+      setFileDropOverlayVisible(true);
+    },
+    true
+  );
+
+  window.addEventListener(
+    "dragover",
+    (event) => {
+      if (!hasExternalFiles(event)) return;
+      event.preventDefault();
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = "copy";
+      }
+      setFileDropOverlayVisible(true);
+    },
+    true
+  );
+
+  window.addEventListener(
+    "dragleave",
+    (event) => {
+      if (externalFileDragDepth <= 0 && !hasExternalFiles(event)) return;
+      externalFileDragDepth = Math.max(0, externalFileDragDepth - 1);
+      if (externalFileDragDepth === 0) {
+        setFileDropOverlayVisible(false);
+      }
+    },
+    true
+  );
+
+  window.addEventListener(
+    "drop",
+    (event) => {
+      if (!hasExternalFiles(event)) {
+        clearOverlay();
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      clearOverlay();
+
+      // drop 핸들러의 동기 실행 턴이 끝나면 dataTransfer가 비워지므로 반드시 동기적으로 파일/핸들을 추출한다.
+      const dt = event.dataTransfer;
+      const items = dt?.items ? Array.from(dt.items) : [];
+      const fileItem = items.find((item) => item && item.kind === "file");
+      const droppedFile = fileItem?.getAsFile?.() || dt?.files?.[0] || null;
+      const handlePromise =
+        fileItem && typeof fileItem.getAsFileSystemHandle === "function"
+          ? fileItem.getAsFileSystemHandle().catch(() => null)
+          : null;
+
+      window.focus();
+      if (droppedFile) {
+        void handleDroppedAnalysisFile({ droppedFile, handlePromise });
+      }
+    },
+    true
+  );
+
+  window.addEventListener("dragend", clearOverlay, true);
+  window.addEventListener("blur", clearOverlay);
+}
+
+async function probeRunningLocalServerPort() {
   const currentFilePath = decodeURIComponent(window.location.pathname || "")
     .replace(/^\/([A-Za-z]:)/, "$1")
     .replace(/\//g, "\\")
     .toLowerCase();
 
-  for (const port of [5510, 5511, 5512]) {
+  const ports = [];
+  for (let p = 5510; p <= 5519; p += 1) {
+    ports.push(p);
+  }
+
+  const probePort = async (port) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 450);
     try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 350);
       const response = await fetch(`http://127.0.0.1:${port}/__whiteboard_ping`, {
         signal: controller.signal,
         cache: "no-store"
       });
-      clearTimeout(timer);
-      if (!response.ok) continue;
-
+      if (!response.ok) return null;
       const data = await response.json();
       if (data?.app !== "english-visualization-board" || typeof data.root !== "string") {
-        continue;
+        return null;
       }
       const serverRoot = data.root.replace(/\//g, "\\").toLowerCase();
-      if (!currentFilePath.startsWith(serverRoot)) {
-        continue;
+      if (currentFilePath && !currentFilePath.startsWith(serverRoot)) {
+        return null;
       }
-      if (state.passageText.trim() || state.sentences.length > 0 || elements.passageInput?.value?.trim()) {
-        return;
-      }
-      window.location.replace(`http://127.0.0.1:${port}/`);
-      return;
+      return port;
     } catch (_err) {
-      // 로컬 런처 서버가 아직 켜져 있지 않으면 조용히 무시
+      return null;
+    } finally {
+      clearTimeout(timer);
     }
+  };
+
+  const results = await Promise.all(ports.map((port) => probePort(port)));
+  return results.find((port) => Number.isInteger(port)) || null;
+}
+
+async function tryUpgradeFileToLocalhost({ userInitiated = false } = {}) {
+  if (window.location.protocol !== "file:") {
+    return;
   }
+  if (!userInitiated && hasAnyBoardContent()) {
+    return;
+  }
+
+  const port = await probeRunningLocalServerPort();
+  if (port) {
+    if (!userInitiated && hasAnyBoardContent()) {
+      return;
+    }
+    if (userInitiated && hasAnyBoardContent()) {
+      const proceed = confirm(
+        "로컬 실행기 서버가 감지되었습니다. 로컬 서버 주소로 이동하면 현재 화면의 미저장 내용은 초기화됩니다. 이동하시겠습니까?"
+      );
+      if (!proceed) return;
+    }
+    window.location.replace(`http://127.0.0.1:${port}/`);
+    return;
+  }
+
+  if (userInitiated) {
+    alert(
+      "실행 중인 로컬 서버를 찾지 못했습니다. 폴더의 [영어시각화보드_실행.bat] 파일을 더블클릭해 먼저 실행해 주세요."
+    );
+  }
+  updateDirectFileNoticeBanner();
+}
+
+function bindWindowFocusSync() {
+  const syncOnFocus = () => {
+    const now = Date.now();
+    if (now - lastFocusServerSyncAt < 2500) {
+      return;
+    }
+    lastFocusServerSyncAt = now;
+
+    if (isLocalServerHost() && !state.fileIoInFlight) {
+      void ensureLocalServerApi({ forceRefresh: true });
+    } else if (window.location.protocol === "file:" && !hasAnyBoardContent()) {
+      void tryUpgradeFileToLocalhost({ userInitiated: false });
+    }
+  };
+
+  window.addEventListener("focus", syncOnFocus);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      syncOnFocus();
+    }
+  });
 }
 
 function showElementDetail(component) {

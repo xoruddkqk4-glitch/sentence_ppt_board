@@ -4339,3 +4339,209 @@ label.button input[type="file"] {
   font-size: calc(var(--edit-font-size) * 0.6) !important;
   padding: 0 calc(var(--edit-gap) * 0.4) !important;
 }
+
+/* 직접 index.html(file://) 실행 경고/안내 배너 */
+.direct-file-notice-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: 10px clamp(var(--space-4), 4vw, var(--space-12));
+  border-bottom: 1px solid #fdba74;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.direct-file-notice-banner.hidden {
+  display: none !important;
+}
+
+.direct-file-notice-banner.is-blocked {
+  border-bottom-color: #fdba74;
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.direct-file-notice-banner.is-info {
+  border-bottom-color: #93c5fd;
+  background: #eff6ff;
+  color: #1e3a8a;
+}
+
+.direct-file-notice-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.direct-file-notice-text {
+  word-break: keep-all;
+}
+
+.direct-file-notice-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.direct-file-notice-btn {
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid currentColor;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.direct-file-notice-btn.primary {
+  border-color: #c2410c;
+  background: #c2410c;
+  color: #ffffff;
+}
+
+.direct-file-notice-btn.primary:hover {
+  border-color: #9a3412;
+  background: #9a3412;
+}
+
+.direct-file-notice-banner.is-info .direct-file-notice-btn.primary {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.direct-file-notice-banner.is-info .direct-file-notice-btn.primary:hover {
+  border-color: var(--color-primary-strong);
+  background: var(--color-primary-strong);
+}
+
+.direct-file-notice-btn.secondary {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.direct-file-notice-btn.secondary:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.direct-file-notice-btn.hidden {
+  display: none !important;
+}
+
+.app-shell[data-theme="dark"] .direct-file-notice-banner.is-blocked {
+  border-bottom-color: #c2410c;
+  background: #431407;
+  color: #fed7aa;
+}
+
+.app-shell[data-theme="dark"] .direct-file-notice-banner.is-info {
+  border-bottom-color: #1d4ed8;
+  background: #172554;
+  color: #dbeafe;
+}
+
+.app-shell[data-theme="dark"] .direct-file-notice-btn.secondary {
+  border-color: #475569;
+  background: #1e293b;
+  color: var(--color-dark-ink);
+}
+
+/* file:// 차단 상태에서 상단 저장 버튼 시각 표시 */
+.top-workflow-button.is-save-blocked {
+  border-style: dashed;
+  border-color: #ea580c;
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.top-workflow-button.is-save-blocked:hover:not(:disabled) {
+  border-color: #c2410c;
+  background: #ffedd5;
+  color: #7c2d12;
+}
+
+.app-shell[data-theme="dark"] .top-workflow-button.is-save-blocked {
+  border-color: #ea580c;
+  background: #431407;
+  color: #fed7aa;
+}
+
+.app-shell[data-theme="dark"] .top-workflow-button.is-save-blocked:hover:not(:disabled) {
+  border-color: #fb923c;
+  background: #7c2d12;
+  color: #ffffff;
+}
+
+/* 외부 TXT 파일 전역 드래그 앤 드롭 오버레이 */
+.file-drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: rgba(15, 23, 42, 0.56);
+  pointer-events: none;
+}
+
+.file-drop-overlay.hidden {
+  display: none;
+}
+
+.file-drop-card {
+  width: min(560px, 92vw);
+  padding: var(--space-8) var(--space-6);
+  border: 2px dashed var(--color-primary);
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+  color: var(--color-ink);
+  text-align: center;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.24);
+}
+
+.file-drop-icon {
+  font-size: 44px;
+  line-height: 1;
+  margin-bottom: var(--space-3);
+}
+
+.file-drop-title {
+  margin: 0 0 var(--space-2);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.file-drop-subtitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-muted);
+  word-break: keep-all;
+}
+
+.app-shell[data-theme="dark"] .file-drop-card {
+  border-color: #60a5fa;
+  background: var(--color-dark-panel);
+  color: var(--color-dark-ink);
+}
+
+.app-shell[data-theme="dark"] .file-drop-title {
+  color: var(--color-dark-ink);
+}
+
+.app-shell[data-theme="dark"] .file-drop-subtitle {
+  color: var(--color-dark-muted);
+}

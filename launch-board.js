@@ -5,15 +5,17 @@ const fs = require("node:fs");
 const path = require("node:path");
 const net = require("node:net");
 const os = require("node:os");
+const crypto = require("node:crypto");
 const { spawn, execFileSync } = require("node:child_process");
 
 const ROOT_DIR = path.resolve(__dirname);
 const APP_ID = "english-visualization-board";
-const SERVER_VERSION = 3;
+const SERVER_VERSION = 4;
 const HOST = "127.0.0.1";
 const PORT_START = 5510;
 const PORT_END = 5519;
 const MAX_JSON_BODY_BYTES = 120 * 1024 * 1024;
+const MAX_ALLOWED_FILE_PATHS = 200;
 
 const GIT_DIR = path.join(ROOT_DIR, ".git");
 const STATE_FILE = fs.existsSync(GIT_DIR)
@@ -37,8 +39,9 @@ const MIME_TYPES = {
   ".woff": "font/woff"
 };
 
-const allowedFilePaths = new Set();
+const allowedFilePaths = new Map();
 let isDialogOpen = false;
+let activeDialogOwnerHwnd = null;
 
 function getMimeType(filePath) {
   const ext = path.extname(filePath).toLowerCase();
@@ -48,6 +51,20 @@ function getMimeType(filePath) {
 function isPathInsideRoot(targetPath) {
   const resolved = path.resolve(targetPath);
   return resolved === ROOT_DIR || resolved.startsWith(ROOT_DIR + path.sep);
+}
+
+function normalizeAllowedPathKey(filePath) {
+  const resolved = path.resolve(String(filePath || ""));
+  return process.platform === "win32" ? resolved.toLowerCase() : resolved;
+}
+
+function isValidTxtAbsolutePath(filePath) {
+  return (
+    typeof filePath === "string" &&
+    filePath.trim().length > 0 &&
+    path.isAbsolute(filePath) &&
+    /\.txt$/i.test(filePath)
+  );
 }
 
 function readPickerState() {
@@ -61,18 +78,101 @@ function readPickerState() {
   }
 }
 
+function writePickerState(nextState) {
+  const json = JSON.stringify(nextState, null, 2);
+  const tmpFile = `${STATE_FILE}.${process.pid}.tmp`;
+  try {
+    fs.writeFileSync(tmpFile, json, "utf8");
+    fs.renameSync(tmpFile, STATE_FILE);
+  } catch (_renameErr) {
+    try {
+      if (fs.existsSync(tmpFile)) {
+        fs.unlinkSync(tmpFile);
+      }
+    } catch (_cleanupErr) {
+      // ignore cleanup error
+    }
+    try {
+      fs.writeFileSync(STATE_FILE, json, "utf8");
+    } catch (_writeErr) {
+      // 상태 파일 저장 실패는 무시
+    }
+  }
+}
+
+function loadAllowedFilePathsFromState() {
+  const state = readPickerState();
+  const entries = Array.isArray(state.allowedFilePaths) ? state.allowedFilePaths : [];
+  for (const entry of entries) {
+    if (!isValidTxtAbsolutePath(entry)) continue;
+    const resolved = path.resolve(entry);
+    const key = normalizeAllowedPathKey(resolved);
+    allowedFilePaths.delete(key);
+    allowedFilePaths.set(key, resolved);
+  }
+  while (allowedFilePaths.size > MAX_ALLOWED_FILE_PATHS) {
+    const oldestKey = allowedFilePaths.keys().next().value;
+    if (oldestKey === undefined) break;
+    allowedFilePaths.delete(oldestKey);
+  }
+}
+
+function rememberAllowedFilePath(filePath, { updateLastDir = true } = {}) {
+  if (!isValidTxtAbsolutePath(filePath)) return;
+  const resolved = path.resolve(filePath);
+  const key = normalizeAllowedPathKey(resolved);
+  allowedFilePaths.delete(key);
+  allowedFilePaths.set(key, resolved);
+  while (allowedFilePaths.size > MAX_ALLOWED_FILE_PATHS) {
+    const oldestKey = allowedFilePaths.keys().next().value;
+    if (oldestKey === undefined) break;
+    allowedFilePaths.delete(oldestKey);
+  }
+
+  const prev = readPickerState();
+  const next = {
+    ...prev,
+    allowedFilePaths: Array.from(allowedFilePaths.values()),
+    updatedAt: new Date().toISOString()
+  };
+
+  if (updateLastDir) {
+    const dirPath = path.dirname(resolved);
+    try {
+      if (fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory()) {
+        next.lastDirectory = dirPath;
+      }
+    } catch (_err) {
+      // ignore invalid directory
+    }
+  }
+
+  writePickerState(next);
+}
+
+function isPathAllowedForWrite(resolvedPath) {
+  if (!isValidTxtAbsolutePath(resolvedPath)) {
+    return false;
+  }
+  const key = normalizeAllowedPathKey(resolvedPath);
+  if (allowedFilePaths.has(key)) {
+    return true;
+  }
+  loadAllowedFilePathsFromState();
+  return allowedFilePaths.has(key);
+}
+
 function saveLastDirectory(dirPath) {
   try {
     if (!dirPath) return;
     const resolvedDir = path.resolve(dirPath);
     if (!fs.existsSync(resolvedDir)) return;
     const prev = readPickerState();
-    const next = {
+    writePickerState({
       ...prev,
       lastDirectory: resolvedDir,
       updatedAt: new Date().toISOString()
-    };
-    fs.writeFileSync(STATE_FILE, JSON.stringify(next, null, 2), "utf8");
+    });
   } catch (_err) {
     // 상태 파일 저장 실패는 무시
   }
@@ -185,11 +285,49 @@ async function writeFileWithRetry(filePath, content) {
   throw lastError || new Error("파일 쓰기에 실패했습니다.");
 }
 
+const WIN32_FOCUS_CSHARP = [
+  "using System;",
+  "using System.Runtime.InteropServices;",
+  "public static class WbWin32Focus {",
+  "  [DllImport(\"user32.dll\")] public static extern IntPtr GetForegroundWindow();",
+  "  [DllImport(\"user32.dll\")] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);",
+  "  [DllImport(\"kernel32.dll\")] public static extern uint GetCurrentThreadId();",
+  "  [DllImport(\"user32.dll\")] [return: MarshalAs(UnmanagedType.Bool)] public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, [MarshalAs(UnmanagedType.Bool)] bool fAttach);",
+  "  [DllImport(\"user32.dll\")] [return: MarshalAs(UnmanagedType.Bool)] public static extern bool SetForegroundWindow(IntPtr hWnd);",
+  "  [DllImport(\"user32.dll\")] [return: MarshalAs(UnmanagedType.Bool)] public static extern bool BringWindowToTop(IntPtr hWnd);",
+  "  [DllImport(\"user32.dll\")] [return: MarshalAs(UnmanagedType.Bool)] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);",
+  "  [DllImport(\"user32.dll\")] [return: MarshalAs(UnmanagedType.Bool)] public static extern bool IsIconic(IntPtr hWnd);",
+  "  [DllImport(\"user32.dll\")] [return: MarshalAs(UnmanagedType.Bool)] public static extern bool IsWindow(IntPtr hWnd);",
+  "  [DllImport(\"user32.dll\")] public static extern IntPtr GetLastActivePopup(IntPtr hWnd);",
+  "  public static void ForceForeground(IntPtr targetHwnd) {",
+  "    if (targetHwnd == IntPtr.Zero || !IsWindow(targetHwnd)) return;",
+  "    if (IsIconic(targetHwnd)) ShowWindow(targetHwnd, 9);",
+  "    IntPtr fgHwnd = GetForegroundWindow();",
+  "    uint pid;",
+  "    uint fgThread = fgHwnd != IntPtr.Zero ? GetWindowThreadProcessId(fgHwnd, out pid) : 0;",
+  "    uint curThread = GetCurrentThreadId();",
+  "    bool attached = false;",
+  "    try {",
+  "      if (fgThread != 0 && fgThread != curThread) {",
+  "        attached = AttachThreadInput(curThread, fgThread, true);",
+  "      }",
+  "      BringWindowToTop(targetHwnd);",
+  "      SetForegroundWindow(targetHwnd);",
+  "    } finally {",
+  "      if (attached) AttachThreadInput(curThread, fgThread, false);",
+  "    }",
+  "  }",
+  "}"
+].join("\n");
+
 function showWindowsFileDialog(mode, suggestedName = "") {
   const psScript = [
     "Add-Type -AssemblyName System.Windows.Forms",
     "Add-Type -AssemblyName System.Drawing",
+    "try { Add-Type -TypeDefinition $env:WB_WIN32_CS -Language CSharp } catch {}",
     "[System.Windows.Forms.Application]::EnableVisualStyles()",
+    "$prevHwnd = [IntPtr]::Zero",
+    "try { $prevHwnd = [WbWin32Focus]::GetForegroundWindow() } catch {}",
     "$owner = New-Object System.Windows.Forms.Form",
     "$owner.StartPosition = [System.Windows.Forms.FormStartPosition]::Manual",
     "$owner.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::None",
@@ -197,11 +335,20 @@ function showWindowsFileDialog(mode, suggestedName = "") {
     "$owner.TopMost = $true",
     "$owner.Opacity = 0.01",
     "$owner.Size = New-Object System.Drawing.Size(1, 1)",
-    "$screen = [System.Windows.Forms.Screen]::FromPoint([System.Windows.Forms.Cursor]::Position)",
+    "$screen = $null",
+    "if ($prevHwnd -ne [IntPtr]::Zero) {",
+    "  try { $screen = [System.Windows.Forms.Screen]::FromHandle($prevHwnd) } catch { $screen = $null }",
+    "}",
+    "if (-not $screen) {",
+    "  $screen = [System.Windows.Forms.Screen]::FromPoint([System.Windows.Forms.Cursor]::Position)",
+    "}",
     "$area = $screen.WorkingArea",
     "$owner.Location = New-Object System.Drawing.Point(($area.Left + [int]($area.Width / 2)), ($area.Top + [int]($area.Height / 2)))",
     "$owner.Show()",
+    "try { [WbWin32Focus]::ForceForeground($owner.Handle) } catch {}",
     "$owner.Activate()",
+    "[Console]::Out.WriteLine(('WB_HWND:' + $owner.Handle.ToInt64()))",
+    "[Console]::Out.Flush()",
     "if ($env:WB_MODE -eq 'save') {",
     "  $dlg = New-Object System.Windows.Forms.SaveFileDialog",
     "  $dlg.Title = '다른 이름으로 TXT 저장'",
@@ -219,9 +366,29 @@ function showWindowsFileDialog(mode, suggestedName = "") {
     "if ($env:WB_INITIAL_DIR -and (Test-Path -LiteralPath $env:WB_INITIAL_DIR -PathType Container)) {",
     "  $dlg.InitialDirectory = $env:WB_INITIAL_DIR",
     "}",
-    "$result = $dlg.ShowDialog($owner)",
-    "$owner.Close()",
-    "$owner.Dispose()",
+    "$script:ticks = 0",
+    "$script:focusTimer = New-Object System.Windows.Forms.Timer",
+    "$script:focusTimer.Interval = 120",
+    "$script:focusTimer.Add_Tick({",
+    "  $script:ticks++",
+    "  try {",
+    "    $popup = [WbWin32Focus]::GetLastActivePopup($owner.Handle)",
+    "    $target = if ($popup -ne [IntPtr]::Zero -and $popup -ne $owner.Handle) { $popup } else { $owner.Handle }",
+    "    [WbWin32Focus]::ForceForeground($target)",
+    "  } catch {}",
+    "  if ($script:ticks -ge 3) { $script:focusTimer.Stop() }",
+    "})",
+    "$script:focusTimer.Start()",
+    "$result = [System.Windows.Forms.DialogResult]::Cancel",
+    "try {",
+    "  $result = $dlg.ShowDialog($owner)",
+    "} finally {",
+    "  try { $script:focusTimer.Stop(); $script:focusTimer.Dispose() } catch {}",
+    "  try { $owner.Close(); $owner.Dispose() } catch {}",
+    "  if ($prevHwnd -ne [IntPtr]::Zero) {",
+    "    try { [WbWin32Focus]::ForceForeground($prevHwnd) } catch {}",
+    "  }",
+    "}",
     "if ($result -eq [System.Windows.Forms.DialogResult]::OK -and $dlg.FileName) {",
     "  $bytes = [System.Text.Encoding]::UTF8.GetBytes($dlg.FileName)",
     "  [Console]::Out.WriteLine(('WB_OK:' + [Convert]::ToBase64String($bytes)))",
@@ -236,7 +403,8 @@ function showWindowsFileDialog(mode, suggestedName = "") {
     ...process.env,
     WB_MODE: mode === "save" ? "save" : "open",
     WB_INITIAL_DIR: initialDir,
-    WB_SUGGESTED_NAME: String(suggestedName || "")
+    WB_SUGGESTED_NAME: String(suggestedName || ""),
+    WB_WIN32_CS: WIN32_FOCUS_CSHARP
   };
 
   return new Promise((resolve, reject) => {
@@ -256,14 +424,20 @@ function showWindowsFileDialog(mode, suggestedName = "") {
     child.stderr.setEncoding("utf8");
     child.stdout.on("data", (chunk) => {
       stdout += chunk;
+      const hwndMatch = stdout.match(/WB_HWND:(\d+)\r?\n/);
+      if (hwndMatch) {
+        activeDialogOwnerHwnd = hwndMatch[1];
+      }
     });
     child.stderr.on("data", (chunk) => {
       stderr += chunk;
     });
     child.on("error", (err) => {
+      activeDialogOwnerHwnd = null;
       reject(err);
     });
     child.on("close", (code) => {
+      activeDialogOwnerHwnd = null;
       const lines = stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
       const okLine = lines.find((line) => line.startsWith("WB_OK:"));
       if (okLine) {
@@ -286,13 +460,249 @@ function showWindowsFileDialog(mode, suggestedName = "") {
   });
 }
 
+function focusWindowsDialog(ownerHwnd) {
+  if (!ownerHwnd || !/^\d+$/.test(String(ownerHwnd))) {
+    return Promise.resolve(false);
+  }
+
+  const psScript = [
+    "try { Add-Type -TypeDefinition $env:WB_WIN32_CS -Language CSharp } catch {}",
+    "$owner = [IntPtr]([Int64]$env:WB_TARGET_HWND)",
+    "if ([WbWin32Focus]::IsWindow($owner)) {",
+    "  $popup = [WbWin32Focus]::GetLastActivePopup($owner)",
+    "  $target = if ($popup -ne [IntPtr]::Zero) { $popup } else { $owner }",
+    "  [WbWin32Focus]::ForceForeground($target)",
+    "  [Console]::Out.WriteLine('WB_FOCUSED')",
+    "}"
+  ].join("\n");
+
+  const encodedCommand = Buffer.from(psScript, "utf16le").toString("base64");
+  return new Promise((resolve) => {
+    const child = spawn(
+      "powershell.exe",
+      ["-NoProfile", "-EncodedCommand", encodedCommand],
+      {
+        env: {
+          ...process.env,
+          WB_WIN32_CS: WIN32_FOCUS_CSHARP,
+          WB_TARGET_HWND: String(ownerHwnd)
+        },
+        windowsHide: true,
+        stdio: ["ignore", "pipe", "ignore"]
+      }
+    );
+
+    let out = "";
+    const killTimer = setTimeout(() => {
+      try { child.kill(); } catch (_err) { /* ignore */ }
+      resolve(false);
+    }, 4000);
+    killTimer.unref();
+
+    child.stdout.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => {
+      out += chunk;
+    });
+    child.on("error", () => {
+      clearTimeout(killTimer);
+      resolve(false);
+    });
+    child.on("close", () => {
+      clearTimeout(killTimer);
+      resolve(out.includes("WB_FOCUSED"));
+    });
+  });
+}
+
+function getDroppedFileCandidateDirs() {
+  const dirs = [];
+  const seen = new Set();
+
+  const addDir = (dirPath) => {
+    if (!dirPath || typeof dirPath !== "string") return;
+    const resolved = path.resolve(dirPath);
+    const key = normalizeAllowedPathKey(resolved);
+    if (seen.has(key)) return;
+    try {
+      if (fs.existsSync(resolved) && fs.statSync(resolved).isDirectory()) {
+        seen.add(key);
+        dirs.push(resolved);
+      }
+    } catch (_err) {
+      // ignore inaccessible directory
+    }
+  };
+
+  addDir(getLastDirectory());
+
+  for (const allowedPath of Array.from(allowedFilePaths.values()).reverse()) {
+    addDir(path.dirname(allowedPath));
+  }
+
+  const txtsDir = path.join(ROOT_DIR, "txts");
+  addDir(txtsDir);
+  try {
+    if (fs.existsSync(txtsDir) && fs.statSync(txtsDir).isDirectory()) {
+      const subEntries = fs.readdirSync(txtsDir, { withFileTypes: true }).slice(0, 30);
+      for (const entry of subEntries) {
+        if (entry.isDirectory()) {
+          addDir(path.join(txtsDir, entry.name));
+        }
+      }
+    }
+  } catch (_err) {
+    // ignore txts traversal failure
+  }
+
+  addDir(ROOT_DIR);
+
+  const homeDir = os.homedir();
+  if (homeDir) {
+    addDir(path.join(homeDir, "Desktop"));
+    addDir(path.join(homeDir, "Documents"));
+    addDir(path.join(homeDir, "Downloads"));
+  }
+
+  const oneDriveRoots = [
+    process.env.OneDrive,
+    process.env.OneDriveConsumer,
+    process.env.OneDriveCommercial
+  ].filter(Boolean);
+  for (const odRoot of oneDriveRoots) {
+    addDir(odRoot);
+    addDir(path.join(odRoot, "Desktop"));
+    addDir(path.join(odRoot, "Documents"));
+    addDir(path.join(odRoot, "바탕 화면"));
+    addDir(path.join(odRoot, "문서"));
+  }
+
+  return dirs;
+}
+
+async function handleResolveDroppedFileApi(req, res) {
+  if (!isTrustedLocalApiRequest(req)) {
+    sendJson(res, 403, { ok: false, error: "Forbidden" });
+    return;
+  }
+
+  let body;
+  try {
+    body = await readJsonBody(req);
+  } catch (err) {
+    sendJson(res, err.statusCode || 400, { ok: false, error: err.message });
+    return;
+  }
+
+  const fileName = typeof body?.fileName === "string" ? body.fileName : "";
+  const fileSize = Number(body?.fileSize);
+  const lastModified = Number(body?.lastModified);
+  const sha256 = typeof body?.sha256 === "string" ? body.sha256.trim().toLowerCase() : "";
+  const content = typeof body?.content === "string" ? body.content : null;
+
+  const hasValidSha256 = /^[0-9a-f]{64}$/.test(sha256);
+  const isSafeTxtFileName = Boolean(
+    fileName &&
+    fileName.trim() === fileName &&
+    path.basename(fileName) === fileName &&
+    /\.txt$/i.test(fileName)
+  );
+
+  if (!isSafeTxtFileName || (!hasValidSha256 && content === null)) {
+    sendJson(res, 200, { ok: true, resolved: false });
+    return;
+  }
+
+  const candidateDirs = getDroppedFileCandidateDirs();
+  const matches = [];
+  const seenFiles = new Set();
+
+  for (const dir of candidateDirs) {
+    const candidatePath = path.resolve(path.join(dir, fileName));
+    const fileKey = normalizeAllowedPathKey(candidatePath);
+    if (seenFiles.has(fileKey)) continue;
+    seenFiles.add(fileKey);
+
+    try {
+      const stat = await fs.promises.stat(candidatePath);
+      if (!stat.isFile()) continue;
+      if (Number.isFinite(fileSize) && fileSize >= 0 && stat.size !== fileSize) {
+        continue;
+      }
+
+      const buf = await fs.promises.readFile(candidatePath);
+      const isMatch = hasValidSha256
+        ? crypto.createHash("sha256").update(buf).digest("hex").toLowerCase() === sha256
+        : buf.toString("utf8") === content;
+
+      if (isMatch) {
+        matches.push({ filePath: candidatePath, mtimeMs: stat.mtimeMs });
+      }
+    } catch (_err) {
+      // 후보 폴더에 파일이 없거나 접근할 수 없으면 다음 후보로 이동
+    }
+  }
+
+  let matched = null;
+  if (matches.length === 1) {
+    matched = matches[0];
+  } else if (matches.length > 1 && Number.isFinite(lastModified)) {
+    const mtimeMatches = matches.filter((m) => Math.abs(m.mtimeMs - lastModified) <= 2000);
+    if (mtimeMatches.length === 1) {
+      matched = mtimeMatches[0];
+    } else {
+      sendJson(res, 200, { ok: true, resolved: false, ambiguous: true });
+      return;
+    }
+  } else if (matches.length > 1) {
+    sendJson(res, 200, { ok: true, resolved: false, ambiguous: true });
+    return;
+  }
+
+  if (!matched) {
+    sendJson(res, 200, { ok: true, resolved: false });
+    return;
+  }
+
+  rememberAllowedFilePath(matched.filePath);
+  sendJson(res, 200, {
+    ok: true,
+    resolved: true,
+    filePath: matched.filePath,
+    fileName: path.basename(matched.filePath)
+  });
+}
+
+async function handleFocusDialogApi(req, res) {
+  if (!isTrustedLocalApiRequest(req)) {
+    sendJson(res, 403, { ok: false, error: "Forbidden" });
+    return;
+  }
+  const focused = isDialogOpen && activeDialogOwnerHwnd
+    ? await focusWindowsDialog(activeDialogOwnerHwnd)
+    : false;
+  sendJson(res, 200, {
+    ok: true,
+    busy: isDialogOpen,
+    focused
+  });
+}
+
 async function handleNativeOpenApi(req, res) {
   if (!isTrustedLocalApiRequest(req)) {
     sendJson(res, 403, { ok: false, error: "Forbidden" });
     return;
   }
   if (isDialogOpen) {
-    sendJson(res, 409, { ok: false, busy: true, error: "이미 파일 선택 창이 열려 있습니다." });
+    const focused = Boolean(activeDialogOwnerHwnd);
+    if (activeDialogOwnerHwnd) {
+      void focusWindowsDialog(activeDialogOwnerHwnd);
+    }
+    sendJson(res, 409, {
+      ok: false,
+      busy: true,
+      focused,
+      error: "이미 파일 탐색기 창이 열려 있습니다. 열려 있는 창을 앞으로 가져왔습니다."
+    });
     return;
   }
 
@@ -305,8 +715,7 @@ async function handleNativeOpenApi(req, res) {
     }
 
     const content = await fs.promises.readFile(result.filePath, "utf8");
-    saveLastDirectory(path.dirname(result.filePath));
-    allowedFilePaths.add(result.filePath);
+    rememberAllowedFilePath(result.filePath);
 
     sendJson(res, 200, {
       ok: true,
@@ -319,6 +728,7 @@ async function handleNativeOpenApi(req, res) {
     sendJson(res, 500, { ok: false, error: error?.message || "파일 불러오기 중 오류가 발생했습니다." });
   } finally {
     isDialogOpen = false;
+    activeDialogOwnerHwnd = null;
   }
 }
 
@@ -328,7 +738,16 @@ async function handleNativeSaveAsApi(req, res) {
     return;
   }
   if (isDialogOpen) {
-    sendJson(res, 409, { ok: false, busy: true, error: "이미 저장 창이 열려 있습니다." });
+    const focused = Boolean(activeDialogOwnerHwnd);
+    if (activeDialogOwnerHwnd) {
+      void focusWindowsDialog(activeDialogOwnerHwnd);
+    }
+    sendJson(res, 409, {
+      ok: false,
+      busy: true,
+      focused,
+      error: "이미 파일 탐색기 창이 열려 있습니다. 열려 있는 창을 앞으로 가져왔습니다."
+    });
     return;
   }
 
@@ -352,8 +771,7 @@ async function handleNativeSaveAsApi(req, res) {
     }
 
     await writeFileWithRetry(result.filePath, content);
-    saveLastDirectory(path.dirname(result.filePath));
-    allowedFilePaths.add(result.filePath);
+    rememberAllowedFilePath(result.filePath);
 
     sendJson(res, 200, {
       ok: true,
@@ -365,6 +783,7 @@ async function handleNativeSaveAsApi(req, res) {
     sendJson(res, 500, { ok: false, error: error?.message || "파일 저장 중 오류가 발생했습니다." });
   } finally {
     isDialogOpen = false;
+    activeDialogOwnerHwnd = null;
   }
 }
 
@@ -390,14 +809,20 @@ async function handleNativeSaveCurrentApi(req, res) {
   }
 
   const resolvedPath = path.resolve(rawPath);
-  if (!allowedFilePaths.has(resolvedPath) || !/\.txt$/i.test(resolvedPath)) {
+  if (!isPathAllowedForWrite(resolvedPath)) {
     sendJson(res, 200, { ok: false, needsSaveAs: true, error: "파일 쓰기 세션을 다시 지정해야 합니다." });
+    return;
+  }
+
+  const parentDir = path.dirname(resolvedPath);
+  if (!fs.existsSync(parentDir)) {
+    sendJson(res, 200, { ok: false, needsSaveAs: true, error: "저장할 원래 폴더를 찾을 수 없습니다. 새 저장 위치를 지정해 주세요." });
     return;
   }
 
   try {
     await writeFileWithRetry(resolvedPath, content);
-    saveLastDirectory(path.dirname(resolvedPath));
+    rememberAllowedFilePath(resolvedPath);
     sendJson(res, 200, {
       ok: true,
       filePath: resolvedPath,
@@ -409,6 +834,8 @@ async function handleNativeSaveCurrentApi(req, res) {
 }
 
 function startStaticServer(port) {
+  loadAllowedFilePathsFromState();
+
   const server = http.createServer(async (req, res) => {
     const method = (req.method || "GET").toUpperCase();
     const rawUrl = (req.url || "/").split("?")[0];
@@ -417,7 +844,12 @@ function startStaticServer(port) {
       const payload = JSON.stringify({
         app: APP_ID,
         version: SERVER_VERSION,
-        capabilities: ["native-win-dialog"],
+        capabilities: [
+          "native-win-dialog",
+          "persistent-allowlist",
+          "drop-path-resolve",
+          "dialog-focus-control"
+        ],
         root: ROOT_DIR,
         port
       });
@@ -455,6 +887,14 @@ function startStaticServer(port) {
       }
       if (rawUrl === "/__whiteboard_api/save-current") {
         await handleNativeSaveCurrentApi(req, res);
+        return;
+      }
+      if (rawUrl === "/__whiteboard_api/resolve-dropped-file") {
+        await handleResolveDroppedFileApi(req, res);
+        return;
+      }
+      if (rawUrl === "/__whiteboard_api/focus-dialog") {
+        await handleFocusDialogApi(req, res);
         return;
       }
       sendJson(res, 404, { ok: false, error: "Not Found" });
