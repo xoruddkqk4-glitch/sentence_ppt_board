@@ -72,7 +72,7 @@
 
 ## 사용 방법
 
-1. `영어시각화보드_실행.bat`을 더블클릭해 실행하거나(Chrome에서 다운로드 없는 직접 TXT 저장·이전 폴더 기억 지원), `index.html`을 브라우저에서 엽니다.
+1. `영어시각화보드_실행.bat`을 더블클릭해 실행합니다. (Chrome·Edge 모두에서 다운로드 없는 직접 TXT 저장·덮어쓰기·이전 폴더 기억·외부 `.txt` 드래그 앤 드롭 원본 연결을 지원합니다. Chrome에서 `index.html`을 직접 여는 경우 상단 안내 배너가 표시되며 중복 다운로드 방지를 위해 임시 다운로드 저장이 차단됩니다.)
 2. **1단계-지문 입력**에서 지문을 붙여넣고 **2단계-어휘 분석 시작**을 누릅니다.
 3. **2·3단계**에서 수업 핵심 어휘를 입력·공유합니다.
 4. **4단계-문장 분석**에서 성분 역할·위치·분리·병합·형용사어 수식 대상을 보정합니다.
@@ -515,3 +515,23 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
   - `node --check launch-board.js`: PASS (구문 이상 없음, Exit Code 0)
   - `node --check js/main.js`: PASS (구문 이상 없음, Exit Code 0)
   - `node --check js/vocabulary.js`: PASS (구문 이상 없음, Exit Code 0)
+
+## [2026-11-22 17:25] index.html 직접 실행 다운로드 차단·안내 및 로컬 서버 덮어쓰기 안정화(초기 레이스·서버 재시작·드래그 앤 드롭·창 포커스) (Commit ID: b397096)
+- **수정 내용**:
+  - **`index.html` 직접 실행(`file://`) 다운로드 차단 및 명확한 안내 (`index.html`, `css/style.css`, `js/main.js`)**:
+    - 상단 저장 버튼을 `<a download>`에서 `<button type="button">`으로 변경하고 브라우저 임시 다운로드 폴백(`downloadAnalysisTxt`)을 완전히 제거하여, Chrome 등에서 `index.html`을 직접 열었을 때 다운로드 폴더에 중복 파일이 쌓이지 않도록 차단
+    - 상단 경고/안내 배너(`#directFileNoticeBanner`)·저장 버튼 시각 표시(`.is-save-blocked`)·명확한 안내 모달(`showDirectFileSaveBlockedAlert`) 및 `로컬 서버로 전환`(`tryUpgradeFileToLocalhost`) 기능 추가 (Edge `file://` 환경에서는 직접 저장 유지 및 닫기 가능한 정보 배너 표시)
+  - **초기 레이스 컨디션 제거 및 로컬 서버 재시작 대비 (`js/main.js`, `launch-board.js`)**:
+    - `ensureLocalServerApi()` 단일 비행 중복 제거(`localServerPingPromise`) 및 2회 재시도(`1200ms`, `1800ms`), `callLocalServerApi()` 네트워크 오류(`TypeError`) 시 자동 재연결 후 1회 재시도, `state.fileIoInFlight` 직렬화 락 적용
+    - 로컬 서버 환경(`isLocalServerHost()`)에서 `triggerNativeAnalysisImport()`와 `#inputImportButton` 클릭이 `<input type="file">` / `showOpenFilePicker`로 우회되지 않도록 차단하여 `currentServerFilePath` 누락 방지
+    - `launch-board.js` `SERVER_VERSION = 4`로 상향하고 `allowedFilePaths`(최대 200건)를 `STATE_FILE`에 원자적 저장(`writePickerState`, `rememberAllowedFilePath`) 및 재시작 복원(`loadAllowedFilePathsFromState`, `isPathAllowedForWrite`)하여 서버 재시작 후에도 `현재 TXT에 저장` 덮어쓰기 유지
+  - **외부 `.txt` 전역 드래그 앤 드롭 불러오기 및 원본 덮어쓰기 연결 (`index.html`, `css/style.css`, `js/main.js`, `launch-board.js`)**:
+    - `#fileDropOverlay` 및 `bindExternalFileDropEvents()`, `handleDroppedAnalysisFile()` 구현 (`isInternalAppDrag()`로 앱 내부 성분·어휘·개조식 드래그와 간섭 차단)
+    - 동기 드롭 턴에서 `getAsFileSystemHandle()` 추출 및 로컬 서버 `POST /__whiteboard_api/resolve-dropped-file`(SHA-256 해시·파일 크기·수정 시각 대조, `getDroppedFileCandidateDirs`)로 원본 파일 경로(`currentServerFilePath`) 또는 파일 핸들(`currentFileHandle`) 연결
+  - **Windows 탐색기 창 포커스 제어 및 창 복귀 동기화 (`launch-board.js`, `js/main.js`)**:
+    - `WbWin32Focus`(`WIN32_FOCUS_CSHARP`)로 탐색기 실행 전 이전 포그라운드 창 모니터 중앙 배치, `ForceForeground`·타이머로 전면 포커스 확보, 닫힌 뒤 이전 창 포커스 복원 및 중복 클릭 시 기존 탐색기 재포커스(`POST /__whiteboard_api/focus-dialog`, `focusWindowsDialog`) 구현
+    - 열기/저장 대화상자 실행 전 전체화면 자동 해제 및 완료 후 `window.focus()` 호출, `bindWindowFocusSync()`(2.5초 쓰로틀)로 창 `focus`/`visibilitychange` 복귀 시 서버 상태 재동기화 및 5510~5519 병렬 포트 탐색(`probeRunningLocalServerPort`) 자동 전환 지원
+- **검증 결과**:
+  - `node --check launch-board.js`, `node --check js/main.js`, `node --check js/vocabulary.js`: **PASS** (Exit Code 0)
+  - PowerShell AST 및 `WbWin32Focus` C# `Add-Type` 컴파일 검증: **PASS**
+  - `launch-board.js` v4 비-GUI HTTP 통합 검증 (`/__whiteboard_ping` v4·4개 capabilities, `/__whiteboard_api/resolve-dropped-file` 해시 일치/불일치/경로순회 차단, `/__whiteboard_api/focus-dialog`, 서버 재시작 후 `STATE_FILE` 허용 목록 기반 `/__whiteboard_api/save-current` 덮어쓰기): **PASS**
