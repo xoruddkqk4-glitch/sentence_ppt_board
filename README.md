@@ -535,3 +535,17 @@ Chrome과 Edge 계열 브라우저에서는 TXT 저장 시 저장 위치 선택 
   - `node --check launch-board.js`, `node --check js/main.js`, `node --check js/vocabulary.js`: **PASS** (Exit Code 0)
   - PowerShell AST 및 `WbWin32Focus` C# `Add-Type` 컴파일 검증: **PASS**
   - `launch-board.js` v4 비-GUI HTTP 통합 검증 (`/__whiteboard_ping` v4·4개 capabilities, `/__whiteboard_api/resolve-dropped-file` 해시 일치/불일치/경로순회 차단, `/__whiteboard_api/focus-dialog`, 서버 재시작 후 `STATE_FILE` 허용 목록 기반 `/__whiteboard_api/save-current` 덮어쓰기): **PASS**
+
+## [2026-11-26 10:01] 5단계 전체화면 개체 확대 보기 정상 표시 및 종요소 브래킷·앵커 정렬 개선 (Commit ID: d6f8ded)
+- **수정 내용**:
+  - **5단계-문장 공유 전체화면 상태 개체 확대 보기(`#elementDetailOverlay`) 정상 표시 (`index.html`, `js/main.js`)**:
+    - `#elementDetailOverlay`를 `<section id="presentView">` 바깥에서 내부 하단으로 이동하여, `presentView.requestFullscreen()` 활성화 시 Fullscreen Top Layer 안에서도 개체 클릭 시 확대 화면이 정상 표시되도록 수정
+    - `handlePresentationClick()` 예외 대상에 `.element-detail-overlay`를 추가하고 `#elementCloseButton`·`#elementDetailOverlay` 클릭 핸들러에 `event.stopPropagation()`을 적용해 확대 화면 클릭 시 뒤 문장이 넘어가지 않도록 차단
+    - `handleFullscreenChange()`에서 `scheduleDetailFit()`을 호출해 전체화면 전환 시 확대 텍스트 크기를 재맞춤하고, `setMode()`에서 5단계 이탈 시 `hideElementDetail()`을 호출해 상태를 정리
+  - **5단계 종요소(부사어·형용사어) 위치·수식 브래킷 정렬 및 원문 인덱스 보정 (`css/style.css`, `index.html`, `js/main.js`)**:
+    - `.modifier-target-bracket`의 `z-index`를 `105`로 상향(`css/style.css`)하고 `index.html` 정적 자산 쿼리 버전(`css/style.css?v=20261122b`, `js/main.js?v=20261122c`)을 갱신
+    - `getAdverbAnchorIndex()`, `doesComponentMatchDisplayWords()`, `repairSentenceComponentIndices()`를 도입하고 `moveMinorAnchor()`가 원문 `startIndex`/`endIndex`를 덮어쓰지 않고 `anchorIndex`만 저장·직렬화(`serializeSinglePassagePayload`, `normalizeImportedComponent`)하도록 개선
+    - `clampSingleMinorBox()` 분리, `updateMinorPositions()` 2단계 배치(부사어 위치 확정·클램프 후 형용사어 수식 화살표 중앙 계산) 및 `placeMinorRow()` 브래킷 여백(`extraHeight`) 확대로 종요소 내부 단어 수식 화살표·밑줄 정렬 정확도 향상
+- **검증 결과**:
+  - `node --check js/main.js`: **PASS** (Exit Code 0)
+  - `index.html` 내 `#elementDetailOverlay`가 `#presentView` 내부에 단 1회 존재함 확인: **PASS**
