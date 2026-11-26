@@ -924,6 +924,9 @@ function setMode(mode) {
   if (mode === "passage-share" && previousMode !== "passage-share") {
     state.isKoreanTopicRevealed = false;
   }
+  if (mode !== "present") {
+    hideElementDetail();
+  }
   if (mode !== "passage-share") {
     hidePassageShareTopicModal();
   }
@@ -2314,6 +2317,7 @@ function renderEditView() {
   if (!sentence) {
     return;
   }
+  repairSentenceComponentIndices(sentence);
 
   elements.editProgress.textContent = getProgressText();
   elements.sentenceTextEditor.value = sentence.text;
@@ -2841,6 +2845,7 @@ function renderPresentView() {
   if (!sentence) {
     return;
   }
+  repairSentenceComponentIndices(sentence);
 
   const isTitleOrSub = sentence.components.some(c => c.role === "title" || c.role === "subtitle");
   const hasMinor = sentence.components.some(c => c.lane === "minor");
@@ -2993,7 +2998,7 @@ function renderMinorPresentRows(container, allComponents, revealCount = allCompo
 function placeMinorRow(row, rowIndex, totalRows, hasBracket = false) {
   const spacing = Math.max(50, 96 - totalRows * 8);
   const boxTop = getMinorBoxTop(rowIndex, totalRows);
-  const extraHeight = hasBracket ? Math.max(16, Math.round(spacing * 0.35)) : 0;
+  const extraHeight = hasBracket ? Math.max(40, Math.round(spacing * 0.55)) : 0;
   const rowHeight = spacing + extraHeight;
   row.style.setProperty("--minor-box-top", `${boxTop}px`);
   row.style.setProperty("--minor-row-height", `${rowHeight}px`);
@@ -3077,6 +3082,108 @@ function getMinorBoxTop(rowIndex, totalRows) {
   return Math.max(8, Math.round(spacing * 0.2));
 }
 
+function getAdverbAnchorIndex(component) {
+  if (Number.isFinite(component?.anchorIndex)) {
+    return component.anchorIndex;
+  }
+  return Number.isFinite(component?.startIndex) ? component.startIndex : (component?.order || 1) - 1;
+}
+
+function doesComponentMatchDisplayWords(displayWords, startIndex, compWords) {
+  if (!Number.isInteger(startIndex) || startIndex < 0 || compWords.length === 0 || startIndex + compWords.length > displayWords.length) {
+    return false;
+  }
+  return compWords.every((word, offset) => {
+    const sentenceWord = displayWords[startIndex + offset];
+    if (sentenceWord === word) {
+      return true;
+    }
+    const sentenceCore = getWordCore(sentenceWord).toLowerCase();
+    const compCore = getWordCore(word).toLowerCase();
+    return Boolean(sentenceCore && compCore && sentenceCore === compCore);
+  });
+}
+
+function repairSentenceComponentIndices(sentence) {
+  if (!sentence || !sentence.text || !Array.isArray(sentence.components) || sentence.components.length === 0) {
+    return;
+  }
+
+  const displayWords = getDisplayWords(sentence.text);
+  if (displayWords.length === 0) {
+    return;
+  }
+
+  const claimed = new Set();
+  const mismatched = [];
+
+  sentence.components.forEach((component) => {
+    if (!component || component.role === "title" || component.role === "subtitle") {
+      return;
+    }
+    const compWords = getComponentWords(component);
+    if (doesComponentMatchDisplayWords(displayWords, component.startIndex, compWords)) {
+      const expectedEnd = component.startIndex + compWords.length;
+      if (component.endIndex !== expectedEnd) {
+        component.endIndex = expectedEnd;
+      }
+      for (let idx = component.startIndex; idx < expectedEnd; idx += 1) {
+        claimed.add(idx);
+      }
+      return;
+    }
+    mismatched.push({ component, compWords });
+  });
+
+  if (mismatched.length === 0) {
+    return;
+  }
+
+  mismatched.forEach(({ component, compWords }) => {
+    const candidates = [];
+    for (let start = 0; start <= displayWords.length - compWords.length; start += 1) {
+      if (doesComponentMatchDisplayWords(displayWords, start, compWords)) {
+        candidates.push(start);
+      }
+    }
+    if (candidates.length === 0) {
+      return;
+    }
+
+    const unclaimedCandidates = candidates.filter((start) => {
+      for (let offset = 0; offset < compWords.length; offset += 1) {
+        if (claimed.has(start + offset)) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    const pool = unclaimedCandidates.length > 0 ? unclaimedCandidates : candidates;
+    let chosenStart = pool[0];
+    if (pool.length > 1 && Number.isFinite(component.startIndex)) {
+      chosenStart = pool.reduce((best, candidate) => {
+        return Math.abs(candidate - component.startIndex) < Math.abs(best - component.startIndex) ? candidate : best;
+      }, pool[0]);
+    }
+
+    if (
+      component.lane === "minor" &&
+      component.pinnedAnchor === true &&
+      !Number.isFinite(component.anchorIndex) &&
+      Number.isFinite(component.startIndex)
+    ) {
+      component.anchorIndex = component.startIndex;
+    }
+
+    component.startIndex = chosenStart;
+    component.endIndex = chosenStart + compWords.length;
+    for (let idx = chosenStart; idx < component.endIndex; idx += 1) {
+      claimed.add(idx);
+    }
+  });
+}
+
 function getMinorAnchorPercent(component) {
   const slots = getMinorSlots();
   if (slots.length === 0) {
@@ -3087,8 +3194,7 @@ function getMinorAnchorPercent(component) {
     return getModifierTargetCenterPercent(component);
   }
 
-  const start = Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1;
-  const slot = getClosestSlot(start);
+  const slot = getClosestSlot(getAdverbAnchorIndex(component));
   return slot.percent;
 }
 
@@ -3183,6 +3289,29 @@ function getMinorSlots() {
 
 function getClosestSlot(index) {
   const slots = getMinorSlots();
+  const containingMiddle = slots.find((slot) => (
+    slot.side === "middle" &&
+    Number.isFinite(slot.rangeMin) &&
+    Number.isFinite(slot.rangeMax) &&
+    slot.rangeMin < slot.rangeMax &&
+    index > slot.rangeMin &&
+    index < slot.rangeMax
+  ));
+  if (containingMiddle) {
+    return containingMiddle;
+  }
+
+  const containingEdge = slots.find((slot) => (
+    (slot.side === "start" || slot.side === "end") &&
+    slot.rangeMin !== undefined &&
+    slot.rangeMax !== undefined &&
+    index > slot.rangeMin &&
+    index < slot.rangeMax
+  ));
+  if (containingEdge) {
+    return containingEdge;
+  }
+
   return slots.reduce((closest, slot) => {
     return Math.abs(slot.index - index) < Math.abs(closest.index - index) ? slot : closest;
   }, slots[0]);
@@ -3205,6 +3334,8 @@ function rebuildMinorSlotsFromWords() {
   });
   const firstIndex = wordIndexes[0];
   const lastIndex = wordIndexes[wordIndexes.length - 1];
+  const minWordIndex = Math.min(...wordIndexes);
+  const maxWordIndex = Math.max(...wordIndexes);
   const slots = [];
   const first = wordRects[0];
   const last = wordRects[wordRects.length - 1];
@@ -3229,6 +3360,8 @@ function rebuildMinorSlotsFromWords() {
   slots.push({
     index: firstIndex - 0.5,
     side: "start",
+    rangeMin: firstIndex === minWordIndex ? -Infinity : undefined,
+    rangeMax: firstIndex === minWordIndex ? firstIndex : undefined,
     percent: clampEdgeSlotPercent(startTargetPx, startClearancePx, slotRect, "start"),
     minPercent: pxToSlotPercent(startMinX),
     maxPercent: pxToSlotPercent(startMaxX)
@@ -3243,6 +3376,8 @@ function rebuildMinorSlotsFromWords() {
     slots.push({
       index: (wordIndexes[index] + wordIndexes[index + 1]) / 2,
       side: "middle",
+      rangeMin: wordIndexes[index],
+      rangeMax: wordIndexes[index + 1],
       percent: rectXToPercent((rect.right + nextRect.left) / 2, slotRect),
       minPercent: pxToSlotPercent(stageMinX),
       maxPercent: pxToSlotPercent(stageMaxX)
@@ -3259,6 +3394,8 @@ function rebuildMinorSlotsFromWords() {
   slots.push({
     index: lastIndex + 0.5,
     side: "end",
+    rangeMin: lastIndex === maxWordIndex ? lastIndex : undefined,
+    rangeMax: lastIndex === maxWordIndex ? Infinity : undefined,
     percent: clampEdgeSlotPercent(endTargetPx, endClearancePx, slotRect, "end"),
     minPercent: pxToSlotPercent(endMinX),
     maxPercent: pxToSlotPercent(endMaxX)
@@ -3449,7 +3586,7 @@ function updateModifierTargetWords(componentId, indexes) {
 }
 
 function setModifierTargetWords(component, indexes) {
-  const wordCount = getPlainWords(getCurrentSentence()?.text || "").length;
+  const wordCount = getDisplayWords(getCurrentSentence()?.text || "").length;
   const normalizedIndexes = [...new Set(indexes)]
     .filter((index) => Number.isInteger(index) && index >= 0 && index < wordCount)
     .sort((a, b) => a - b);
@@ -3576,10 +3713,13 @@ function updateModifierTargetBrackets() {
 
     const left = Math.min(...targetWords.map((word) => word.getBoundingClientRect().left)) - stageRect.left;
     const right = Math.max(...targetWords.map((word) => word.getBoundingClientRect().right)) - stageRect.left;
-    const bottom = Math.max(...targetWords.map((word) => word.getBoundingClientRect().bottom)) - stageRect.top;
+    const targetBottom = Math.max(...targetWords.map((word) => {
+      const minorChip = word.closest(".minor-row .present-chip");
+      return minorChip ? minorChip.getBoundingClientRect().bottom + 4 : word.getBoundingClientRect().bottom + 8;
+    })) - stageRect.top;
     bracket.classList.remove("hidden");
     bracket.style.left = `${Math.round(left)}px`;
-    bracket.style.top = `${Math.round(bottom + 8)}px`;
+    bracket.style.top = `${Math.round(targetBottom)}px`;
     bracket.style.width = `${Math.round(right - left)}px`;
   });
 }
@@ -3587,7 +3727,7 @@ function updateModifierTargetBrackets() {
 function getVisibleWordElementsByIndexes(indexes) {
   const indexSet = new Set(indexes);
   return [...document.querySelectorAll(".presentation-stage .present-word[data-word-index]")]
-    .filter((word) => indexSet.has(Number(word.dataset.wordIndex)));
+    .filter((word) => !word.closest(".is-unrevealed") && indexSet.has(Number(word.dataset.wordIndex)));
 }
 
 function getContiguousGroups(indexes) {
@@ -3717,6 +3857,7 @@ function handleFullscreenChange() {
   if (isPresentFullscreen || (!fullscreenElement && state.mode === "present")) {
     applySettings();
     schedulePresentationFit();
+    scheduleDetailFit();
   }
   if (isPassageShareFullscreen || (!fullscreenElement && state.mode === "passage-share")) {
     schedulePassageShareFit(true);
@@ -3738,7 +3879,7 @@ function handlePresentationClick(event) {
     return;
   }
 
-  const interactiveTarget = event.target.closest("button, input, select, textarea, a, [draggable='true'], .important-present-nav");
+  const interactiveTarget = event.target.closest("button, input, select, textarea, a, [draggable='true'], .important-present-nav, .element-detail-overlay");
   if (interactiveTarget) {
     return;
   }
@@ -3839,6 +3980,7 @@ function createDerivedComponent(baseComponent, words, startIndex, endIndex) {
 // 발표 화면에서 드래그로 정해진 수동 위치(점 고정/박스)를 초기화한다.
 function clearManualMinorPosition(component) {
   delete component.pinnedAnchor;
+  delete component.anchorIndex;
   delete component.boxPercent;
 }
 
@@ -4039,11 +4181,8 @@ function moveMinorAnchor(componentId, clientX) {
   const nearestSlot = slots.reduce((closest, slot) => {
     return Math.abs(slot.percent - targetPercent) < Math.abs(closest.percent - targetPercent) ? slot : closest;
   }, slots[0]);
-  const span = Math.max(1, (component.endIndex || 0) - (component.startIndex || 0));
-  const wordCount = Math.max(sentence.wordCount || 1, 1);
-  const startIndex = clamp(0, Math.round(nearestSlot.index), wordCount);
-  component.startIndex = startIndex;
-  component.endIndex = Math.min(wordCount, startIndex + span);
+  // 원문 단어 인덱스(startIndex/endIndex)는 수식 대상 매칭과 단어 번호 표시에 사용되므로 덮어쓰지 않고 anchorIndex만 저장한다.
+  component.anchorIndex = nearestSlot.index;
   // 드래그한 부사어는 선택한 슬롯에 고정(pinned)되어 다른 종요소 자동 배치에 영향받지 않는다.
   component.pinnedAnchor = true;
   renderPresentView();
@@ -4073,8 +4212,8 @@ function applySettings() {
 function runPresentationFitStep() {
   fitMajorLine();
   rebuildMinorSlotsFromWords();
-  updateMinorPositions();
   fitMinorRows();
+  updateMinorPositions();
   clampMinorBoxes();
   updateModifierTargetBrackets();
   updateMinorConnectorLengths();
@@ -4241,6 +4380,48 @@ function fitMinorRows() {
   elements.app.style.setProperty("--font-minor-current", `${nextSize}px`);
 }
 
+function clampSingleMinorBox(chip, laneRect) {
+  if (!chip || !laneRect?.width) {
+    return;
+  }
+
+  const anchorPercent = Number.parseFloat(chip.style.getPropertyValue("--anchor-percent")) || 50;
+  const desiredBox = Number.parseFloat(chip.style.getPropertyValue("--box-percent"));
+  const targetBox = Number.isFinite(desiredBox) ? desiredBox : anchorPercent;
+  const chipRect = chip.getBoundingClientRect();
+  if (!chipRect.width) {
+    return;
+  }
+
+  // 박스가 가장자리(문장 맨앞/맨뒤 슬롯)까지 충분히 붙을 수 있도록 여백을 작게 잡는다.
+  const boxGuard = clamp(16, laneRect.width * 0.02, 56);
+  const halfPercent = ((chipRect.width / 2 + boxGuard) / laneRect.width) * 100;
+  const halfWidthPercent = ((chipRect.width / 2) / laneRect.width) * 100;
+
+  // 박스가 화면 영역 내에 위치하되, 앵커(점/화살표)가 박스의 가로 폭 영역(0% ~ 100%)을 벗어나지 않도록 제한
+  let minBox = Math.max(halfPercent, anchorPercent - halfWidthPercent);
+  let maxBox = Math.min(100 - halfPercent, anchorPercent + halfWidthPercent);
+  if (minBox > maxBox) {
+    minBox = halfPercent;
+    maxBox = 100 - halfPercent;
+  }
+
+  const boxPercent = halfPercent >= 50 ? 50 : clamp(minBox, targetBox, maxBox);
+  const roundedBoxPercent = Math.round(boxPercent * 10) / 10;
+  chip.style.setProperty("--box-percent", `${roundedBoxPercent}%`);
+  const anchorX = (anchorPercent / 100) * laneRect.width;
+  const boxCenterX = (roundedBoxPercent / 100) * laneRect.width;
+
+  // ::before/::after의 left % 기준(padding box)에 맞춰 좌우 테두리 폭을 제외한 내부 폭으로 수직선 위치를 계산한다.
+  const chipStyle = getComputedStyle(chip);
+  const borderX = (Number.parseFloat(chipStyle.borderLeftWidth) || 0) + (Number.parseFloat(chipStyle.borderRightWidth) || 0);
+  const innerWidth = Math.max(1, chipRect.width - borderX);
+  // 수직선이 항상 박스 내에 안착할 수 있도록 0% ~ 100% 범위로 clamp
+  const rawConnector = 50 + ((anchorX - boxCenterX) / innerWidth) * 100;
+  const connectorPercent = clamp(0, rawConnector, 100);
+  chip.style.setProperty("--connector-x", `${Math.round(connectorPercent * 10) / 10}%`);
+}
+
 function clampMinorBoxes() {
   if (state.mode !== "present") {
     return;
@@ -4252,32 +4433,7 @@ function clampMinorBoxes() {
   }
 
   elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
-    const anchorPercent = Number.parseFloat(chip.style.getPropertyValue("--anchor-percent")) || 50;
-    const desiredBox = Number.parseFloat(chip.style.getPropertyValue("--box-percent"));
-    const targetBox = Number.isFinite(desiredBox) ? desiredBox : anchorPercent;
-    const chipRect = chip.getBoundingClientRect();
-    // 박스가 가장자리(문장 맨앞/맨뒤 슬롯)까지 충분히 붙을 수 있도록 여백을 작게 잡는다.
-    const boxGuard = clamp(16, laneRect.width * 0.02, 56);
-    const halfPercent = ((chipRect.width / 2 + boxGuard) / laneRect.width) * 100;
-    const halfWidthPercent = ((chipRect.width / 2) / laneRect.width) * 100;
-
-    // 박스가 화면 영역 내에 위치하되, 앵커(점/화살표)가 박스의 가로 폭 영역(0% ~ 100%)을 벗어나지 않도록 제한
-    let minBox = Math.max(halfPercent, anchorPercent - halfWidthPercent);
-    let maxBox = Math.min(100 - halfPercent, anchorPercent + halfWidthPercent);
-    if (minBox > maxBox) {
-      minBox = halfPercent;
-      maxBox = 100 - halfPercent;
-    }
-
-    const boxPercent = halfPercent >= 50 ? 50 : clamp(minBox, targetBox, maxBox);
-    chip.style.setProperty("--box-percent", `${Math.round(boxPercent * 10) / 10}%`);
-    const anchorX = (anchorPercent / 100) * laneRect.width;
-    const boxCenterX = (boxPercent / 100) * laneRect.width;
-
-    // 수직선이 항상 박스 내에 안착할 수 있도록 0% ~ 100% 범위로 clamp
-    const rawConnector = 50 + ((anchorX - boxCenterX) / chipRect.width) * 100;
-    const connectorPercent = clamp(0, rawConnector, 100);
-    chip.style.setProperty("--connector-x", `${Math.round(connectorPercent * 10) / 10}%`);
+    clampSingleMinorBox(chip, laneRect);
   });
 }
 
@@ -4416,17 +4572,17 @@ function updateMinorPositions() {
   const anchorById = new Map();
   const boxById = new Map();
   const adverbItems = [];
+  const adjectiveComponents = [];
 
   components.forEach((component) => {
     if (component.role === "adjective") {
-      // 형용사어: 화살표는 항상 수식 대상 정중앙. 박스만 드래그로 옮길 수 있다.
-      anchorById.set(component.id, getModifierTargetCenterPercent(component));
+      adjectiveComponents.push(component);
       if (Number.isFinite(component.boxPercent)) {
         boxById.set(component.id, clamp(edgePercent, component.boxPercent, 100 - edgePercent));
       }
       return;
     }
-    const slot = getClosestSlot(Number.isFinite(component.startIndex) ? component.startIndex : component.order - 1);
+    const slot = getClosestSlot(getAdverbAnchorIndex(component));
     adverbItems.push({
       component,
       order: component.order,
@@ -4439,15 +4595,45 @@ function updateMinorPositions() {
     anchorById.set(id, percent);
   });
 
-  elements.minorPresentLane.querySelectorAll(".present-chip").forEach((chip) => {
+  const chips = [...elements.minorPresentLane.querySelectorAll(".present-chip")];
+  // 부사어 위치를 먼저 DOM에 반영하고 즉시 clamp해야 부사어 내부 단어를 수식하는 형용사어가 화면 안으로 보정된 최신 좌표로 화살표 중앙을 계산할 수 있다.
+  chips.forEach((chip) => {
     const id = chip.dataset.componentId;
+    if (!anchorById.has(id)) {
+      return;
+    }
     const anchor = anchorById.get(id);
     if (Number.isFinite(anchor)) {
       chip.style.setProperty("--anchor-percent", `${anchor}%`);
       const box = boxById.has(id) ? boxById.get(id) : anchor;
       chip.style.setProperty("--box-percent", `${box}%`);
+      clampSingleMinorBox(chip, metrics);
     }
   });
+
+  const chipById = new Map(chips.map((chip) => [chip.dataset.componentId, chip]));
+  const positionAdjectives = () => {
+    adjectiveComponents.forEach((component) => {
+      const chip = chipById.get(component.id);
+      if (!chip) {
+        return;
+      }
+      // 형용사어: 화살표는 항상 수식 대상 정중앙. 박스만 드래그로 옮길 수 있다.
+      const anchor = getModifierTargetCenterPercent(component);
+      if (Number.isFinite(anchor)) {
+        chip.style.setProperty("--anchor-percent", `${anchor}%`);
+        const box = boxById.has(component.id) ? boxById.get(component.id) : anchor;
+        chip.style.setProperty("--box-percent", `${box}%`);
+        clampSingleMinorBox(chip, metrics);
+      }
+    });
+  };
+
+  positionAdjectives();
+  if (adjectiveComponents.length > 1) {
+    // pinOrder 등으로 뒤쪽 형용사어를 앞쪽 형용사어가 수식하는 역순 체인도 1회 패스 안에 안정화한다.
+    positionAdjectives();
+  }
 }
 
 function hasPassageEntryContent(entry) {
@@ -5407,6 +5593,7 @@ function serializeSinglePassagePayload(passageEntry, passageIndex = 0) {
         modifierTargetEnd: component.modifierTargetEnd,
         modifierTargetIndexes: component.modifierTargetIndexes,
         pinnedAnchor: component.pinnedAnchor,
+        anchorIndex: Number.isFinite(component.anchorIndex) ? component.anchorIndex : undefined,
         boxPercent: component.boxPercent,
         pinOrder: Number.isInteger(component.pinOrder) ? component.pinOrder : undefined,
         words: getComponentWords(component)
@@ -5874,7 +6061,7 @@ function normalizeImportedSentence(sentence, sentenceIndex) {
     ? sentence.components.map((component, componentIndex) => normalizeImportedComponent(component, sentenceIndex, componentIndex)).filter(Boolean)
     : analyzeSentence(text, sentenceIndex);
 
-  return {
+  const normalizedSentence = {
     id: String(sentence.id || `sentence-${sentenceIndex + 1}`),
     text,
     isImportant: sentence.isImportant === true,
@@ -5884,6 +6071,8 @@ function normalizeImportedSentence(sentence, sentenceIndex) {
     wordCount: Number.isFinite(Number(sentence.wordCount)) ? Number(sentence.wordCount) : getPlainWords(text).length,
     components
   };
+  repairSentenceComponentIndices(normalizedSentence);
+  return normalizedSentence;
 }
 
 function normalizeImportedComponent(component, sentenceIndex, componentIndex) {
@@ -5898,6 +6087,7 @@ function normalizeImportedComponent(component, sentenceIndex, componentIndex) {
   const endIndex = Number(component?.endIndex);
   const modifierTargetStart = Number(component?.modifierTargetStart);
   const modifierTargetEnd = Number(component?.modifierTargetEnd);
+  const anchorIndex = Number(component?.anchorIndex);
   const boxPercent = Number(component?.boxPercent);
   return {
     // 저장 파일에 중복 id가 있을 수 있으므로 불러올 때 항상 고유 id를 새로 부여한다.
@@ -5915,6 +6105,7 @@ function normalizeImportedComponent(component, sentenceIndex, componentIndex) {
       ? component.modifierTargetIndexes.map((index) => Number(index)).filter((index) => Number.isInteger(index) && index >= 0)
       : undefined,
     pinnedAnchor: component?.pinnedAnchor === true ? true : undefined,
+    anchorIndex: Number.isFinite(anchorIndex) ? anchorIndex : undefined,
     boxPercent: Number.isFinite(boxPercent) ? boxPercent : undefined,
     pinOrder: Number.isInteger(component?.pinOrder) ? Number(component.pinOrder) : undefined
   };
@@ -6362,8 +6553,12 @@ function bindEvents() {
     scheduleTopicModalFit();
     adjustEditViewScale();
   });
-  elements.elementCloseButton.addEventListener("click", hideElementDetail);
+  elements.elementCloseButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    hideElementDetail();
+  });
   elements.elementDetailOverlay.addEventListener("click", (event) => {
+    event.stopPropagation();
     if (event.target === elements.elementDetailOverlay) {
       hideElementDetail();
     }
